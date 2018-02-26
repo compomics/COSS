@@ -17,7 +17,6 @@ import com.compomics.ms2io.SpectrumReader;
 import com.compomics.coss.Model.ComparisonResult;
 
 import com.compomics.ms2io.IndexKey;
-import java.io.File;
 import java.util.Collections;
 /**
  * 
@@ -31,20 +30,21 @@ public class UseMsRoben extends Matching {
 
     UpdateListener listener;
 
-    File expSpecFile;
-    File libSpecFile;
-    //ArrayList<Spectrum> specA;
-    //ArrayList<MSnSpectrum> specB;
+    SpectrumReader rdExperiment, rdLibrary;
+    List<IndexKey> expIndex;
+    String resultType;
+    
     int MsRobinOption;
     int IntensityOption;
     double fragTolerance;
     boolean cancelled = false;
 
-    public UseMsRoben(UpdateListener lstner, File expFile, File libFile) {
+    public UseMsRoben(UpdateListener lstner, SpectrumReader rdExperiment, List<IndexKey> expIndex, SpectrumReader rdLibrary, String resultType) {
         this.listener = lstner;
-        this.expSpecFile=expFile;
-        this.libSpecFile=libFile;
-        
+        this.rdExperiment=rdExperiment;
+        this.rdLibrary=rdLibrary;
+        this.resultType=resultType;
+        this.expIndex=expIndex;
         cancelled = false;
     }
 
@@ -64,9 +64,11 @@ public class UseMsRoben extends Matching {
     }
 
     @Override
-    public List<ArrayList<ComparisonResult>> compare(SpectrumReader rdExperiment, List<IndexKey> expIndex, SpectrumReader rdLibrary, List<IndexKey> libIndex,org.apache.log4j.Logger log) {
-       // specA = spa;
+    public List<ArrayList<ComparisonResult>> compare(org.apache.log4j.Logger log) {
+       // specA = spa;, libIndex
                   
+      
+      
         int specNum = 1;
         List<ArrayList<ComparisonResult>> simResult = new ArrayList<>();
 
@@ -86,7 +88,7 @@ public class UseMsRoben extends Matching {
             expSpec=rdExperiment.readAt(expIndex.get(a).getPos());   
             double mass=expSpec.getPCMass();
             ArrayList libSpec = rdLibrary.readPart(mass, 0.05);
-            DoMatching dm = new DoMatching(expSpec, libSpec);
+            DoMatching dm = new DoMatching(expSpec, libSpec, resultType);
             Future future = executor.submit(dm);
             futureList.add(future);
            
@@ -120,14 +122,18 @@ public class UseMsRoben extends Matching {
 
     private class DoMatching implements Callable<ArrayList<ComparisonResult> > {
 
-        public DoMatching(Spectrum sa, ArrayList<Spectrum> sb) {
+        Spectrum sp1;
+        ArrayList<Spectrum> sb;        
+        String resType="";
+        
+        public DoMatching(Spectrum sa, ArrayList<Spectrum> sb, String restype) {
             this.sp1 = sa;
             this.sb = sb;
+            
            
         }
 
-        Spectrum sp1;
-        ArrayList<Spectrum> sb;
+        
         
         double intensity_part = 0, probability_part = 0;
 
@@ -175,6 +181,7 @@ public class UseMsRoben extends Matching {
                 res.setScore(score);
                 res.setTitle(sp2.getTitle());
                 res.setSpecPosition(sp2.getIndex().getPos());
+                res.setResultType(this.resType);
                 
                 compResult.add(res);
 

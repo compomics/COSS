@@ -12,6 +12,7 @@ public class ComparisonResult implements Comparable<ComparisonResult> {
     private String charge;
     private double score;
     private long spec_pos;
+    private String result_type;//either decoy or target
     
     public long getSpecPosition(){
         return this.spec_pos;
@@ -59,6 +60,15 @@ public class ComparisonResult implements Comparable<ComparisonResult> {
     
     public double getScore(){
         return this.score;
+    }
+    
+    
+    public String getResultType(){
+        return this.result_type;
+    }
+    
+    public void setResultType(String resType){
+        this.result_type=resType;
     }
     
     

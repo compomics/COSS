@@ -25,6 +25,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 /**
@@ -128,6 +130,9 @@ public class MainGUI extends JFrame {
         JPanel innerControlPanel=new JPanel(new FlowLayout());
         innerControlPanel.add(btnStartSearch);
         innerControlPanel.add(btnCancel);
+        
+        JPanel pnlValidationControl = new JPanel(new FlowLayout());
+     
         
         pnlCommands.add(innerControlPanel, BorderLayout.NORTH);
         pnlCommands.add(prgProgress, BorderLayout.SOUTH);
@@ -269,7 +274,12 @@ public class MainGUI extends JFrame {
         }
         );
         
-        
+        tab.addChangeListener((ChangeEvent e) -> {
+            if (e.getSource() instanceof JTabbedPane) {
+                JTabbedPane pane = (JTabbedPane) e.getSource();
+                changeControlView(pane.getSelectedIndex());
+            }          
+        });
         
         setJMenuBar(menuBar);        
         BorderLayout layout=new BorderLayout();
@@ -306,6 +316,12 @@ public class MainGUI extends JFrame {
     public JTextArea txtlog;
     private JScrollPane scrLogArea;
     public JProgressBar prgProgress;
+
+    private void changeControlView(int selectedIndex) {
+        
+        
+        
+    }
     
 
  

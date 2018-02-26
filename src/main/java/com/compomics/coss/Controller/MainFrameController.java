@@ -53,7 +53,6 @@ import java.util.Collections;
 public class MainFrameController implements UpdateListener {
 
     private static final Logger LOG = Logger.getLogger(MainFrameController.class);
-    private SwingWorkerThread workerThread;
 
     /**
      * Objects of the views
@@ -66,6 +65,7 @@ public class MainFrameController implements UpdateListener {
     // private ConfigHolder config = new ConfigHolder();
     Matching matching;
     private static List<ArrayList<ComparisonResult>> res;
+    int cutoff_index;
     ConfigData configData;
     public boolean cencelled = false;
     public boolean isBussy = false;
@@ -76,6 +76,7 @@ public class MainFrameController implements UpdateListener {
     public DefaultComboBoxModel cmbModel;
 
     private int targSpectrumNum, resultNumber;
+    private boolean isValidation;
 
     /**
      * Initialize objects, variables and components.
@@ -143,9 +144,13 @@ public class MainFrameController implements UpdateListener {
      */
     public void stopSearch() {
 
-        this.cencelled = true;
-        matching.stopMatching();
+        if (matching != null) {
+            this.cencelled = true;
+            matching.stopMatching();
 
+        } else {
+            LOG.info("Nothing to cancel! Matching process is not running");
+        }
     }
 
     /**
@@ -166,11 +171,11 @@ public class MainFrameController implements UpdateListener {
             readSpectra();
             this.cencelled = false;
             this.isBussy = true;
-            matching = new UseMsRoben(this, configData.getExperimentalSpecFile(), configData.getSpecLibraryFile());
-            // matching = new Cascade(this);
 
+            isValidation=false;
+            matching = new UseMsRoben(this, configData.getExpSpecReader(), configData.getExpSpectraIndex(), configData.getLibSpecReader(), "target");
             mainView.prgProgress.setValue(0);
-            workerThread = new SwingWorkerThread();
+            SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
 
         }
@@ -180,6 +185,44 @@ public class MainFrameController implements UpdateListener {
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(com.compomics.main.ProjectMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+
+    }
+
+    /**
+     * start search against decoy database
+     */
+    private void validateResult(File decoydbFile) {
+        
+        SpectrumReader rdDecoy=null;
+        List<IndexKey> decoyindxList=null;
+        try {
+            Indexer giExp = new Indexer(decoydbFile);            
+            decoyindxList = giExp.generate();
+            Collections.sort(decoyindxList);
+            
+            //reader for decoy spectrum file
+            
+            if (decoydbFile.getName().endsWith("mgf")) {
+                rdDecoy = new MgfReader(decoydbFile, decoyindxList);
+                
+
+            } else if (decoydbFile.getName().endsWith("msp")) {
+                rdDecoy = new MspReader(decoydbFile, decoyindxList);
+
+            }
+            
+        } catch (IOException ex) {
+            LOG.info(ex);
+        }
+        
+        
+        
+        isValidation = true;
+        matching = new UseMsRoben(this, configData.getExpSpecReader(), configData.getExpSpectraIndex(), rdDecoy, "decoy");
+        mainView.prgProgress.setValue(0);
+        SwingWorkerThread workerThread = new SwingWorkerThread();
+        workerThread.execute();
+      
 
     }
 
@@ -214,7 +257,7 @@ public class MainFrameController implements UpdateListener {
             // List<Spectrum> experimentalSpectra;
             Indexer giExp = new Indexer(configData.getExperimentalSpecFile());
             List<IndexKey> indxList = giExp.generate();
-            Collections.sort(indxList);
+            //Collections.sort(indxList);
             configData.setExpSpectraIndex(indxList);
 
             //Read spectra library
@@ -689,17 +732,24 @@ public class MainFrameController implements UpdateListener {
 
     }
 
+
+
     /**
      * swing thread to start the search and it runs on background
      */
     private class SwingWorkerThread extends SwingWorker<Void, Void> {
+        
+        List<ArrayList<ComparisonResult>> tempRes;
+        
 
         @Override
         protected Void doInBackground() throws Exception {
 
             matching.InpArgs(Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()), Double.toString(configData.getfragTol()));
-            res = new ArrayList<>();
-            res = matching.compare(configData.getExpSpecReader(), configData.getExpSpectraIndex(), configData.getLibSpecReader(), configData.getSpectraLibraryIndex(), LOG);
+            tempRes = new ArrayList<>();
+            tempRes = matching.compare(LOG);
+            
+            
             return null;
         }
 
@@ -718,14 +768,25 @@ public class MainFrameController implements UpdateListener {
                     mainView.prgProgress.setValue(100);
                     mainView.prgProgress.setString(Integer.toString(100) + "%");
 
-                    if (res != null && res.size() > 0) {
+                    if (tempRes != null && tempRes.size() > 0) {
 
+                        if(!isValidation){
+                            res=tempRes;   
+                            cutoff_index=res.size()-1;
+                        }
+                        else{
+                            Validation validation=new Validation();
+                            validation.compareNmerge(res, tempRes);
+                            cutoff_index=validation.validate(res, 0.01);                            
+                            isValidation=false;
+                        }
+                        
                         fillTargetTable();
                         fillBestmatchTable(0);
                         displayResult();
 
                     } else {
-//                        Log.info("No comparison result.");
+                       LOG.info("No comparison result.");
                     }
 
                 }
