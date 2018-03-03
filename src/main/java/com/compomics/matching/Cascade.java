@@ -24,7 +24,7 @@ import com.compomics.preprocessing.Filter;
 import com.compomics.featureExtraction.Wavelet;
 import com.compomics.ms2io.IndexKey;
 import com.compomics.ms2io.Spectrum;
-import com.compomics.ms2io.SpectrumReader;
+import com.compomics.ms2io.SpectraReader;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public class Cascade extends Matching {
     }
 
     @Override
-    public List<ArrayList<ComparisonResult>> compare(SpectrumReader rdExperiment, List<IndexKey> expIndex, SpectrumReader rdLibrary, List<IndexKey> libIndex,org.apache.log4j.Logger log) {
+    public List<ArrayList<ComparisonResult>> compare(SpectraReader rdExperiment, List<IndexKey> expIndex, SpectraReader rdLibrary, List<IndexKey> libIndex,org.apache.log4j.Logger log) {
 
         int specNum = 1;
         List<ArrayList<ComparisonResult>> simResult = new ArrayList<>();

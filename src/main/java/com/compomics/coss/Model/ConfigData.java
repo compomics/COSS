@@ -3,7 +3,7 @@ package com.compomics.coss.Model;
 
 import com.compomics.ms2io.IndexKey;
 import java.io.File;
-import com.compomics.ms2io.SpectrumReader;
+import com.compomics.ms2io.SpectraReader;
 import java.util.List;
 /**
  *this class holds the configuration data for spectral comparison
@@ -15,8 +15,8 @@ public class ConfigData {
     File specLibraryFile;
     List<IndexKey> expIndex;
     List<IndexKey> libIndex;
-    SpectrumReader rdExperimental;
-    SpectrumReader rdLibrary;
+    SpectraReader rdExperimental;
+    SpectraReader rdLibrary;
     
     String outputPath;
     int ScoringFun;//index
@@ -50,19 +50,19 @@ public class ConfigData {
         return this.expIndex;
     }
 
-    public SpectrumReader getExpSpecReader(){
+    public SpectraReader getExpSpecReader(){
         return this.rdExperimental;
     }
     
-    public void setExpSpecReader(SpectrumReader rd){
+    public void setExpSpecReader(SpectraReader rd){
         this.rdExperimental=rd;
     }
     
-    public void setLibSpecReader(SpectrumReader rd){
+    public void setLibSpecReader(SpectraReader rd){
         this.rdLibrary=rd;
     }
    
-    public SpectrumReader getLibSpecReader(){
+    public SpectraReader getLibSpecReader(){
         return this.rdLibrary;
     }
     

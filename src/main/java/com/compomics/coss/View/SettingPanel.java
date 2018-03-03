@@ -252,7 +252,7 @@ public class SettingPanel extends JPanel {
         );
 
         //End of Matching panel layout
-        //this panel: the layout
+        //base input panel layout: panel to hold all the three different panels together
         javax.swing.GroupLayout pnlMainLayout = new javax.swing.GroupLayout(pnlInputs);
         pnlInputs.setLayout(pnlMainLayout);
 

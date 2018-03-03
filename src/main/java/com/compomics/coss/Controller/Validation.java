@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.apache.avro.generic.GenericData;
 
 /**
  *
@@ -21,27 +22,28 @@ public class Validation {
 
     }
 
-    public void compareNmerge(List<ArrayList<ComparisonResult>> targetResult, List<ArrayList<ComparisonResult>> decoyResult) {
+    public List<ArrayList<ComparisonResult>> compareNmerge(List<ArrayList<ComparisonResult>> targetResult, List<ArrayList<ComparisonResult>> decoyResult) {
 
-        List<ArrayList<ComparisonResult>> validatedResult = null;
+        List<ArrayList<ComparisonResult>> validatedResult = new ArrayList<>();
         //calculate FDR=Ndecoy/Ntargethits
 
         int c = 0;
-        int decoySSM = 0;
-
         for (ArrayList<ComparisonResult> rTarget : targetResult) {
             ArrayList<ComparisonResult> rDecoy = decoyResult.get(c++);
             if (rTarget.get(0).compareTo(rDecoy.get(0)) < 0) {
 
-                rTarget.clear();
-                rTarget.addAll(rDecoy);
-                decoySSM++;
-
+                validatedResult.add(rDecoy);
+                
             }
+            else{
+                validatedResult.add(rTarget);
+            }
+            
 
         }
-        Collections.sort(targetResult, (ArrayList<ComparisonResult> o1, ArrayList<ComparisonResult> o2) -> Double.valueOf(o1.get(0).getScore()).compareTo(o2.get(0).getScore()));
+        Collections.sort(validatedResult, (ArrayList<ComparisonResult> o1, ArrayList<ComparisonResult> o2) -> Double.valueOf(o1.get(0).getScore()).compareTo(o2.get(0).getScore()));
 
+        return validatedResult;
     }
 
     public int validate(List<ArrayList<ComparisonResult>> result, double threshold) {

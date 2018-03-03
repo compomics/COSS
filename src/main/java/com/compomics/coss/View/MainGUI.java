@@ -20,13 +20,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 
 /**
@@ -45,6 +47,7 @@ public class MainGUI extends JFrame {
        * constructor of the class 
        * @param settings setting panel to be added on the main GUI
        * @param result result panel to be added on the main GUI
+     * @param targetView
        * @param controler  controller class responsible for coordinating the process 
        */
     public MainGUI(SettingPanel settings, ResultPanel result, TargetDB_View targetView, MainFrameController controler) {
@@ -120,35 +123,12 @@ public class MainGUI extends JFrame {
         pnlLog = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlLog.setLayout(new BorderLayout());
 
-        btnStartSearch=new JButton("Start Searching");
-        btnCancel=new  JButton("Cancel");       
-        prgProgress=new JProgressBar(0, 100);
-      
-        
-       
-        
-        JPanel innerControlPanel=new JPanel(new FlowLayout());
-        innerControlPanel.add(btnStartSearch);
-        innerControlPanel.add(btnCancel);
-        
-        JPanel pnlValidationControl = new JPanel(new FlowLayout());
-     
-        
-        pnlCommands.add(innerControlPanel, BorderLayout.NORTH);
-        pnlCommands.add(prgProgress, BorderLayout.SOUTH);
-        
-    
         txtlog = new JTextArea();
         scrLogArea=new JScrollPane();
         txtlog.setColumns(20);
         txtlog.setRows(5);
         scrLogArea.setViewportView(txtlog);
-        
-        
-        
-        
-        
-      
+     
         //this.setSize(dmnsn);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
@@ -170,17 +150,7 @@ public class MainGUI extends JFrame {
         pnlLower.add(pnlCommands);
         pnlLower.add(pnlLog);
         
-       
-        
-//        //base panel it is the base panel holding the upper and the lower split panel
-//        splBase = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pnlUpper, pnlLower);
-//        splBase.setResizeWeight(0.9);
-//        splBase.setDividerLocation(0.9);
-//        splBase.setEnabled(false);
-//        //splBase.setOneTouchExpandable(true);
-//        
-//       
-      
+     
         //SettingPanel settings = new SettingPanel();
         pnlsetting.add(settings);
 
@@ -215,30 +185,8 @@ public class MainGUI extends JFrame {
             }
         }
         );
-        
-        //start search button listenr
-        btnStartSearch.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                       
-                        
-                        control.startSearch();
 
-                    }
-                }
-                );
-        
-        
-        //cancel button listener
-        btnCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-
-                control.stopSearch();
-
-            }
-        }
-        );
-        
+  
         save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 try {
@@ -277,9 +225,15 @@ public class MainGUI extends JFrame {
         tab.addChangeListener((ChangeEvent e) -> {
             if (e.getSource() instanceof JTabbedPane) {
                 JTabbedPane pane = (JTabbedPane) e.getSource();
-                changeControlView(pane.getSelectedIndex());
+                int ind = pane.getSelectedIndex();
+                control.cmdViewDisplay(ind);
+               
             }          
         });
+        
+        
+        
+  
         
         setJMenuBar(menuBar);        
         BorderLayout layout=new BorderLayout();
@@ -307,15 +261,13 @@ public class MainGUI extends JFrame {
     public JPanel pnlsetting;
     public JPanel pnlresult;
    
-    private JPanel pnlCommands;
+    public JPanel pnlCommands;
     private JPanel pnlLog;
     
     
-    public JButton btnStartSearch;
-    private JButton btnCancel;
     public JTextArea txtlog;
     private JScrollPane scrLogArea;
-    public JProgressBar prgProgress;
+    
 
     private void changeControlView(int selectedIndex) {
         

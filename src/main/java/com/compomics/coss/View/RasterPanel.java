@@ -2,7 +2,7 @@ package com.compomics.coss.View;
 
 import com.compomics.ms2io.IndexKey;
 import com.compomics.ms2io.Spectrum;
-import com.compomics.ms2io.SpectrumReader;
+import com.compomics.ms2io.SpectraReader;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -29,7 +29,7 @@ import org.apache.commons.math3.util.Precision;
 public class RasterPanel extends JPanel implements MouseListener, MouseMotionListener {
 
     List<IndexKey> iKey;
-    SpectrumReader rd;
+    SpectraReader rd;
     double scale = 1;
     double retnTime = 0;
     BufferedImage temp;
@@ -49,7 +49,7 @@ public class RasterPanel extends JPanel implements MouseListener, MouseMotionLis
      * @param key index key to read the spectrum
      * @param rd spectrum reader object
      */
-    public RasterPanel(List<IndexKey> key, SpectrumReader rd) {
+    public RasterPanel(List<IndexKey> key, SpectraReader rd) {
         this.iKey = key;
         this.rd=rd;
 

@@ -13,7 +13,7 @@ import org.apache.commons.math3.util.Precision;
 import com.compomics.coss.Controller.UpdateListener;
 import com.compomics.ms2io.Peak;
 import com.compomics.ms2io.Spectrum;
-import com.compomics.ms2io.SpectrumReader;
+import com.compomics.ms2io.SpectraReader;
 import com.compomics.coss.Model.ComparisonResult;
 
 import com.compomics.ms2io.IndexKey;
@@ -30,7 +30,8 @@ public class UseMsRoben extends Matching {
 
     UpdateListener listener;
 
-    SpectrumReader rdExperiment, rdLibrary;
+    SpectraReader rdExperiment;
+    SpectraReader rdLibrary;
     List<IndexKey> expIndex;
     String resultType;
     
@@ -39,7 +40,7 @@ public class UseMsRoben extends Matching {
     double fragTolerance;
     boolean cancelled = false;
 
-    public UseMsRoben(UpdateListener lstner, SpectrumReader rdExperiment, List<IndexKey> expIndex, SpectrumReader rdLibrary, String resultType) {
+    public UseMsRoben(UpdateListener lstner, SpectraReader rdExperiment, List<IndexKey> expIndex, SpectraReader rdLibrary, String resultType) {
         this.listener = lstner;
         this.rdExperiment=rdExperiment;
         this.rdLibrary=rdLibrary;

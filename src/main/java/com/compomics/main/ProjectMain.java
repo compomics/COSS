@@ -25,10 +25,7 @@ public class ProjectMain {
     private static final String ERROR_MESSAGE = "An error occured during startup, please try again."
             + System.lineSeparator() + "If the problem persists, contact your administrator or post an issue on the google code page.";
 
-    /**
-     * The GUI main controller.
-     */
-    private MainFrameController controller = new MainFrameController();
+
     // private DrawRaster  visualize=new DrawRaster();
 
     /**
@@ -81,6 +78,10 @@ public class ProjectMain {
     private void launch() {
         try {
 
+                /**
+     * The GUI main controller.
+     */
+            MainFrameController controller = new MainFrameController();
             controller.init();
             controller.showMainFrame();
 
