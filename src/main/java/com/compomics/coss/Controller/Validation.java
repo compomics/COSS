@@ -29,14 +29,18 @@ public class Validation {
 
         int c = 0;
         for (ArrayList<ComparisonResult> rTarget : targetResult) {
+            
             ArrayList<ComparisonResult> rDecoy = decoyResult.get(c++);
-            if (rTarget.get(0).compareTo(rDecoy.get(0)) < 0) {
+            if(!rTarget.isEmpty() && !rDecoy.isEmpty()){
+                if (rTarget.get(0).compareTo(rDecoy.get(0)) < 0) {
 
                 validatedResult.add(rDecoy);
-                
-            }
-            else{
-                validatedResult.add(rTarget);
+
+                }
+                else{
+                    validatedResult.add(rTarget);
+                }
+            
             }
             
 

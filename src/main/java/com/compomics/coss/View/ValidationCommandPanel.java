@@ -6,6 +6,8 @@
 package com.compomics.coss.View;
 
 import com.compomics.coss.Controller.MainFrameController;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -37,12 +39,9 @@ public class ValidationCommandPanel extends JPanel {
         
         JComboBox cmbFdr=new JComboBox(fdr);
         cmbFdr.setSelectedIndex(0);
-        JLabel lblVaidResul=new JLabel("No. of Valid Result");
-        JTextField txtValidResult=new JTextField(Integer.toString(0));
-        txtValidResult.setEditable(false);
-        JButton btnValidate=new JButton("Validate Result");        
-       // JPanel pnlValdninnerControl = new JPanel(new FlowLayout());
         
+        JButton btnValidate=new JButton("Validate Result");       
+       
         javax.swing.GroupLayout pnlValdninnerControlLayout = new javax.swing.GroupLayout(this);
         setLayout(pnlValdninnerControlLayout);
         pnlValdninnerControlLayout.setHorizontalGroup(
@@ -54,14 +53,13 @@ public class ValidationCommandPanel extends JPanel {
                         .addComponent(lblFdr)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(cmbFdr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(38, Short.MAX_VALUE))
+                        .addContainerGap(38, 38))
                     .addGroup(pnlValdninnerControlLayout.createSequentialGroup()
                         .addGroup(pnlValdninnerControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnValidate)
                             .addGroup(pnlValdninnerControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblVaidResul, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtValidResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                              ))
+                        .addGap(0, 0, 10))))
         );
         pnlValdninnerControlLayout.setVerticalGroup(
             pnlValdninnerControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -70,17 +68,23 @@ public class ValidationCommandPanel extends JPanel {
                 .addGroup(pnlValdninnerControlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblFdr)
                     .addComponent(cmbFdr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblVaidResul)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtValidResult, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnValidate)
-                .addGap(119, 119, 119))
+                    .addGap(5, 5, 5)
+                )
         );
         
         
-        
+        btnValidate.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                       
+                        
+                        control.validateResult();
+
+                    }
+                }
+                );
         
     }
     

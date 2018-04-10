@@ -1,5 +1,6 @@
 package com.compomics.matching;
 
+
 import com.compomics.featureExtraction.DivideAndTopNPeaks;
 import com.compomics.featureExtraction.TopNPeaks;
 import java.util.ArrayList;
@@ -18,8 +19,9 @@ import com.compomics.coss.Model.ComparisonResult;
 
 import com.compomics.ms2io.IndexKey;
 import java.util.Collections;
+
 /**
- * 
+ *
  *
  * @author Genet
  */
@@ -28,25 +30,28 @@ public class UseMsRoben extends Matching {
     //private final double msRobinScore = 0;
     private final double massWindow = 100;
 
+    boolean stillReading;
     UpdateListener listener;
 
     SpectraReader rdExperiment;
     SpectraReader rdLibrary;
     List<IndexKey> expIndex;
     String resultType;
-    
+
     int MsRobinOption;
     int IntensityOption;
     double fragTolerance;
     boolean cancelled = false;
+    int TaskCompleted;
 
     public UseMsRoben(UpdateListener lstner, SpectraReader rdExperiment, List<IndexKey> expIndex, SpectraReader rdLibrary, String resultType) {
         this.listener = lstner;
-        this.rdExperiment=rdExperiment;
-        this.rdLibrary=rdLibrary;
-        this.resultType=resultType;
-        this.expIndex=expIndex;
+        this.rdExperiment = rdExperiment;
+        this.rdLibrary = rdLibrary;
+        this.resultType = resultType;
+        this.expIndex = expIndex;
         cancelled = false;
+        this.TaskCompleted = 0;
     }
 
     @Override
@@ -59,144 +64,215 @@ public class UseMsRoben extends Matching {
 
     @Override
     public void stopMatching() {
-        //executor.shutdownNow();
+
         cancelled = true;
 
     }
 
     @Override
-    public List<ArrayList<ComparisonResult>> compare(org.apache.log4j.Logger log) {
-       // specA = spa;, libIndex
-                  
-      
-      
-        int specNum = 1;
+    public List<ArrayList<ComparisonResult>> dispatcher(org.apache.log4j.Logger log) {
+
         List<ArrayList<ComparisonResult>> simResult = new ArrayList<>();
+        try {
 
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-        List<Future> futureList = new ArrayList<>();
+            this.stillReading = true;
+            ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(10, true);
+            ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(10, true);
+            TheData data = new TheData(expspec, libSelected);
 
-        int taskCompleted = 0;
-        double numTasks = expIndex.size();
-        Spectrum expSpec;
-        for(int a=0;a<numTasks;a++){// (Spectrum sp1 : specA) {
+            DoMatching match1 = new DoMatching(data, resultType, "First Matcher", log);
+            //DoMatching match2 = new DoMatching(data, resultType, "Second Matcher", log);
+            DataProducer producer1 = new DataProducer(data);
 
-            if (cancelled) {
-                executor.shutdownNow();
-                return null;
-            }
-            
-            expSpec=rdExperiment.readAt(expIndex.get(a).getPos());   
-            double mass=expSpec.getPCMass();
-            ArrayList libSpec = rdLibrary.readPart(mass, 0.05);
-            DoMatching dm = new DoMatching(expSpec, libSpec, resultType);
-            Future future = executor.submit(dm);
-            futureList.add(future);
-           
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            //executor.execute(match2);
+            Future future1 = executor.submit(producer1);
+            Future<List<ArrayList<ComparisonResult>>> future = executor.submit(match1);
 
+            future1.get();
+            simResult = future.get();
+
+            executor.shutdown();
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        for (Future<ArrayList<ComparisonResult>> f : futureList) {
-            try {
-
-                if (cancelled) {
-                    executor.shutdownNow();
-                    return null;
-                }
-
-                simResult.add(f.get());
-                taskCompleted++;
-                this.listener.updateprogressbar((double) taskCompleted / numTasks);
-                log.info("Matching Spectrum Number " + specNum + " Completed");
-                specNum++;
-
-            } catch (InterruptedException ex) {
-                Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, "IterruptedExeption", ex + "Interrrupted Exception");
-            } catch (ExecutionException ex) {
-                Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, "Execution Exception", ex + " from useMsRobin");
-            }
-        }
-
-        executor.shutdown();
         return simResult;
     }
 
-    private class DoMatching implements Callable<ArrayList<ComparisonResult> > {
+    /**
+     * This class creates and holds blocking queues for experimental spectrum
+     * and selected library spectrum based on precursor mass. The comparison is
+     * done between experimental spectrum against corresponding spectra at the
+     * same location in their respective queue.
+     *
+     */
+    private class TheData {
 
-        Spectrum sp1;
-        ArrayList<Spectrum> sb;        
-        String resType="";
-        
-        public DoMatching(Spectrum sa, ArrayList<Spectrum> sb, String restype) {
-            this.sp1 = sa;
-            this.sb = sb;
-            
-           
+        private BlockingQueue<Spectrum> expSpec = null;
+        private BlockingQueue<ArrayList<Spectrum>> selectedLibSpec = null;
+
+        public TheData(ArrayBlockingQueue<Spectrum> expS, ArrayBlockingQueue<ArrayList<Spectrum>> libS) {
+
+            this.expSpec = expS;
+            this.selectedLibSpec = libS;
+
         }
 
-        
-        
+        private void putExpSpec(Spectrum s) throws InterruptedException {
+            this.expSpec.put(s);
+        }
+
+        private void putLibSpec(ArrayList<Spectrum> s) throws InterruptedException {
+            this.selectedLibSpec.put(s);
+        }
+
+        private Spectrum pollExpSpec() throws InterruptedException {
+            return this.expSpec.poll(1, TimeUnit.SECONDS);
+        }
+
+        private ArrayList<Spectrum> pollLibSpec() throws InterruptedException {
+            return this.selectedLibSpec.poll(1, TimeUnit.SECONDS);
+        }
+
+    }
+
+    /**
+     * this class puts spectra that are going to be compared into queue as it is
+     * blocking Queue it blocks until there is free space.
+     */
+    private class DataProducer implements Runnable { //procucer thread
+
+        TheData data;
+
+        public DataProducer(TheData data) {
+            this.data = data;
+
+        }
+
+        @Override
+        public void run() {
+            try {
+                double numTasks = expIndex.size();
+                Spectrum expSpec;
+                for (int a = 0; a < numTasks; a++) {
+
+                    expSpec = rdExperiment.readAt(expIndex.get(a).getPos());
+                    double mass = expSpec.getPCMass();
+                    double da_error = (10 * mass) / 1000000.0;
+                    ArrayList libSpec = rdLibrary.readPart(mass, da_error);
+
+                    data.putExpSpec(expSpec);
+                    data.putLibSpec(libSpec);
+
+                }
+            } catch (Exception e) {
+                System.out.println(e.toString());
+
+            } finally {
+                stillReading = false;
+            }
+
+        }
+    }
+
+    private class DoMatching implements Callable<List<ArrayList<ComparisonResult>>> {
+
+        String resType = "";
+        TheData data;
+        final String threadName;
+        org.apache.log4j.Logger log;
+
+        public DoMatching(TheData data, String restype, String matcherName, org.apache.log4j.Logger log) {
+            this.data = data;
+            this.resType = restype;
+            this.threadName = matcherName;
+            this.log = log;
+
+        }
+
         double intensity_part = 0, probability_part = 0;
 
         @Override
-        public ArrayList<ComparisonResult>  call() throws Exception {
+        public List<ArrayList<ComparisonResult>> call() {
 
-            InnerIteratorSync<Spectrum> iteratorSpectra = new InnerIteratorSync(sb.iterator());
+            List<ArrayList<ComparisonResult>> simResult = new ArrayList<>();
 
-            //the first 6 values stores scores and the last 6 values corresponds to lib. spec. indexes at which the score calculated
-           // double[][] topScores = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-           
-            
-            ArrayList<ComparisonResult> compResult=new ArrayList<>();
+            while (stillReading || (!data.expSpec.isEmpty() && !data.selectedLibSpec.isEmpty())) {
 
-            
-            while (iteratorSpectra.iter.hasNext()) {
-                ComparisonResult res=new ComparisonResult();
-                Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
-                //DoMatching dm = new DoMatching(sp1, sp2);
+                ArrayList<ComparisonResult> compResult = new ArrayList<>();
+                Spectrum sp1 = new Spectrum();
+                ArrayList sb = new ArrayList();
 
-                //Computing all topN scores omited as the all 10 picks score more than the others - topN changed by 10 
-                //for (int topN = 1; topN < 11; topN++) {
-                TopNPeaks filterA = new DivideAndTopNPeaks(sp1, 10, massWindow);
-                TopNPeaks filterB = new DivideAndTopNPeaks(sp2, 10, massWindow);
-                double probability = (double) 10 / (double) massWindow;
-                ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks(),
-                        fP_spectrumB = filterB.getFilteredPeaks();
-                double[] results = new double[4];
-                if (fP_spectrumB.size() < fP_spectrumA.size()) {
-                    results = prepareData(fP_spectrumA, fP_spectrumB);
-                } else {
-                    results = prepareData(fP_spectrumB, fP_spectrumA);
+                try {
+
+                    if(data.expSpec.isEmpty() || data.selectedLibSpec.isEmpty())
+                        continue;
+                    
+                    sp1 = data.pollExpSpec();
+                    sb = data.pollLibSpec();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                int totalN = (int) results[0],
-                        n = (int) results[1];
-                double tmp_intensity_part = results[2];
 
-                MSRobin object = new MSRobin(probability, totalN, n, tmp_intensity_part, MsRobinOption);
-                double score = object.getScore();                
-                Precision.round(score, 2);
-                
-                res.setCharge(sp2.getCharge());
-                res.setPrecMass(sp2.getPCMass());
-                res.setScanNum(sp2.getScanNumber());
-                res.setScore(score);
-                res.setTitle(sp2.getTitle());
-                res.setSpecPosition(sp2.getIndex().getPos());
-                res.setResultType(this.resType);
-                
-                compResult.add(res);
+                InnerIteratorSync<Spectrum> iteratorSpectra = new InnerIteratorSync(sb.iterator());
 
-                intensity_part = object.getIntensity_part();
-                probability_part = object.getProbability_part();
-             
+                while (iteratorSpectra.iter.hasNext()) {
+                    Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
+                    ComparisonResult res = new ComparisonResult();
+                    try {
+                        
+                        //Computing all topN scores omited as the all 10 picks score more than the others - topN changed by 10
+                        //for (int topN = 1; topN < 11; topN++) {
+                        TopNPeaks filterA = new DivideAndTopNPeaks(sp1, 10, massWindow);
+                        TopNPeaks filterB = new DivideAndTopNPeaks(sp2, 10, massWindow);
+                        double probability = (double) 10 / (double) massWindow;
+                        ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks(),
+                                fP_spectrumB = filterB.getFilteredPeaks();
+                        double[] results = new double[4];
+                        if (fP_spectrumB.size() < fP_spectrumA.size()) {
+                            results = prepareData(fP_spectrumA, fP_spectrumB);
+                        } else {
+                            results = prepareData(fP_spectrumB, fP_spectrumA);
+                        }
+                        int totalN = (int) results[0],
+                                n = (int) results[1];
+                        double tmp_intensity_part = results[2];
+                        MSRobin object = new MSRobin(probability, totalN, n, tmp_intensity_part, MsRobinOption);
+                        double score = object.getScore();
+                        Precision.round(score, 2);
+                        res.setCharge(sp2.getCharge());
+                        res.setPrecMass(sp2.getPCMass());
+                        res.setScanNum(sp2.getScanNumber());
+                        res.setScore(score);
+                        res.setTitle(sp2.getTitle());
+                        res.setSpecPosition(sp2.getIndex().getPos());
+                        res.setResultType(this.resType);
+                        compResult.add(res);
+                        intensity_part = object.getIntensity_part();
+                        probability_part = object.getProbability_part();
+                    } catch (Exception ex) {
+                        Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+
+                TaskCompleted++;
+                log.info("Number of match completed " + Integer.toString(TaskCompleted));
+                Collections.sort(compResult, Collections.reverseOrder());
+                //only top 5 scores returned 
+                if (compResult.size() > 5) {
+                    compResult.subList(5, compResult.size()).clear();
+                }
+
+                simResult.add(compResult);
+                compResult.clear();
             }
-            
-            Collections.sort(compResult, Collections.reverseOrder());            
-            //only top 5 scores returned 
-            if(compResult.size()> 5)
-                compResult.subList(5, compResult.size()).clear();
 
-            return compResult;
+            return simResult;
         }
 
         public double getIntensity_part() {
@@ -233,7 +309,7 @@ public class UseMsRoben extends Matching {
         }
 
         private double[] prepareData(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2) {
-            
+
             double[] results = new double[4];
             HashSet<Peak> mPeaks_2 = new HashSet<Peak>(); //matched peaks from filteredExpMS2_2
             double intensities_1 = 0,
@@ -327,3 +403,4 @@ public class UseMsRoben extends Matching {
 
     }
 }
+

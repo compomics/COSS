@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -17,7 +16,8 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 import com.compomics.coss.Model.ConfigHolder;
 import com.compomics.coss.View.*;
-import com.compomics.matching.Cascade;
+//import com.compomics.matching.Cascade;
+import javax.swing.JFileChooser;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -25,17 +25,13 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 import com.compomics.matching.Matching;
 import com.compomics.matching.UseMsRoben;
-import java.awt.Color;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
-//import org.jfree.util.Log;
 import com.compomics.ms2io.*;
 import java.awt.BorderLayout;
 import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Controller class for GUI
@@ -52,16 +48,13 @@ public class MainFrameController implements UpdateListener {
     private MainGUI mainView;
     private SettingPanel settingsPnl;
     private ResultPanel resultPnl;
-    private ValidationHistogramPanel valdHistPnl;
     private TargetDB_View targetView;
-    private SearchCommandPnl srchCmdPnl;
-    private ValidationCommandPanel valdtCmdPnl;
 
     // private ConfigHolder config = new ConfigHolder();
     Matching matching;
-    private static List<ArrayList<ComparisonResult>> resultTarget=null;
-    private static List<ArrayList<ComparisonResult>> resultDecoy=null;
-    private static List<ArrayList<ComparisonResult>> resultMerged=null;
+    private static List<ArrayList<ComparisonResult>> resultTarget = null;
+    private static List<ArrayList<ComparisonResult>> resultDecoy = null;
+    private static List<ArrayList<ComparisonResult>> resultMerged = null;
     int cutoff_index;
     ConfigData configData;
     public boolean cencelled = false;
@@ -75,24 +68,22 @@ public class MainFrameController implements UpdateListener {
     private int targSpectrumNum, resultNumber;
     private boolean isValidation;
 
+    private boolean isReaderReady;
+
     /**
      * Initialize objects, variables and components.
      */
     //<editor-fold  defaultstate="Colapsed" desc="Initialize Components">
     public void init() {
 
+        isReaderReady = false;
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
         resultPnl = new ResultPanel(this);
-        targetView = new TargetDB_View(this);  
-    
-        srchCmdPnl=new SearchCommandPnl(this);
-        valdtCmdPnl=new ValidationCommandPanel(this);
-        
-        mainView = new MainGUI(settingsPnl, resultPnl, targetView,this);
-        mainView.pnlCommands.setLayout(new BorderLayout());
-        mainView.pnlCommands.add(srchCmdPnl);
+        targetView = new TargetDB_View(this);
 
+        mainView = new MainGUI(settingsPnl, resultPnl, targetView, this);
+        mainView.pnlCommands.setLayout(new BorderLayout());
         configData = new ConfigData();
         // add gui appender
         LogTextAreaAppender logTextAreaAppender = new LogTextAreaAppender();
@@ -121,8 +112,6 @@ public class MainFrameController implements UpdateListener {
 
         //cmbModel = new DefaultComboBoxModel();
         //settingsPnl.cboSpectraLibrary.setModel(cmbModel);
-        srchCmdPnl.prgProgress.setStringPainted(true);
-        srchCmdPnl.prgProgress.setForeground(Color.BLUE);
         spectrumDisplay(0);
         rasterDisplay();
 
@@ -132,22 +121,6 @@ public class MainFrameController implements UpdateListener {
 
     }//</editor-fold>
 
-    public void cmdViewDisplay(int a){
-        if(a==0){
-            mainView.pnlCommands.removeAll();
-            mainView.pnlCommands.add(srchCmdPnl);
-            
-        }
-        else{
-            mainView.pnlCommands.removeAll();
-            mainView.pnlCommands.add(valdtCmdPnl, BorderLayout.EAST);
-            if(valdHistPnl!=null)
-                mainView.pnlCommands.add(valdHistPnl, BorderLayout.CENTER);
-            
-        }
-            
-    }
-    
     /**
      * Show the view of this controller.
      */
@@ -177,26 +150,28 @@ public class MainFrameController implements UpdateListener {
      */
     public void startSearch() {
 
-        //check for input validation and display if one or more infalid value found
-        List<String> validationMessages = validateInput();
-        if (!validationMessages.isEmpty()) {
-            StringBuilder message = new StringBuilder();
-            for (String validationMessage : validationMessages) {
-                message.append(validationMessage).append(System.lineSeparator());
-            }
-            showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
-        } else {
-            ReadInputData();
-            readSpectra();
+//        //check for input validation and display if one or more infalid value found
+//        List<String> validationMessages = validateInput();
+//        if (!validationMessages.isEmpty()) {
+//            StringBuilder message = new StringBuilder();
+//            for (String validationMessage : validationMessages) {
+//                message.append(validationMessage).append(System.lineSeparator());
+//            }
+//            showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
+//        } else {
+        if (this.isReaderReady) {
+
             this.cencelled = false;
-            this.isBussy = true;
 
             isValidation = false;
             matching = new UseMsRoben(this, configData.getExpSpecReader(), configData.getExpSpectraIndex(), configData.getLibSpecReader(), "target");
-            srchCmdPnl.prgProgress.setValue(0);
+
+            mainView.setProgressValue(0);
             SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
 
+        } else {
+            LOG.info("Spectrum reader is not ready");
         }
 
         try {
@@ -207,11 +182,47 @@ public class MainFrameController implements UpdateListener {
 
     }
 
+    public void configReader() {
+
+        List<String> validationMessages = validateInput();
+        if (!validationMessages.isEmpty()) {
+            StringBuilder message = new StringBuilder();
+            for (String validationMessage : validationMessages) {
+                message.append(validationMessage).append(System.lineSeparator());
+            }
+            showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
+        } else {
+
+            ReadInputData();
+            this.isBussy = true;
+            mainView.searchBtnActive(false);
+
+            SwingReadThread readThread = new SwingReadThread();
+            readThread.execute();
+
+        }
+
+    }
+
+    private File readDecoyFile() {
+        File decoyDB = null;
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File("C:/pandyDS/"));
+        int result = fileChooser.showOpenDialog(mainView);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            decoyDB = fileChooser.getSelectedFile();
+
+        }
+
+        return decoyDB;
+    }
+
     /**
      * start search against decoy database
      */
-    private void validateResult(File decoydbFile) {
+    public void validateResult() {
 
+        File decoydbFile = readDecoyFile();
         SpectraReader rdDecoy = null;
         List<IndexKey> decoyindxList = null;
         try {
@@ -234,7 +245,7 @@ public class MainFrameController implements UpdateListener {
 
         isValidation = true;
         matching = new UseMsRoben(this, configData.getExpSpecReader(), configData.getExpSpectraIndex(), rdDecoy, "decoy");
-        srchCmdPnl.prgProgress.setValue(0);
+        mainView.setProgressValue(0);
         SwingWorkerThread workerThread = new SwingWorkerThread();
         workerThread.execute();
 
@@ -254,81 +265,6 @@ public class MainFrameController implements UpdateListener {
         String path = settingsPnl.txtLibrary.getText();
         configData.setSpecLibraryFile(path);
 
-    }
-
-    /**
-     * Initiates spectra reading from the specified directory, draws the target
-     * spectra and display information of the spectra
-     */
-    private void readSpectra() {
-
-        try {
-            Map<Integer, Integer> mp = new TreeMap();
-            mp.put(1, 1);
-            mp.put(2, 2);
-            mp.put(3, 1);
-
-            LOG.info("Reading Data ....");
-            srchCmdPnl.btnStartSearch.setEnabled(false);
-            //Read target and librart spectra  
-
-            // List<Spectrum> experimentalSpectra;
-            Indexer giExp = new Indexer(configData.getExperimentalSpecFile());
-            List<IndexKey> indxList = giExp.generate();
-            //Collections.sort(indxList);
-            configData.setExpSpectraIndex(indxList);
-
-            //Read spectra library
-            String libname = configData.getSpecLibraryFile().getName().substring(0, configData.getSpecLibraryFile().getName().lastIndexOf("."));
-            File lib_indxfile = new File(configData.getSpecLibraryFile().getParent(), libname + ".idx");
-
-            List<IndexKey> indxList2;
-            if (lib_indxfile.exists()) {
-
-                Indexer indxer = new Indexer();
-                indxList2 = indxer.readFromFile(lib_indxfile);
-
-            } else {
-
-                Indexer gi = new Indexer(configData.getSpecLibraryFile());
-                indxList2 = gi.generate();
-                Collections.sort(indxList2);
-                gi.saveIndex2File(lib_indxfile);
-
-            }
-            configData.setSpectralLibraryIndex(indxList2);
-
-            //reader for experimental spectrum file
-            if (configData.getExperimentalSpecFile().getName().endsWith("mgf")) {
-                SpectraReader rd = new MgfReader(configData.getExperimentalSpecFile(), configData.getExpSpectraIndex());
-                configData.setExpSpecReader(rd);
-
-            } else if (configData.getExperimentalSpecFile().getName().endsWith("msp")) {
-                SpectraReader rd = new MspReader(configData.getExperimentalSpecFile(), configData.getExpSpectraIndex());
-                configData.setExpSpecReader(rd);
-
-            }
-
-            //reader for spectral library file
-            if (configData.getSpecLibraryFile().getName().endsWith("mgf")) {
-                SpectraReader rd = new MgfReader(configData.getSpecLibraryFile(), configData.getSpectraLibraryIndex());
-                configData.setLibSpecReader(rd);
-
-            } else if (configData.getSpecLibraryFile().getName().endsWith("msp")) {
-                SpectraReader rd = new MspReader(configData.getSpecLibraryFile(), configData.getSpectraLibraryIndex());
-                configData.setLibSpecReader(rd);
-            }
-
-            //Displaying info and visualization of experimental spectrum
-            int expSpecSize = configData.getExpSpectraIndex().size();
-            spnModel.setMaximum(expSpecSize);
-            targetView.txtTotalSpec.setText("/" + Integer.toString(expSpecSize));
-            updateInputInfo();
-            spectrumDisplay(0);
-            rasterDisplay();
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
     }
 
     /**
@@ -565,7 +501,6 @@ public class MainFrameController implements UpdateListener {
     public void fillBestmatchTable() {
 
         //ArrayList<ComparisonResult> singleResult = resultTarget.get(target);
-        
         int a = 0;
         Object[][] rows = new Object[10][8];
 
@@ -573,7 +508,7 @@ public class MainFrameController implements UpdateListener {
 
             if (!res.isEmpty()) {
                 Long pos = res.get(0).getSpecPosition();
-               
+
                 rows[a][0] = a + 1;
                 rows[a][1] = "ID" + Integer.toString(a);
                 rows[a][2] = res.get(0).getTitle();
@@ -604,8 +539,8 @@ public class MainFrameController implements UpdateListener {
         final double PERCENT = percent;
         SwingUtilities.invokeLater(() -> {
             int v = (int) (100 * PERCENT);
-            srchCmdPnl.prgProgress.setValue(v);
-            srchCmdPnl.prgProgress.setString(Integer.toString(v) + "%");
+            mainView.setProgressValue(v);
+            mainView.setProgressValue(Integer.toString(v) + "%");
         });
     }
 
@@ -794,12 +729,15 @@ public class MainFrameController implements UpdateListener {
         @Override
         protected Void doInBackground() throws Exception {
 
+            isBussy = true;
+            mainView.searchBtnActive(false);
+
             matching.InpArgs(Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()), Double.toString(configData.getfragTol()));
             if (!isValidation) {
-                resultTarget = matching.compare(LOG);
+                resultTarget = matching.dispatcher(LOG);
                 cutoff_index = resultTarget.size() - 1;
             } else {
-                resultDecoy = matching.compare(LOG);
+                resultDecoy = matching.dispatcher(LOG);
                 Validation validation = new Validation();
                 resultMerged = validation.compareNmerge(resultTarget, resultDecoy);
                 cutoff_index = validation.validate(resultTarget, 0.01);
@@ -811,25 +749,30 @@ public class MainFrameController implements UpdateListener {
 
         @Override
         protected void done() {
+
             try {
 
                 if (cencelled) {
 
                     LOG.info("Process Cancelled.");
-                    srchCmdPnl.prgProgress.setValue(0);
-                    srchCmdPnl.prgProgress.setString(Integer.toString(0) + "%");
+                    mainView.setProgressValue(0);
+                    mainView.setProgressValue(Integer.toString(0) + "%");
 
                 } else {
                     LOG.info("Spectrum Similarity Comparison Completed");
-                    srchCmdPnl.prgProgress.setValue(100);
-                    srchCmdPnl.prgProgress.setString(Integer.toString(100) + "%");
+                    mainView.setProgressValue(100);
+                    mainView.setProgressValue(Integer.toString(100) + "%");
 
-                    if (resultTarget != null && resultTarget.size() > 0) {
+                    if (resultTarget != null) {
 
                         //validationPnl=new ValidationHistogramPanel(resultTarget, resultDecoy);
                         fillExpSpectraTable();
                         fillBestmatchTable(0);
                         displayResult();
+                        if (resultDecoy != null) {
+                            mainView.setResults(resultTarget, resultDecoy);
+
+                        }
 
                     } else {
                         LOG.info("No comparison result.");
@@ -838,7 +781,62 @@ public class MainFrameController implements UpdateListener {
                 }
 
                 isBussy = false;
-                srchCmdPnl.btnStartSearch.setEnabled(true);
+                mainView.searchBtnActive(true);
+                get();
+
+            } catch (InterruptedException | ExecutionException ex) {
+                LOG.error(ex.getMessage(), ex);
+                showMessageDialog("Unexpected error", ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+            } catch (CancellationException ex) {
+                LOG.info("the spectrum similarity score pipeline run was cancelled");
+            } finally {
+
+            }
+        }
+
+    }
+
+    /**
+     * swing thread to start the search and it runs on background
+     */
+    private class SwingReadThread extends SwingWorker<Void, Void> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+
+            // isBussy = true;        
+            mainView.readerBtnActive(false);
+            mainView.searchBtnActive(false);
+
+            LOG.info("Configuring Spectrum Reader ....");
+            ConfigSpecReaders cfReader = new ConfigSpecReaders(configData.getExperimentalSpecFile(), configData.getSpecLibraryFile());
+            cfReader.readFile(configData);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+
+            try {
+
+                LOG.info("Spectrum Reader Config Completed");
+                if (configData.getExpSpectraIndex() != null && configData.getSpectraLibraryIndex() != null) {
+
+                    int expSpecSize = configData.getExpSpectraIndex().size();
+                    spnModel.setMaximum(expSpecSize);
+                    targetView.txtTotalSpec.setText("/" + Integer.toString(expSpecSize));
+                    updateInputInfo();
+                    spectrumDisplay(0);
+                    // rasterDisplay();
+
+                } else {
+                    LOG.info("Null Spectrum Index");
+                }
+
+                isReaderReady=true;
+                isBussy = false;
+                mainView.readerBtnActive(true);
+                mainView.searchBtnActive(true);
                 get();
 
             } catch (InterruptedException | ExecutionException ex) {

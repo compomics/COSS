@@ -29,14 +29,27 @@ public class SearchCommandPnl extends JPanel{
     
     private void init(){
         
-        
+        btnConfigReader=new JButton("Config Spec. Reader");
         btnStartSearch=new JButton("Start Searching");
         JButton btnCancel=new  JButton("Cancel");       
         prgProgress=new JProgressBar(0, 100);  
         
         JPanel innerControlPanel=new JPanel(new FlowLayout());
+        innerControlPanel.add(btnConfigReader);
         innerControlPanel.add(btnStartSearch);
         innerControlPanel.add(btnCancel);
+        
+             //start search button listenr
+        btnConfigReader.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                       
+                        
+                        control.configReader();
+
+                    }
+                }
+                );
         
          //start search button listenr
         btnStartSearch.addActionListener(new ActionListener() {
@@ -70,6 +83,7 @@ public class SearchCommandPnl extends JPanel{
     }
     
     public JButton btnStartSearch;    
+    public JButton btnConfigReader; 
     public JProgressBar prgProgress;
     
     

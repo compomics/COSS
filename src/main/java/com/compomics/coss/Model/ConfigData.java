@@ -26,8 +26,6 @@ public class ConfigData {
     int intensityOption; 
     int maxPrecursorCharge;
     
-  
-    
     
    /**
     * constructor
