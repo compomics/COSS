@@ -40,7 +40,7 @@ public class ProjectMain {
      * @param args the main method arguments
      */
     public static void main(final String[] args) {
-        LOG = Logger.getLogger(ProjectMain.class);
+        LOG = Logger.getLogger(ProjectMain.class.getName());
         /*
          * Set the Nimbus look and feel
          */
