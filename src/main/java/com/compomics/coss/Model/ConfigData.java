@@ -4,6 +4,8 @@ package com.compomics.coss.Model;
 import com.compomics.ms2io.IndexKey;
 import java.io.File;
 import com.compomics.ms2io.SpectraReader;
+import java.util.Iterator;
+import uk.ac.ebi.pride.tools.jmzreader.model.*;
 import java.util.List;
 /**
  *this class holds the configuration data for spectral comparison
@@ -11,32 +13,37 @@ import java.util.List;
  */
 public class ConfigData {
     
-    File experimentalSpecFile;
-    File specLibraryFile;
-    List<IndexKey> expIndex;
-    List<IndexKey> libIndex;
-    SpectraReader rdExperimental;
-    SpectraReader rdLibrary;
+    //User input experimental and library spectra file
+    private final File experimentalSpecFile;
+    private final File specLibraryFile;
     
-    String outputPath;
-    int ScoringFun;//index
-    double precTol;
-    double fragTol;
-    int MSRobinOption;
-    int intensityOption; 
-    int maxPrecursorCharge;
+    private List<IndexKey> expIndex;
+    private List<IndexKey> libIndex;
+    private SpectraReader rdExperimental;
+    private SpectraReader rdLibrary;
+    private Iterator<Spectrum> ebiSpectrumIterator;
+    
+    //Decoy database index and reader
+    
+    private List<IndexKey> decoyDBIndex;
+    private SpectraReader rdDecoyDB;
+    
+   //User input Search Settings
+    private int ScoringFun;//index
+    private double precTol;
+    private double fragTol;
+    private int MSRobinOption;
+    private int intensityOption; 
+    private int maxPrecursorCharge;
     
     
    /**
     * constructor
     */
-    public ConfigData(){
-        precTol = 0;
-        fragTol = 0.5;
-        MSRobinOption = 0; // 0-sqrt(Intensities), 1-Intensities
-        intensityOption = 0; // 0-Summed Up 1-Multiply intensities   
-        ScoringFun=0;
-        
+    public ConfigData(File expFile, File libFile){
+        this.experimentalSpecFile=expFile;
+        this.specLibraryFile=libFile;
+              
     }
 
     
@@ -106,14 +113,6 @@ public class ConfigData {
         this.ScoringFun=matchAlgorithm;
     }
        
-    public String getOutputFilePath() {
-        return this.outputPath;
-    }
-
-    public void setOutputFilePath(String filename) {
-        this.outputPath=filename;
-    }
-    
     public File getExperimentalSpecFile() {
         return this.experimentalSpecFile;
     }
@@ -122,14 +121,6 @@ public class ConfigData {
         return this.specLibraryFile;
     }
 
-    public void setExperimentalSpecFile(String filename){
-        this.experimentalSpecFile= new File(filename);
-        
-    }
-      public void setSpecLibraryFile(String filename){
-        this.specLibraryFile= new File(filename);
-        
-    }
     public int getIntensityOption() {
         return this.intensityOption;
     }
@@ -161,6 +152,28 @@ public class ConfigData {
     public double getfragTol() {
         return this.fragTol;
     }
-
     
+     public void setEbiSpecIterator(Iterator itrl) {
+        this.ebiSpectrumIterator = itrl;
+    }
+
+    public Iterator<Spectrum> getEbiSpecIterator() {
+        return this.ebiSpectrumIterator;
+    }
+
+    public void setDecoyDBIndexList( List<IndexKey>  indx) {
+        this.decoyDBIndex=indx;
+    }
+
+    public  List<IndexKey> getDecoyDBIndexList() {
+        return this.decoyDBIndex;
+    }
+    
+    public void setDecoyDBReader( SpectraReader  rd) {
+        this.rdDecoyDB=rd;
+    }
+
+    public  SpectraReader getDecoyDBReader() {
+        return this.rdDecoyDB;
+    }
 }

@@ -1,6 +1,5 @@
 package com.compomics.matching;
 
-
 import com.compomics.featureExtraction.DivideAndTopNPeaks;
 import com.compomics.featureExtraction.TopNPeaks;
 import java.util.ArrayList;
@@ -14,11 +13,9 @@ import org.apache.commons.math3.util.Precision;
 import com.compomics.coss.Controller.UpdateListener;
 import com.compomics.ms2io.Peak;
 import com.compomics.ms2io.Spectrum;
-import com.compomics.ms2io.SpectraReader;
 import com.compomics.coss.Model.ComparisonResult;
-
-import com.compomics.ms2io.IndexKey;
 import java.util.Collections;
+import com.compomics.coss.Model.ConfigData;
 
 /**
  *
@@ -29,30 +26,28 @@ public class UseMsRoben extends Matching {
 
     //private final double msRobinScore = 0;
     private final double massWindow = 100;
+    private final ConfigData confData;
 
     boolean stillReading;
     UpdateListener listener;
 
-    SpectraReader rdExperiment;
-    SpectraReader rdLibrary;
-    List<IndexKey> expIndex;
     String resultType;
 
     int MsRobinOption;
     int IntensityOption;
     double fragTolerance;
+    double precTlerance;
     boolean cancelled = false;
     int TaskCompleted;
 
-    public UseMsRoben(UpdateListener lstner, SpectraReader rdExperiment, List<IndexKey> expIndex, SpectraReader rdLibrary, String resultType) {
+    public UseMsRoben(UpdateListener lstner, ConfigData cnfData, String resultType) {
         this.listener = lstner;
-        this.rdExperiment = rdExperiment;
-        this.rdLibrary = rdLibrary;
         this.resultType = resultType;
-        this.expIndex = expIndex;
         cancelled = false;
         this.TaskCompleted = 0;
+        this.confData=cnfData;
     }
+
 
     @Override
     public void InpArgs(String... args) {
@@ -60,6 +55,8 @@ public class UseMsRoben extends Matching {
         this.MsRobinOption = Integer.parseInt(args[0]);
         this.IntensityOption = Integer.parseInt(args[1]);
         this.fragTolerance = Double.parseDouble(args[2]);
+        this.precTlerance = Double.parseDouble(args[3]);
+
     }
 
     @Override
@@ -156,18 +153,54 @@ public class UseMsRoben extends Matching {
         @Override
         public void run() {
             try {
-                double numTasks = expIndex.size();
-                Spectrum expSpec;
-                for (int a = 0; a < numTasks; a++) {
+                Spectrum expSpec=new Spectrum();
+                uk.ac.ebi.pride.tools.jmzreader.model.Spectrum  mzmlSpec;
+                double massErrorFraction = precTlerance / 1000000.0;
 
-                    expSpec = rdExperiment.readAt(expIndex.get(a).getPos());
-                    double mass = expSpec.getPCMass();
-                    double da_error = (10 * mass) / 1000000.0;
-                    ArrayList libSpec = rdLibrary.readPart(mass, da_error);
+                if (confData.getExpSpectraIndex() == null && confData.getEbiSpecIterator() != null) {
+                    
+                    /**
+                     * if comparison between Decoy database .... allow to take decoy db reader from configdata*
+                     ******************************************************************************
+                     * *******************************************************************************/
+                    
+                    
+                    while(confData.getEbiSpecIterator().hasNext()) {
 
-                    data.putExpSpec(expSpec);
-                    data.putLibSpec(libSpec);
+                        mzmlSpec = confData.getEbiSpecIterator().next();
+                        expSpec.setFileName("mzmlfile");
+                        expSpec.setCharge(mzmlSpec.getPrecursorCharge().toString());
+                        expSpec.setPCMass(mzmlSpec.getPrecursorMZ());
+                        expSpec.setPCIntesity(mzmlSpec.getPrecursorIntensity());
+                        expSpec.setScanNumber("");                        
+                        double mass = expSpec.getPCMass();
+                        double da_error = mass * massErrorFraction;// (10 * mass) / 1000000.0;
+                        ArrayList libSpec = confData.getLibSpecReader().readPart(mass, da_error);
+                        data.putExpSpec(expSpec);
+                        data.putLibSpec(libSpec);
 
+                    }
+
+                } else {
+
+                         /**
+                     * if comparison between Decoy database .... allow to take decoy db reader from configdata*
+                     ******************************************************************************
+                     * *******************************************************************************/
+                    
+                    double numTasks=confData.getExpSpectraIndex().size();
+                    for (int a = 0; a < numTasks; a++) {
+
+                        expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
+                        double mass = expSpec.getPCMass();
+
+                        double da_error = mass * massErrorFraction;// (10 * mass) / 1000000.0;
+                        ArrayList libSpec = confData.getLibSpecReader().readPart(mass, da_error);
+
+                        data.putExpSpec(expSpec);
+                        data.putLibSpec(libSpec);
+
+                    }
                 }
             } catch (Exception e) {
                 System.out.println(e.toString());
@@ -209,9 +242,10 @@ public class UseMsRoben extends Matching {
 
                 try {
 
-                    if(data.expSpec.isEmpty() || data.selectedLibSpec.isEmpty())
+                    if (data.expSpec.isEmpty() || data.selectedLibSpec.isEmpty()) {
                         continue;
-                    
+                    }
+
                     sp1 = data.pollExpSpec();
                     sb = data.pollLibSpec();
                 } catch (InterruptedException ex) {
@@ -224,7 +258,7 @@ public class UseMsRoben extends Matching {
                     Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
                     ComparisonResult res = new ComparisonResult();
                     try {
-                        
+
                         //Computing all topN scores omited as the all 10 picks score more than the others - topN changed by 10
                         //for (int topN = 1; topN < 11; topN++) {
                         TopNPeaks filterA = new DivideAndTopNPeaks(sp1, 10, massWindow);
@@ -403,4 +437,3 @@ public class UseMsRoben extends Matching {
 
     }
 }
-

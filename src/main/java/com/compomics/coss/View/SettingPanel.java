@@ -72,7 +72,14 @@ public class SettingPanel extends JPanel {
         JLabel lblFragmentTolerance = new JLabel("Fragment Tolerance");
         JLabel lblPrecursorCharge = new JLabel("Precursor Charge");
         JLabel lblPrecursorTolerance = new JLabel("Precursor Tolerance");
+        JComboBox cmbPrcTolUnit = new JComboBox();
+        JComboBox cmbFragTolUnit = new JComboBox();
+        cmbPrcTolUnit.addItem("Dalton");
+        cmbPrcTolUnit.addItem("PPM");
+        cmbFragTolUnit.addItem("Dalton");
+        cmbFragTolUnit.addItem("PPM");
 
+        cmbFragTolUnit.setSelectedIndex(1);
         //Text field
         //txtdbspec = new JTextField();
         txttargetspec = new JTextField();
@@ -98,14 +105,13 @@ public class SettingPanel extends JPanel {
         TreeModel fileModel = new FileTreeModel(this.libDirectory);
         //getContentPane().setLayout(new GridLayout(0, 3, 0, 0));
 
-       JScrollPane scrollPane = new JScrollPane();
+        JScrollPane scrollPane = new JScrollPane();
         JTree srcDirTree = new JTree(fileModel);
         srcDirTree.setEditable(false);
         srcDirTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         srcDirTree.setShowsRootHandles(true);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Choose Spectral Library Path"));
-        
-        
+
         scrollPane.setViewportView(srcDirTree);
 
         srcDirTree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -116,70 +122,79 @@ public class SettingPanel extends JPanel {
                 Object object = e.getPath().getLastPathComponent();
                 if (object instanceof File) {
                     File file = (File) object;
-                    String path=file.getPath().replace('\\', '/');
+                    String path = file.getPath().replace('\\', '/');
                     txtLibrary.setText(path);
                 }
-               
+
             }
         });
-
 
         //Input settings panel layout
         JPanel pnlInputParam = new JPanel();
         pnlInputParam.setBorder(BorderFactory.createTitledBorder("Input Settings"));
 
-        GroupLayout pnlInput1Layout = new javax.swing.GroupLayout(pnlInputParam);
-        pnlInputParam.setLayout(pnlInput1Layout);
-        pnlInput1Layout.setHorizontalGroup(
-                pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(pnlInput1Layout.createSequentialGroup()
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblPrecursorTolerance)
-                                .addComponent(lblFragmentTolerance)
-                                .addComponent(lblPrecursorCharge)
-                                .addComponent(lbltargetspec)
-                                .addComponent(lbldblib))
+        GroupLayout jPanel1Layout = new javax.swing.GroupLayout(pnlInputParam);
+        pnlInputParam.setLayout(jPanel1Layout);
+       jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblFragmentTolerance)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtFragmentTolerance,  40, 40, 40)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbFragTolUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbldblib, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lbltargetspec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txttargetspec, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                            .addComponent(txtLibrary))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtPrecursorCharge, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtFragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txtPrecursorTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(txttargetspec)
-                                .addComponent(txtLibrary))
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(pnlInput1Layout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addComponent(btntargetspec))
-                        )
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGap(39, 39, 39))
+                        .addComponent(btntargetspec, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblPrecursorTolerance)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtPrecursorTolerance, 40, 40, 40)
+                        .addGap(18, 18, 18)
+                        .addComponent(cmbPrcTolUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(lblPrecursorCharge)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtPrecursorCharge,  40, 40, 40)))
+                .addContainerGap(75, Short.MAX_VALUE))
         );
-        pnlInput1Layout.setVerticalGroup(
-                pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(pnlInput1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lbltargetspec)
-                                .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(txttargetspec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(btntargetspec)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(txtLibrary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(lbldblib)))
-                        .addGap(24, 24, 24)
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblPrecursorTolerance)
-                                .addComponent(txtPrecursorTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtFragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblFragmentTolerance))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(pnlInput1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtPrecursorCharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(lblPrecursorCharge)))
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbltargetspec)
+                    .addComponent(txttargetspec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btntargetspec))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbldblib)
+                    .addComponent(txtLibrary, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblPrecursorTolerance)
+                    .addComponent(txtPrecursorTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbPrcTolUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtFragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbFragTolUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblPrecursorCharge)
+                    .addComponent(txtPrecursorCharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         //End of setting panel 
@@ -297,7 +312,6 @@ public class SettingPanel extends JPanel {
         setLayout(new BorderLayout());
         add(pnlInputs, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.EAST);
-
 
         btntargetspec.addActionListener(new ActionListener() {
             @Override

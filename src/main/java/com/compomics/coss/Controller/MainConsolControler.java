@@ -80,9 +80,6 @@ public class MainConsolControler {
      */
     private void loadData() {
         //Reading User inputs and set to config data 
-
-        data.setSpecLibraryFile(ConfigHolder.getInstance().getString("db.spectra.path"));
-        data.setExperimentalSpecFile(ConfigHolder.getInstance().getString("target.spectra.path"));
         data.setScoringFunction(ConfigHolder.getInstance().getInt("matching.algorithm"));
         data.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
         data.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance"));

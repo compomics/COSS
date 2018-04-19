@@ -192,6 +192,19 @@
 	</repository>
             
             
+        <!-- EBI jmzReader  -->
+        <repository>
+            <id>pst-release</id>
+            <name>EBI Nexus Repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-release</url>
+        </repository>
+    
+        <!-- EBI SNAPSHOT repo -->
+        <repository>
+            <id>pst-snapshots</id>
+            <name>EBI Nexus Snapshots Repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
+        </repository>
     </repositories>
     
     
@@ -278,6 +291,55 @@
             <artifactId>MS2IO</artifactId>
             <version>1.0</version>
         </dependency>
+        
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>jmzreader</artifactId>
+            <version>1.2.5</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>mzml-wrapper</artifactId>
+            <version>1.3.3</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.jmzml</groupId>
+            <artifactId>jmzml</artifactId>
+            <version>1.7.9</version>
+            <type>jar</type>
+        </dependency>       
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>mzdata-parser</artifactId>
+            <version>1.2.6</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>mzxml-parser</artifactId>
+            <version>1.3.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>ms2-parser</artifactId>
+            <version>1.2.7</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>dta-parser</artifactId>
+            <version>1.2.6</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.ac.ebi.pride.tools</groupId>
+            <artifactId>pkl-parser</artifactId>
+            <version>1.2.6</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     
     <distributionManagement>   
@@ -288,6 +350,9 @@
             <name>Internal Release Repository</name>
             <url>http://genesis.ugent.be/archiva/repository/compomics_maven_2</url>
         </repository>
+        
+        
+        
          
         <!-- UGent Genesis archiva snapshot repository -->
         <snapshotRepository>

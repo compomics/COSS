@@ -2,8 +2,6 @@
 package com.compomics.matching;
 
 import com.compomics.coss.Model.ComparisonResult;
-import com.compomics.ms2io.IndexKey;
-import com.compomics.ms2io.SpectraReader;
 import java.util.ArrayList;
 import java.util.List;
 

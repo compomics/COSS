@@ -65,7 +65,7 @@ public class MainFrameController implements UpdateListener {
     public SpinnerNumberModel spnModel;
     public DefaultComboBoxModel cmbModel;
 
-    private int targSpectrumNum, resultNumber;
+    private int targSpectrumNum, resultNumber; 
     private boolean isValidation;
 
     private boolean isReaderReady;
@@ -76,6 +76,7 @@ public class MainFrameController implements UpdateListener {
     //<editor-fold  defaultstate="Colapsed" desc="Initialize Components">
     public void init() {
 
+        configData=new ConfigData(null, null);
         isReaderReady = false;
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
@@ -84,7 +85,6 @@ public class MainFrameController implements UpdateListener {
 
         mainView = new MainGUI(settingsPnl, resultPnl, targetView, this);
         mainView.pnlCommands.setLayout(new BorderLayout());
-        configData = new ConfigData();
         // add gui appender
         LogTextAreaAppender logTextAreaAppender = new LogTextAreaAppender();
         logTextAreaAppender.setLogArea(mainView);
@@ -117,7 +117,7 @@ public class MainFrameController implements UpdateListener {
 
         LOG.addAppender(logTextAreaAppender);
         LOG.setLevel((Level) Level.INFO);
-        LoadData();
+        LoadData();//loading data from propery file to user interface
 
     }//</editor-fold>
 
@@ -149,23 +149,22 @@ public class MainFrameController implements UpdateListener {
      * Start Spectrum searching upon user click on start button
      */
     public void startSearch() {
+        
+        List<String> validationMessages = validateInpSettings();
+        if (!validationMessages.isEmpty()) {
+            StringBuilder message = new StringBuilder();
+            validationMessages.stream().forEach((validationMessage) -> {
+                message.append(validationMessage).append(System.lineSeparator());
+            });
+            showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
 
-//        //check for input validation and display if one or more infalid value found
-//        List<String> validationMessages = validateInput();
-//        if (!validationMessages.isEmpty()) {
-//            StringBuilder message = new StringBuilder();
-//            for (String validationMessage : validationMessages) {
-//                message.append(validationMessage).append(System.lineSeparator());
-//            }
-//            showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
-//        } else {
-        if (this.isReaderReady) {
+        }else if (this.isReaderReady) {
+            
+            setSearchSettings();
 
             this.cencelled = false;
-
             isValidation = false;
-            matching = new UseMsRoben(this, configData.getExpSpecReader(), configData.getExpSpectraIndex(), configData.getLibSpecReader(), "target");
-
+            matching = new UseMsRoben(this, this.configData, "target");            
             mainView.setProgressValue(0);
             SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
@@ -174,29 +173,21 @@ public class MainFrameController implements UpdateListener {
             LOG.info("Spectrum reader is not ready");
         }
 
-        try {
-
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(com.compomics.main.ProjectMain.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
     }
 
     public void configReader() {
 
-        List<String> validationMessages = validateInput();
+        List<String> validationMessages = validateInpFiles();
         if (!validationMessages.isEmpty()) {
             StringBuilder message = new StringBuilder();
-            for (String validationMessage : validationMessages) {
+            validationMessages.stream().forEach((validationMessage) -> {
                 message.append(validationMessage).append(System.lineSeparator());
-            }
+            });
             showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
         } else {
-
-            ReadInputData();
+            this.isReaderReady=false;
             this.isBussy = true;
             mainView.searchBtnActive(false);
-
             SwingReadThread readThread = new SwingReadThread();
             readThread.execute();
 
@@ -238,13 +229,15 @@ public class MainFrameController implements UpdateListener {
                 rdDecoy = new MspReader(decoydbFile, decoyindxList);
 
             }
+            configData.setDecoyDBIndexList(decoyindxList);
+            configData.setDecoyDBReader(rdDecoy);
 
         } catch (IOException ex) {
             LOG.info(ex);
         }
 
         isValidation = true;
-        matching = new UseMsRoben(this, configData.getExpSpecReader(), configData.getExpSpectraIndex(), rdDecoy, "decoy");
+        matching = new UseMsRoben(this, this.configData, "decoy");
         mainView.setProgressValue(0);
         SwingWorkerThread workerThread = new SwingWorkerThread();
         workerThread.execute();
@@ -255,15 +248,12 @@ public class MainFrameController implements UpdateListener {
      * Read user input from GUI
      *
      */
-    private void ReadInputData() {
+    private void setSearchSettings() {
 
         configData.setScoringFunction(settingsPnl.cboScoringFun.getSelectedIndex());
         configData.setMaxPrecursorCharg(Integer.parseInt(settingsPnl.txtPrecursorCharge.getText()));
         configData.setPrecTol(Double.parseDouble(settingsPnl.txtPrecursorTolerance.getText()));
         configData.setfragTol(Double.parseDouble(settingsPnl.txtFragmentTolerance.getText()));
-        configData.setExperimentalSpecFile(settingsPnl.txttargetspec.getText());
-        String path = settingsPnl.txtLibrary.getText();
-        configData.setSpecLibraryFile(path);
 
     }
 
@@ -286,23 +276,9 @@ public class MainFrameController implements UpdateListener {
      *
      * @return the list of validation messages
      */
-    public List<String> validateInput() {
+    public List<String> validateInpSettings() {
         //settingsPnl.txtLibrary.setText("C:/tempData/SpecB.msp");
         List<String> validationMessages = new ArrayList<>();
-
-        String tempS = settingsPnl.txttargetspec.getText();
-        if ("".equals(tempS)) {
-            validationMessages.add("Please provide a spectra input directory.");
-        } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp")) {
-            validationMessages.add(" Targer Spectra file typenot valid");
-        }
-
-        String tempS2 = settingsPnl.txtLibrary.getText();
-        if ("".equals(tempS2)) {
-            validationMessages.add("Please select library file");
-        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")) {
-            validationMessages.add(" Data Base Spectra file typenot valid");
-        }
 
         String temp = settingsPnl.txtPrecursorTolerance.getText();
 
@@ -365,6 +341,37 @@ public class MainFrameController implements UpdateListener {
     }
 
     /**
+     * Validate the user input and return a list of validation messages if input
+     * value is not the right format.
+     *
+     * @return the list of validation messages
+     */
+    public List<String> validateInpFiles() {
+        //settingsPnl.txtLibrary.setText("C:/tempData/SpecB.msp");
+        List<String> validationMessages = new ArrayList<>();
+
+        String tempS = settingsPnl.txttargetspec.getText();
+        if ("".equals(tempS)) {
+            validationMessages.add("Please provide a spectra input directory.");
+        } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp")&& !tempS.endsWith(".mzml")
+                && !tempS.endsWith(".mzxml")&& !tempS.endsWith(".ms2")) {
+            validationMessages.add(" Targer Spectra file type not valid");
+        }
+
+        String tempS2 = settingsPnl.txtLibrary.getText();
+        if ("".equals(tempS2)) {
+            validationMessages.add("Please select library file");
+        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")) {
+            validationMessages.add(" Data Base Spectra file type is invalid." + " \n " + "Only .mgf and .msp file format supported");
+        }
+
+        if(validationMessages.isEmpty()){
+            configData=new ConfigData(new File(tempS), new File(tempS2));
+        }
+        return validationMessages;
+    }
+
+    /**
      * Shows a message dialog.
      *
      * @param title the dialog title
@@ -384,16 +391,6 @@ public class MainFrameController implements UpdateListener {
         JOptionPane.showMessageDialog(mainView.getContentPane(), scrollPane, title, messageType);
     }
 
-//    /**
-//     * Get index of the best matched spectrum from result string
-//     *
-//     * @param index
-//     */
-//    private void getIndex(int index) {
-//        //index of best matched spectra for a given target spectrum
-//        resultNumber = index;
-//
-//    }
     /**
      * Displays the comparison result visually on the result panel
      */
@@ -581,7 +578,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void saveSettings() {
 
-        List<String> validationMessages = validateInput();
+        List<String> validationMessages = validateInpSettings();
         if (!validationMessages.isEmpty()) {
             StringBuilder message = new StringBuilder();
             for (String validationMessage : validationMessages) {
@@ -590,7 +587,7 @@ public class MainFrameController implements UpdateListener {
             showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
         } else {
 
-            ReadInputData();
+            setSearchSettings();
             ConfigHolder.getInstance().setProperty("matching.algorithm", configData.getScoringFunction());
             ConfigHolder.getInstance().setProperty("fragment.tolerance", configData.getfragTol());
             ConfigHolder.getInstance().setProperty("precursor.tolerance", configData.getPrecTol());
@@ -732,7 +729,10 @@ public class MainFrameController implements UpdateListener {
             isBussy = true;
             mainView.searchBtnActive(false);
 
-            matching.InpArgs(Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()), Double.toString(configData.getfragTol()));
+            String[] args={Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()),
+                Double.toString(configData.getfragTol()), Double.toString(configData.getPrecTol())};
+            matching.InpArgs(args);
+           // matching.InpArgs(Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()), Double.toString(configData.getfragTol()));
             if (!isValidation) {
                 resultTarget = matching.dispatcher(LOG);
                 cutoff_index = resultTarget.size() - 1;
@@ -743,7 +743,6 @@ public class MainFrameController implements UpdateListener {
                 cutoff_index = validation.validate(resultTarget, 0.01);
                 isValidation = false;
             }
-
             return null;
         }
 
@@ -797,7 +796,7 @@ public class MainFrameController implements UpdateListener {
     }
 
     /**
-     * swing thread to start the search and it runs on background
+     * swing thread configure readers and it runs on background
      */
     private class SwingReadThread extends SwingWorker<Void, Void> {
 
@@ -809,8 +808,8 @@ public class MainFrameController implements UpdateListener {
             mainView.searchBtnActive(false);
 
             LOG.info("Configuring Spectrum Reader ....");
-            ConfigSpecReaders cfReader = new ConfigSpecReaders(configData.getExperimentalSpecFile(), configData.getSpecLibraryFile());
-            cfReader.readFile(configData);
+            ConfigSpecReaders cfReader = new ConfigSpecReaders(configData.getExperimentalSpecFile(), configData.getSpecLibraryFile(), configData);
+            cfReader.startConfig();
             return null;
         }
 
@@ -833,7 +832,7 @@ public class MainFrameController implements UpdateListener {
                     LOG.info("Null Spectrum Index");
                 }
 
-                isReaderReady=true;
+                isReaderReady = true;
                 isBussy = false;
                 mainView.readerBtnActive(true);
                 mainView.searchBtnActive(true);
