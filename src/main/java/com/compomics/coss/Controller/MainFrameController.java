@@ -32,6 +32,7 @@ import javax.swing.table.DefaultTableModel;
 import com.compomics.ms2io.*;
 import java.awt.BorderLayout;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Controller class for GUI
@@ -65,7 +66,7 @@ public class MainFrameController implements UpdateListener {
     public SpinnerNumberModel spnModel;
     public DefaultComboBoxModel cmbModel;
 
-    private int targSpectrumNum, resultNumber; 
+    private int targSpectrumNum, resultNumber;
     private boolean isValidation;
 
     private boolean isReaderReady;
@@ -76,7 +77,7 @@ public class MainFrameController implements UpdateListener {
     //<editor-fold  defaultstate="Colapsed" desc="Initialize Components">
     public void init() {
 
-        configData=new ConfigData(null, null);
+        configData = new ConfigData(null, null);
         isReaderReady = false;
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
@@ -149,7 +150,7 @@ public class MainFrameController implements UpdateListener {
      * Start Spectrum searching upon user click on start button
      */
     public void startSearch() {
-        
+
         List<String> validationMessages = validateInpSettings();
         if (!validationMessages.isEmpty()) {
             StringBuilder message = new StringBuilder();
@@ -158,13 +159,13 @@ public class MainFrameController implements UpdateListener {
             });
             showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
 
-        }else if (this.isReaderReady) {
-            
+        } else if (this.isReaderReady) {
+
             setSearchSettings();
 
             this.cencelled = false;
             isValidation = false;
-            matching = new UseMsRoben(this, this.configData, "target");            
+            matching = new UseMsRoben(this, this.configData, "target");
             mainView.setProgressValue(0);
             SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
@@ -185,7 +186,7 @@ public class MainFrameController implements UpdateListener {
             });
             showMessageDialog("Validation errors", message.toString(), JOptionPane.WARNING_MESSAGE);
         } else {
-            this.isReaderReady=false;
+            this.isReaderReady = false;
             this.isBussy = true;
             mainView.searchBtnActive(false);
             SwingReadThread readThread = new SwingReadThread();
@@ -353,8 +354,8 @@ public class MainFrameController implements UpdateListener {
         String tempS = settingsPnl.txttargetspec.getText();
         if ("".equals(tempS)) {
             validationMessages.add("Please provide a spectra input directory.");
-        } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp")&& !tempS.endsWith(".mzml")
-                && !tempS.endsWith(".mzxml")&& !tempS.endsWith(".ms2")) {
+        } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".mzml")
+                && !tempS.endsWith(".mzxml") && !tempS.endsWith(".ms2")) {
             validationMessages.add(" Targer Spectra file type not valid");
         }
 
@@ -365,8 +366,8 @@ public class MainFrameController implements UpdateListener {
             validationMessages.add(" Data Base Spectra file type is invalid." + " \n " + "Only .mgf and .msp file format supported");
         }
 
-        if(validationMessages.isEmpty()){
-            configData=new ConfigData(new File(tempS), new File(tempS2));
+        if (validationMessages.isEmpty()) {
+            configData = new ConfigData(new File(tempS), new File(tempS2));
         }
         return validationMessages;
     }
@@ -431,22 +432,42 @@ public class MainFrameController implements UpdateListener {
     private void fillExpSpectraTable() {
 
         tblModelTarget.setRowCount(0);
-        int targetsize = configData.getExpSpectraIndex().size();
+        int targetsize = 0;
+        if (configData.getExpSpectraIndex() != null) {
+            targetsize = configData.getExpSpectraIndex().size();
+            Spectrum expSpec;
+            Object[][] rows = new Object[targetsize][6];
+            for (int p = 0; p < targetsize; p++) {
+                // name = d.getSpectra1().get(p).getSpectrumTitle();
 
-        Spectrum expSpec;
-        Object[][] rows = new Object[targetsize][6];
-        for (int p = 0; p < targetsize; p++) {
-            // name = d.getSpectra1().get(p).getSpectrumTitle();
+                expSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(p).getPos());
+                rows[p][0] = p + 1;
+                rows[p][1] = "ID" + Integer.toString(p + 1);
+                rows[p][2] = expSpec.getTitle();
+                rows[p][3] = expSpec.getPCMass();
+                rows[p][4] = expSpec.getCharge();
+                rows[p][5] = expSpec.getNumPeaks();
 
-            expSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(p).getPos());
-            rows[p][0] = p + 1;
-            rows[p][1] = "ID" + Integer.toString(p + 1);
-            rows[p][2] = expSpec.getTitle();
-            rows[p][3] = expSpec.getPCMass();
-            rows[p][4] = expSpec.getCharge();
-            rows[p][5] = expSpec.getNumPeaks();
+                tblModelTarget.addRow(rows[p]);
+            }
+        } else if (configData.getEbiReader() != null) {
+           
+            uk.ac.ebi.pride.tools.jmzreader.model.Spectrum expSpec;
+            Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> itr = configData.getEbiReader().getSpectrumIterator();
+            targetsize = configData.getEbiReader().getSpectraCount();
+            Object[][] rows = new Object[targetsize][6];
+            int p=0;
+            while(itr.hasNext()) {
+                expSpec = itr.next();
+                rows[p][0] = p + 1;
+                rows[p][1] = "ID" + Integer.toString(p + 1);
+                rows[p][2] = expSpec.getId();
+                rows[p][3] = expSpec.getPrecursorMZ();
+                rows[p][4] = expSpec.getPrecursorCharge();
+                rows[p][5] = expSpec.getPeakList().size();
 
-            tblModelTarget.addRow(rows[p]);
+                tblModelTarget.addRow(rows[p]);
+            }
         }
 
     }
@@ -658,7 +679,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void chooseTargetFile() {
 
-        JFileChooser fileChooser = new JFileChooser("D:/AllDocs/MS-data/");
+        JFileChooser fileChooser = new JFileChooser("C:/pandyDS/");
         fileChooser.setDialogTitle("Target Spectra File");
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -669,12 +690,9 @@ public class MainFrameController implements UpdateListener {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
             String tempfile = fileChooser.getSelectedFile().getPath();
             tempfile = tempfile.replace('\\', '/');
-            if (tempfile.endsWith(".mgf") || tempfile.endsWith(".msp")) {
-                settingsPnl.txttargetspec.setText(tempfile);
 
-            } else {
-                showMessageDialog("Invalid Data", "Invalid File Format", JOptionPane.WARNING_MESSAGE);
-            }
+            settingsPnl.txttargetspec.setText(tempfile);
+
         }
     }
 
@@ -729,10 +747,10 @@ public class MainFrameController implements UpdateListener {
             isBussy = true;
             mainView.searchBtnActive(false);
 
-            String[] args={Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()),
+            String[] args = {Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()),
                 Double.toString(configData.getfragTol()), Double.toString(configData.getPrecTol())};
             matching.InpArgs(args);
-           // matching.InpArgs(Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()), Double.toString(configData.getfragTol()));
+            // matching.InpArgs(Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()), Double.toString(configData.getfragTol()));
             if (!isValidation) {
                 resultTarget = matching.dispatcher(LOG);
                 cutoff_index = resultTarget.size() - 1;
@@ -819,9 +837,15 @@ public class MainFrameController implements UpdateListener {
             try {
 
                 LOG.info("Spectrum Reader Config Completed");
-                if (configData.getExpSpectraIndex() != null && configData.getSpectraLibraryIndex() != null) {
+                if ((configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) && configData.getSpectraLibraryIndex() != null) {
 
-                    int expSpecSize = configData.getExpSpectraIndex().size();
+                    int expSpecSize = 0;
+                    if (configData.getExpSpectraIndex() != null) {
+                        expSpecSize = configData.getExpSpectraIndex().size();
+                    } else if (configData.getEbiReader() != null) {
+                        expSpecSize = configData.getEbiReader().getSpectraCount();
+                    }
+
                     spnModel.setMaximum(expSpecSize);
                     targetView.txtTotalSpec.setText("/" + Integer.toString(expSpecSize));
                     updateInputInfo();

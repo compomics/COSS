@@ -7,6 +7,7 @@ import com.compomics.ms2io.SpectraReader;
 import java.util.Iterator;
 import uk.ac.ebi.pride.tools.jmzreader.model.*;
 import java.util.List;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 /**
  *this class holds the configuration data for spectral comparison
  * @author Genet
@@ -17,11 +18,11 @@ public class ConfigData {
     private final File experimentalSpecFile;
     private final File specLibraryFile;
     
-    private List<IndexKey> expIndex;
-    private List<IndexKey> libIndex;
-    private SpectraReader rdExperimental;
-    private SpectraReader rdLibrary;
-    private Iterator<Spectrum> ebiSpectrumIterator;
+    private List<IndexKey> expIndex=null;
+    private List<IndexKey> libIndex=null;
+    private SpectraReader rdExperimental=null;
+    private SpectraReader rdLibrary=null;
+    private JMzReader ebiReader=null;
     
     //Decoy database index and reader
     
@@ -153,12 +154,12 @@ public class ConfigData {
         return this.fragTol;
     }
     
-     public void setEbiSpecIterator(Iterator itrl) {
-        this.ebiSpectrumIterator = itrl;
+     public void setEbiReader(JMzReader reader) {
+        this.ebiReader=reader;
     }
 
-    public Iterator<Spectrum> getEbiSpecIterator() {
-        return this.ebiSpectrumIterator;
+    public JMzReader getEbiReader() {
+        return this.ebiReader;
     }
 
     public void setDecoyDBIndexList( List<IndexKey>  indx) {

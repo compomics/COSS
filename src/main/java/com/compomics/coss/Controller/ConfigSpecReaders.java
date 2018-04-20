@@ -29,7 +29,7 @@ import uk.ac.ebi.pride.tools.dta_parser.DtaFile;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
 import uk.ac.ebi.pride.tools.mzml_wrapper.MzMlWrapper;
-import uk.ac.ebi.pride.tools.jmzreader.model.*;
+
 import uk.ac.ebi.pride.tools.ms2_parser.Ms2File;
 import uk.ac.ebi.pride.tools.mzdata_parser.MzDataFile;
 import uk.ac.ebi.pride.tools.mzxml_parser.MzXMLFile;
@@ -133,7 +133,7 @@ public class ConfigSpecReaders {
         try {
 
             String fileType = FilenameUtils.getExtension(this.fileExperimnt.getName());
-            Iterator<Spectrum> spectrumIterator=null;
+           
 
             ExecutorService executors = Executors.newSingleThreadExecutor();
             Future<List<IndexKey>> fut;
@@ -143,45 +143,40 @@ public class ConfigSpecReaders {
             fut = executors.submit(ipHandler);
 
             //get Iterator for jmzml spectra reader for experimental spectra file
-            JMzReader reader;
+            JMzReader reader=null;
             switch (fileType) {
                 case "mzml":
                     reader = new MzMlWrapper(new File("/path/to/55merge.mgf"));
-                    reader.acceptsFile();
-                    spectrumIterator = reader.getSpectrumIterator();
+                    reader.acceptsFile();     
                     break;
 
                 case "ms2":
                     reader = new Ms2File(this.fileExperimnt);
                     reader.acceptsFile();
-                    spectrumIterator = reader.getSpectrumIterator();
                     break;
+
                 case "mzxml":
                     reader = new MzXMLFile(new File("/path/to/55merge.mgf"));
-                    reader.acceptsFile();
-                    spectrumIterator = reader.getSpectrumIterator();
+                    reader.acceptsFile();                   
                     break;
 
                 case "mzdata":
                     reader = new MzDataFile(this.fileExperimnt);
-                    reader.acceptsFile();
-                    spectrumIterator = reader.getSpectrumIterator();
+                    reader.acceptsFile();                
                     break;
 
                 case "dta":
                     reader = new DtaFile(new File("/path/to/55merge.mgf"));
-                    reader.acceptsFile();
-                    spectrumIterator = reader.getSpectrumIterator();
+                    reader.acceptsFile();                  
                     break;
 
                 case "pkl":
                     reader = new PklFile(this.fileExperimnt);
-                    reader.acceptsFile();
-                    spectrumIterator = reader.getSpectrumIterator();
+                    reader.acceptsFile();                 
                     break;
             }
 
-            cfData.setEbiSpecIterator(spectrumIterator);
+            cfData.setEbiReader(reader);
             cfData.setSpectralLibraryIndex((List<IndexKey>) fut.get());
             //sort library spectrum
             Collections.sort(cfData.getSpectraLibraryIndex());

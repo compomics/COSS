@@ -16,6 +16,11 @@ import com.compomics.ms2io.Spectrum;
 import com.compomics.coss.Model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.Model.ConfigData;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.model.*;
 
 /**
  *
@@ -45,9 +50,8 @@ public class UseMsRoben extends Matching {
         this.resultType = resultType;
         cancelled = false;
         this.TaskCompleted = 0;
-        this.confData=cnfData;
+        this.confData = cnfData;
     }
-
 
     @Override
     public void InpArgs(String... args) {
@@ -153,29 +157,48 @@ public class UseMsRoben extends Matching {
         @Override
         public void run() {
             try {
-                Spectrum expSpec=new Spectrum();
-                uk.ac.ebi.pride.tools.jmzreader.model.Spectrum  mzmlSpec;
+                Spectrum expSpec = new Spectrum();
+                uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec;
                 double massErrorFraction = precTlerance / 1000000.0;
 
-                if (confData.getExpSpectraIndex() == null && confData.getEbiSpecIterator() != null) {
-                    
-                    /**
-                     * if comparison between Decoy database .... allow to take decoy db reader from configdata*
-                     ******************************************************************************
-                     * *******************************************************************************/
-                    
-                    
-                    while(confData.getEbiSpecIterator().hasNext()) {
+                if (confData.getExpSpectraIndex() == null && confData.getEbiReader() != null) {
 
-                        mzmlSpec = confData.getEbiSpecIterator().next();
-                        expSpec.setFileName("mzmlfile");
-                        expSpec.setCharge(mzmlSpec.getPrecursorCharge().toString());
-                        expSpec.setPCMass(mzmlSpec.getPrecursorMZ());
-                        expSpec.setPCIntesity(mzmlSpec.getPrecursorIntensity());
-                        expSpec.setScanNumber("");                        
-                        double mass = expSpec.getPCMass();
-                        double da_error = mass * massErrorFraction;// (10 * mass) / 1000000.0;
-                        ArrayList libSpec = confData.getLibSpecReader().readPart(mass, da_error);
+                    /**
+                     * if comparison between Decoy database .... allow to take
+                     * decoy db reader from configdata*
+                     * *****************************************************************************
+                     * ******************************************************************************
+                     */
+                    
+                    double mz, intensity;
+                    ArrayList<Peak> peakList = new ArrayList<>();  
+                    Map map;
+                    Iterator entriesIterator;
+                    double da_error;
+                    
+                    JMzReader redr = confData.getEbiReader();
+                    Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> ebiSpecIterator = redr.getSpectrumIterator();
+
+                    while (ebiSpecIterator.hasNext()) {
+                        
+                        jmzSpec = ebiSpecIterator.next();
+                        expSpec.setPCMass(jmzSpec.getPrecursorMZ());                                              
+                        map = jmzSpec.getPeakList();
+                        Set entries = map.entrySet();
+                        entriesIterator = entries.iterator();
+
+                        while (entriesIterator.hasNext()) {
+
+                            Map.Entry mapping = (Map.Entry) entriesIterator.next();
+                            mz = (double) mapping.getKey();
+                            intensity = (double) mapping.getValue();
+                            peakList.add(new Peak(mz, intensity));
+                        }                        
+                        expSpec.setPeakList(peakList);
+                        peakList.clear();
+                        
+                        da_error = expSpec.getPCMass() * massErrorFraction;
+                        ArrayList libSpec = confData.getLibSpecReader().readPart(expSpec.getPCMass(), da_error);
                         data.putExpSpec(expSpec);
                         data.putLibSpec(libSpec);
 
@@ -183,12 +206,13 @@ public class UseMsRoben extends Matching {
 
                 } else {
 
-                         /**
-                     * if comparison between Decoy database .... allow to take decoy db reader from configdata*
-                     ******************************************************************************
-                     * *******************************************************************************/
-                    
-                    double numTasks=confData.getExpSpectraIndex().size();
+                    /**
+                     * if comparison between Decoy database .... allow to take
+                     * decoy db reader from configdata*
+                     * *****************************************************************************
+                     * ******************************************************************************
+                     */
+                    double numTasks = confData.getExpSpectraIndex().size();
                     for (int a = 0; a < numTasks; a++) {
 
                         expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
