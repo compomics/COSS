@@ -145,8 +145,8 @@ public class ConfigSpecReaders {
             //get Iterator for jmzml spectra reader for experimental spectra file
             JMzReader reader=null;
             switch (fileType) {
-                case "mzml":
-                    reader = new MzMlWrapper(new File("/path/to/55merge.mgf"));
+                case "mzML":
+                    reader = new MzMlWrapper(this.fileExperimnt);
                     reader.acceptsFile();     
                     break;
 
@@ -155,8 +155,8 @@ public class ConfigSpecReaders {
                     reader.acceptsFile();
                     break;
 
-                case "mzxml":
-                    reader = new MzXMLFile(new File("/path/to/55merge.mgf"));
+                case "mzXML":
+                    reader = new MzXMLFile(this.fileExperimnt);
                     reader.acceptsFile();                   
                     break;
 
@@ -166,7 +166,7 @@ public class ConfigSpecReaders {
                     break;
 
                 case "dta":
-                    reader = new DtaFile(new File("/path/to/55merge.mgf"));
+                    reader = new DtaFile(this.fileExperimnt);
                     reader.acceptsFile();                  
                     break;
 

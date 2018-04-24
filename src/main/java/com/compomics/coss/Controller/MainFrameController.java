@@ -99,8 +99,8 @@ public class MainFrameController implements UpdateListener {
 //        settingsPnl.txtFragmentTolerance.setText(Integer.toString(6));
 //        settingsPnl.txtPrecursorTolerance.setText(Integer.toString(20));
 //        settingsPnl.txtPrecursorCharge.setText(Integer.toString(3));
-        final String[] colNamesRes = {"No.", "ID", "Name/Title", "M/Z", "Charge", "Score", "Confidence(%)"};
-        final String[] colNamesExperimental = {"No.", "ID", "Name/Title", "M/Z", "Charge", "No. Peaks"};
+        final String[] colNamesRes = {"No.", "Name/Title", "M/Z", "Charge", "Score", "Confidence(%)"};
+        final String[] colNamesExperimental = {"No.", "Name/Title", "M/Z", "Charge", "No. Peaks"};
 
         tblModelResult = new DefaultTableModel(colNamesRes, 0);
         tblModelTarget = new DefaultTableModel(colNamesExperimental, 0);
@@ -354,8 +354,8 @@ public class MainFrameController implements UpdateListener {
         String tempS = settingsPnl.txttargetspec.getText();
         if ("".equals(tempS)) {
             validationMessages.add("Please provide a spectra input directory.");
-        } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".mzml")
-                && !tempS.endsWith(".mzxml") && !tempS.endsWith(".ms2")) {
+        } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".mzML")
+                && !tempS.endsWith(".mzXML") && !tempS.endsWith(".ms2")) {
             validationMessages.add(" Targer Spectra file type not valid");
         }
 
@@ -436,17 +436,17 @@ public class MainFrameController implements UpdateListener {
         if (configData.getExpSpectraIndex() != null) {
             targetsize = configData.getExpSpectraIndex().size();
             Spectrum expSpec;
-            Object[][] rows = new Object[targetsize][6];
+            Object[][] rows = new Object[targetsize][5];
             for (int p = 0; p < targetsize; p++) {
                 // name = d.getSpectra1().get(p).getSpectrumTitle();
 
                 expSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(p).getPos());
                 rows[p][0] = p + 1;
-                rows[p][1] = "ID" + Integer.toString(p + 1);
-                rows[p][2] = expSpec.getTitle();
-                rows[p][3] = expSpec.getPCMass();
-                rows[p][4] = expSpec.getCharge();
-                rows[p][5] = expSpec.getNumPeaks();
+                //rows[p][1] = "ID" + Integer.toString(p + 1);
+                rows[p][1] = expSpec.getTitle();
+                rows[p][2] = expSpec.getPCMass();
+                rows[p][3] = expSpec.getCharge();
+                rows[p][4] = expSpec.getNumPeaks();
 
                 tblModelTarget.addRow(rows[p]);
             }
@@ -455,18 +455,18 @@ public class MainFrameController implements UpdateListener {
             uk.ac.ebi.pride.tools.jmzreader.model.Spectrum expSpec;
             Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> itr = configData.getEbiReader().getSpectrumIterator();
             targetsize = configData.getEbiReader().getSpectraCount();
-            Object[][] rows = new Object[targetsize][6];
+            Object[][] rows = new Object[targetsize][5];
             int p=0;
             while(itr.hasNext()) {
                 expSpec = itr.next();
                 rows[p][0] = p + 1;
-                rows[p][1] = "ID" + Integer.toString(p + 1);
-                rows[p][2] = expSpec.getId();
-                rows[p][3] = expSpec.getPrecursorMZ();
-                rows[p][4] = expSpec.getPrecursorCharge();
-                rows[p][5] = expSpec.getPeakList().size();
-
+               // rows[p][1] = "ID" + Integer.toString(p + 1);
+                rows[p][1] = expSpec.getId();
+                rows[p][2] = expSpec.getPrecursorMZ();
+                rows[p][3] = expSpec.getPrecursorCharge();
+                rows[p][4] = expSpec.getPeakList().size();
                 tblModelTarget.addRow(rows[p]);
+                p++;
             }
         }
 
@@ -486,7 +486,7 @@ public class MainFrameController implements UpdateListener {
             tblModelResult.setRowCount(0);
 
             int i = 0;
-            Object[][] rows = new Object[10][8];
+            Object[][] rows = new Object[10][7];
 
             for (ComparisonResult r : singleResult) {
 

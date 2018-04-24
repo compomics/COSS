@@ -16,11 +16,11 @@ import com.compomics.ms2io.Spectrum;
 import com.compomics.coss.Model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.Model.ConfigData;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.io.FilenameUtils;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
-import uk.ac.ebi.pride.tools.jmzreader.model.*;
+import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 
 /**
  *
@@ -169,23 +169,28 @@ public class UseMsRoben extends Matching {
                      * *****************************************************************************
                      * ******************************************************************************
                      */
-                    
                     double mz, intensity;
-                    ArrayList<Peak> peakList = new ArrayList<>();  
+                    ArrayList<Peak> peakList = new ArrayList<>();
                     Map map;
                     Iterator entriesIterator;
                     double da_error;
-                    
+                    double parentMass;
+                    int tempCount=0;
+
                     JMzReader redr = confData.getEbiReader();
                     Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> ebiSpecIterator = redr.getSpectrumIterator();
 
                     while (ebiSpecIterator.hasNext()) {
-                        
+
                         jmzSpec = ebiSpecIterator.next();
-                        expSpec.setPCMass(jmzSpec.getPrecursorMZ());                                              
+                        if (jmzSpec.getMsLevel() != 2) {
+                            System.out.println("Only MS level 2 data is supported ");
+                            break;
+                        }
                         map = jmzSpec.getPeakList();
                         Set entries = map.entrySet();
                         entriesIterator = entries.iterator();
+                        peakList = new ArrayList<>();
 
                         while (entriesIterator.hasNext()) {
 
@@ -193,14 +198,25 @@ public class UseMsRoben extends Matching {
                             mz = (double) mapping.getKey();
                             intensity = (double) mapping.getValue();
                             peakList.add(new Peak(mz, intensity));
-                        }                        
+                        }
+
+                        if (jmzSpec.getPrecursorMZ() != 0) {
+                            parentMass = jmzSpec.getPrecursorMZ();
+                        } else {
+                            parentMass = getPrecursorMass(jmzSpec);
+                        }
+                        if(peakList.isEmpty() || parentMass==0){
+                            continue;
+                        }
+                        expSpec.setPCMass(parentMass);
                         expSpec.setPeakList(peakList);
-                        peakList.clear();
-                        
-                        da_error = expSpec.getPCMass() * massErrorFraction;
+                        expSpec.setNumPeaks(peakList.size());
+
+                        da_error = parentMass * massErrorFraction;
                         ArrayList libSpec = confData.getLibSpecReader().readPart(expSpec.getPCMass(), da_error);
                         data.putExpSpec(expSpec);
                         data.putLibSpec(libSpec);
+                        tempCount++;
 
                     }
 
@@ -212,7 +228,7 @@ public class UseMsRoben extends Matching {
                      * *****************************************************************************
                      * ******************************************************************************
                      */
-                    double numTasks = confData.getExpSpectraIndex().size();
+                    int numTasks = confData.getExpSpectraIndex().size();
                     for (int a = 0; a < numTasks; a++) {
 
                         expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
@@ -233,6 +249,43 @@ public class UseMsRoben extends Matching {
                 stillReading = false;
             }
 
+        }
+
+        private double getPrecursorMass(uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec) {
+
+            double precMass = 0;
+
+            String fileType = FilenameUtils.getExtension(confData.getExperimentalSpecFile().getName());
+            switch (fileType) {
+                case "mzML":
+                    CvParam s = jmzSpec.getAdditional().getCvParams().get(4);
+                    precMass = Double.parseDouble(s.getValue());
+                    break;
+
+                case "ms2":
+                    String temp = jmzSpec.getAdditional().getParams().get(4).getValue();
+                    precMass = Double.parseDouble(temp);
+                    break;
+
+                case "mzXML":
+                    s = jmzSpec.getAdditional().getCvParams().get(3);
+                    precMass = Double.parseDouble(s.getValue());
+                    break;
+
+                case "mzdata":
+                    precMass = 0;
+                    break;
+
+                case "dta":
+                    precMass = 0;
+                    break;
+
+                case "pkl":
+                    precMass = 0;
+                    break;
+            }
+
+            return precMass;
         }
     }
 
@@ -327,7 +380,7 @@ public class UseMsRoben extends Matching {
                 }
 
                 simResult.add(compResult);
-                compResult.clear();
+            
             }
 
             return simResult;
