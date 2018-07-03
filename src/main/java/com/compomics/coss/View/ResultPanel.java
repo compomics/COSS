@@ -8,9 +8,11 @@ import javax.swing.event.ListSelectionListener;
 import com.compomics.coss.Controller.MainFrameController;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import javax.swing.ListSelectionModel;
 
 /**
- *this class creates JPanel on which the comparison result is display
+ * this class creates JPanel on which the comparison result is display
+ *
  * @author Genet
  */
 public class ResultPanel extends JPanel {
@@ -40,9 +42,11 @@ public class ResultPanel extends JPanel {
         //tables
         tblBestMatch = new JTable();
         tblTargetSpectra = new JTable();
+        tblBestMatch.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         tblTargetSpectra.setRowSelectionAllowed(true);
         tblTargetSpectra.setColumnSelectionAllowed(false);
+        tblTargetSpectra.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         tblBestMatch.setRowSelectionAllowed(true);
         tblBestMatch.setColumnSelectionAllowed(false);
@@ -56,7 +60,7 @@ public class ResultPanel extends JPanel {
         //panels
         pnlBestMatchs = new JPanel();
         pnlBestMatchs.setBorder(javax.swing.BorderFactory.createTitledBorder("Best Match Spectra"));
-        
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(pnlBestMatchs);
         pnlBestMatchs.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -94,15 +98,11 @@ public class ResultPanel extends JPanel {
         pnlVisualSpectrum = new JPanel();
         pnlVisualSpectrum.setBorder(javax.swing.BorderFactory.createTitledBorder("Visual Spectrum Comparison"));
         pnlVisualSpectrum.setLayout(new BorderLayout());
-        
-     
 
-        
         setLayout(new GridLayout(3, 1));
         add(pnlTargetSpectra);
         add(pnlBestMatchs);
         add(pnlVisualSpectrum);
-
 
         //Action Listener
         tblBestMatch.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -111,7 +111,6 @@ public class ResultPanel extends JPanel {
             public void valueChanged(ListSelectionEvent lse) {
 
                 int index = tblBestMatch.getSelectedRow();
-
                 control.updateresultview(index);
 
             }
@@ -121,14 +120,11 @@ public class ResultPanel extends JPanel {
             if (!lse.getValueIsAdjusting()) {
                 int targSpectrumIndex = tblTargetSpectra.getSelectedRow();
                 control.fillBestmatchTable(targSpectrumIndex);
-                
-                
-                
+
             }
         });
 
     }
-    
-    //</editor-fold>
 
+    //</editor-fold>
 }

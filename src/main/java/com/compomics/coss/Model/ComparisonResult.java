@@ -12,14 +12,14 @@ public class ComparisonResult implements Comparable<ComparisonResult> {
     private String charge;
     private double score;
     private long spec_pos;
-    private String result_type;//either decoy or target
-    
-    public long getSpecPosition(){
+    private int matched_expe_Index;
+
+    public long getSpecPosition() {
         return this.spec_pos;
     }
-    
-    public void setSpecPosition(long pos){
-        this.spec_pos=pos;
+
+    public void setSpecPosition(long pos) {
+        this.spec_pos = pos;
     }
 
     public void setTitle(String t) {
@@ -41,37 +41,34 @@ public class ComparisonResult implements Comparable<ComparisonResult> {
     public void setScore(double d) {
         this.score = d;
     }
-    
-    public String getTitle(){
+
+    public String getTitle() {
         return this.title;
     }
-    
-    public double getPrecMass(){
+
+    public double getPrecMass() {
         return this.precMass;
     }
-    
-    public String getScanNum(){
+
+    public String getScanNum() {
         return this.scan_num;
     }
-    
-    public String getCharge(){
+
+    public String getCharge() {
         return this.charge;
     }
-    
-    public double getScore(){
+
+    public double getScore() {
         return this.score;
     }
-    
-    
-    public String getResultType(){
-        return this.result_type;
+
+    public int getMatchedExpIndex() {
+        return this.matched_expe_Index;
     }
-    
-    public void setResultType(String resType){
-        this.result_type=resType;
+
+    public void setMatchedExpIndex(int expIndex) {
+        this.matched_expe_Index = expIndex;
     }
-    
-    
 
     @Override
     public int compareTo(ComparisonResult t) {

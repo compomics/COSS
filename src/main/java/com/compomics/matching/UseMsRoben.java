@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.io.FilenameUtils;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.model.Param;
 import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 
 /**
@@ -170,12 +171,12 @@ public class UseMsRoben extends Matching {
                      * ******************************************************************************
                      */
                     double mz, intensity;
-                    ArrayList<Peak> peakList = new ArrayList<>();
+                    ArrayList<Peak> peakList;
                     Map map;
                     Iterator entriesIterator;
                     double da_error;
                     double parentMass;
-                    int tempCount=0;
+                    int tempCount = 0;
 
                     JMzReader redr = confData.getEbiReader();
                     Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> ebiSpecIterator = redr.getSpectrumIterator();
@@ -187,6 +188,7 @@ public class UseMsRoben extends Matching {
                             System.out.println("Only MS level 2 data is supported ");
                             break;
                         }
+
                         map = jmzSpec.getPeakList();
                         Set entries = map.entrySet();
                         entriesIterator = entries.iterator();
@@ -205,9 +207,10 @@ public class UseMsRoben extends Matching {
                         } else {
                             parentMass = getPrecursorMass(jmzSpec);
                         }
-                        if(peakList.isEmpty() || parentMass==0){
+                        if (peakList.isEmpty() || parentMass == 0) {
                             continue;
                         }
+
                         expSpec.setPCMass(parentMass);
                         expSpec.setPeakList(peakList);
                         expSpec.setNumPeaks(peakList.size());
@@ -219,6 +222,9 @@ public class UseMsRoben extends Matching {
                         tempCount++;
 
                     }
+
+                    String sss = "this string break point" + Integer.toString(tempCount);
+                    System.out.print(Integer.toString(tempCount));
 
                 } else {
 
@@ -258,19 +264,47 @@ public class UseMsRoben extends Matching {
             String fileType = FilenameUtils.getExtension(confData.getExperimentalSpecFile().getName());
             switch (fileType) {
                 case "mzML":
-                    CvParam s = jmzSpec.getAdditional().getCvParams().get(4);
-                    precMass = Double.parseDouble(s.getValue());
-                    break;
+                    if (jmzSpec.getAdditional().getCvParams().isEmpty()) {
+                        System.out.println("Additional CV parameters missing for the spectrum");
+                        break;
+                    } else {
+                        List<CvParam> params = jmzSpec.getAdditional().getCvParams();
+                        for (CvParam p : params) {
+                            if (p.getName().equals("base peak m/z")) {
+                                precMass = Double.parseDouble(p.getValue());
+                                break;
+                            }
+                        }
+                    }
 
                 case "ms2":
-                    String temp = jmzSpec.getAdditional().getParams().get(4).getValue();
-                    precMass = Double.parseDouble(temp);
-                    break;
+                    if (jmzSpec.getAdditional().getParams().isEmpty()) {
+                        System.out.println("Additional parameters missing for the spectrum");
+                        break;
+                    } else {
+                        List<Param> temp = jmzSpec.getAdditional().getParams();
+                        for (Param p : temp) {
+                            if (p.getName().equals("BPM")) {
+                                precMass = Double.parseDouble(p.getValue());
+                                break;
+                            }
+
+                        }
+                    }
 
                 case "mzXML":
-                    s = jmzSpec.getAdditional().getCvParams().get(3);
-                    precMass = Double.parseDouble(s.getValue());
-                    break;
+                    if (jmzSpec.getAdditional().getCvParams().isEmpty()) {
+                        System.out.println("Additional CV parameters missing for the spectrum");
+                        break;
+                    } else {
+                        List<CvParam> params = jmzSpec.getAdditional().getCvParams();
+                        for (CvParam p : params) {
+                            if (p.getName().equals("base peak m/z")) {
+                                precMass = Double.parseDouble(p.getValue());
+                                break;
+                            }
+                        }
+                    }
 
                 case "mzdata":
                     precMass = 0;
@@ -325,6 +359,7 @@ public class UseMsRoben extends Matching {
 
                     sp1 = data.pollExpSpec();
                     sb = data.pollLibSpec();
+
                 } catch (InterruptedException ex) {
                     Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -336,35 +371,45 @@ public class UseMsRoben extends Matching {
                     ComparisonResult res = new ComparisonResult();
                     try {
 
+                        ArrayList<Double> scores = new ArrayList<Double>();
+                        double score = 0;
+                        double finalScore = 0;
                         //Computing all topN scores omited as the all 10 picks score more than the others - topN changed by 10
-                        //for (int topN = 1; topN < 11; topN++) {
-                        TopNPeaks filterA = new DivideAndTopNPeaks(sp1, 10, massWindow);
-                        TopNPeaks filterB = new DivideAndTopNPeaks(sp2, 10, massWindow);
-                        double probability = (double) 10 / (double) massWindow;
-                        ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks(),
-                                fP_spectrumB = filterB.getFilteredPeaks();
-                        double[] results = new double[4];
-                        if (fP_spectrumB.size() < fP_spectrumA.size()) {
-                            results = prepareData(fP_spectrumA, fP_spectrumB);
-                        } else {
-                            results = prepareData(fP_spectrumB, fP_spectrumA);
+
+                        for (int topN = 1; topN < 11; topN++) {
+                            TopNPeaks filterA = new DivideAndTopNPeaks(sp1, topN, massWindow);
+                            TopNPeaks filterB = new DivideAndTopNPeaks(sp2, topN, massWindow);
+                            double probability = (double) topN / (double) massWindow;
+                            ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks(),
+                                    fP_spectrumB = filterB.getFilteredPeaks();
+                            double[] results = new double[4];
+                            if (fP_spectrumB.size() < fP_spectrumA.size()) {
+                                results = prepareData(fP_spectrumA, fP_spectrumB);
+                            } else {
+                                results = prepareData(fP_spectrumB, fP_spectrumA);
+                            }
+                            int totalN = (int) results[0],
+                                    n = (int) results[1];
+                            double tmp_intensity_part = results[2];
+                            MSRobin object = new MSRobin(probability, totalN, n, tmp_intensity_part, MsRobinOption);
+                            score = object.getScore();
+                            // Precision.round(score, 2);
+                            scores.add(score);
+                            intensity_part = object.getIntensity_part();
+                            probability_part = object.getProbability_part();
                         }
-                        int totalN = (int) results[0],
-                                n = (int) results[1];
-                        double tmp_intensity_part = results[2];
-                        MSRobin object = new MSRobin(probability, totalN, n, tmp_intensity_part, MsRobinOption);
-                        double score = object.getScore();
-                        Precision.round(score, 2);
+
+                        finalScore = Collections.max(scores);
                         res.setCharge(sp2.getCharge());
                         res.setPrecMass(sp2.getPCMass());
                         res.setScanNum(sp2.getScanNumber());
-                        res.setScore(score);
+                        res.setScore(finalScore);
                         res.setTitle(sp2.getTitle());
                         res.setSpecPosition(sp2.getIndex().getPos());
-                        res.setResultType(this.resType);
+                        res.setMatchedExpIndex(TaskCompleted);
+
                         compResult.add(res);
-                        intensity_part = object.getIntensity_part();
-                        probability_part = object.getProbability_part();
+
                     } catch (Exception ex) {
                         Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -380,7 +425,7 @@ public class UseMsRoben extends Matching {
                 }
 
                 simResult.add(compResult);
-            
+
             }
 
             return simResult;

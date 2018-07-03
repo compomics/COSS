@@ -61,7 +61,9 @@ public class ConfigData {
     }
     
     public void setExpSpecReader(SpectraReader rd){
+        
         this.rdExperimental=rd;
+        
     }
     
     public void setLibSpecReader(SpectraReader rd){

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.compomics</groupId>
     <artifactId>COSS</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     
     <name>COSS</name>
@@ -187,9 +187,9 @@
         
         <!-- JPL library repository-->
         <repository>
-	  <id>Expasy MzJava</id>
-	  <url>http://mzjava.expasy.org/maven</url>
-	</repository>
+            <id>Expasy MzJava</id>
+            <url>http://mzjava.expasy.org/maven</url>
+        </repository>
             
             
         <!-- EBI jmzReader  -->
@@ -213,32 +213,32 @@
         <!--start jpl library dependency-->
         
         <!-- To include the proteomic module -->
-	<dependency>
-	  <groupId>org.expasy.mzjava</groupId>
-	  <artifactId>mzjava-proteomics</artifactId>
-	  <version>1.1.0</version>
-	</dependency>
+        <dependency>
+            <groupId>org.expasy.mzjava</groupId>
+            <artifactId>mzjava-proteomics</artifactId>
+            <version>1.1.0</version>
+        </dependency>
 
         <!-- To include the hadoop proteomic module -->
         <dependency>
-          <groupId>org.expasy.mzjava</groupId>
-          <artifactId>mzjava-hadoop-proteomics</artifactId>
-          <version>1.1.0</version>
+            <groupId>org.expasy.mzjava</groupId>
+            <artifactId>mzjava-hadoop-proteomics</artifactId>
+            <version>1.1.0</version>
         </dependency>
 
-	<!-- To include the glycomics module -->  
-	<dependency>
-	  <groupId>org.expasy.mzjava</groupId>
-	  <artifactId>mzjava-glycomics</artifactId>
-	  <version>1.1.0</version>
-	</dependency>
+        <!-- To include the glycomics module -->  
+        <dependency>
+            <groupId>org.expasy.mzjava</groupId>
+            <artifactId>mzjava-glycomics</artifactId>
+            <version>1.1.0</version>
+        </dependency>
 	        
-	<!-- To include the hadoop glycomics module -->
-	<dependency>
-	  <groupId>org.expasy.mzjava</groupId>
-	  <artifactId>mzjava-hadoop-glycomics</artifactId>
-	  <version>1.1.0</version>
-	</dependency>
+        <!-- To include the hadoop glycomics module -->
+        <dependency>
+            <groupId>org.expasy.mzjava</groupId>
+            <artifactId>mzjava-hadoop-glycomics</artifactId>
+            <version>1.1.0</version>
+        </dependency>
         
         
         <!--end JPL library dependency-->
@@ -340,6 +340,26 @@
             <version>1.2.6</version>
             <type>jar</type>
         </dependency>
+        
+        
+        
+        <!-- Used to work with the older excel file format - `.xls` -->
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.17</version>
+        </dependency>
+
+        <!-- Used to work with the newer excel file format - `.xlsx` -->
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
+        </dependency>
+        
+        
     </dependencies>
     
     <distributionManagement>   

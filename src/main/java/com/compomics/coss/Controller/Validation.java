@@ -7,10 +7,7 @@ package com.compomics.coss.Controller;
 
 import com.compomics.coss.Model.ComparisonResult;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import org.apache.avro.generic.GenericData;
 
 /**
  *
@@ -20,34 +17,6 @@ public class Validation {
 
     public Validation() {
 
-    }
-
-    public List<ArrayList<ComparisonResult>> compareNmerge(List<ArrayList<ComparisonResult>> targetResult, List<ArrayList<ComparisonResult>> decoyResult) {
-
-        List<ArrayList<ComparisonResult>> validatedResult = new ArrayList<>();
-        //calculate FDR=Ndecoy/Ntargethits
-
-        int c = 0;
-        for (ArrayList<ComparisonResult> rTarget : targetResult) {
-            
-            ArrayList<ComparisonResult> rDecoy = decoyResult.get(c++);
-            if(!rTarget.isEmpty() && !rDecoy.isEmpty()){
-                if (rTarget.get(0).compareTo(rDecoy.get(0)) < 0) {
-
-                validatedResult.add(rDecoy);
-
-                }
-                else{
-                    validatedResult.add(rTarget);
-                }
-            
-            }
-            
-
-        }
-        Collections.sort(validatedResult, (ArrayList<ComparisonResult> o1, ArrayList<ComparisonResult> o2) -> Double.valueOf(o1.get(0).getScore()).compareTo(o2.get(0).getScore()));
-
-        return validatedResult;
     }
 
     public int validate(List<ArrayList<ComparisonResult>> result, double threshold) {
@@ -60,7 +29,7 @@ public class Validation {
 
         for (ArrayList<ComparisonResult> r : result) {
             // ArrayList<ComparisonResult> rDecoy=decoyResult.get(c++);
-            if (r.get(0).getResultType().equals("target")) {
+            if (!r.get(0).getTitle().endsWith("decoy")) {
 
                 numTarget++;
 
