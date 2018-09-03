@@ -21,12 +21,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,8 +35,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
@@ -57,9 +51,6 @@ public class CosineSimilarity extends Matching {
 
     boolean stillReading;
     UpdateListener listener;
-
-    String resultType;
-
     int MsRobinOption;
     int IntensityOption;
     double fragTolerance;
@@ -67,9 +58,8 @@ public class CosineSimilarity extends Matching {
     boolean cancelled = false;
     int taskCompleted;
 
-    public CosineSimilarity(UpdateListener lstner, ConfigData cnfData, String resultType) {
+    public CosineSimilarity(UpdateListener lstner, ConfigData cnfData) {
         this.listener = lstner;
-        this.resultType = resultType;
         cancelled = false;
         this.taskCompleted = 0;
         this.confData = cnfData;
@@ -100,7 +90,7 @@ public class CosineSimilarity extends Matching {
             ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(20, true);
             TheData data = new TheData(expspec, libSelected);
 
-            DoMatching match1 = new DoMatching(data, resultType, "First Matcher", log);
+            DoMatching match1 = new DoMatching(data, "First Matcher", log);
             //DoMatching match2 = new DoMatching(data, resultType, "Second Matcher", log);
             DataProducer producer1 = new DataProducer(data);
 
@@ -119,25 +109,20 @@ public class CosineSimilarity extends Matching {
             java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        Collections.sort(simResult);
+        Collections.reverse(simResult);
         return simResult;
     }
 
     private class DoMatching implements Callable<List<ComparisonResult>> {
 
-        String resType = "";
         TheData data;
         final String threadName;
         org.apache.log4j.Logger log;
-
-        double matchedIntA;
-        double matchedIntB;
-        double totalIntA;
-        double totalIntB;
         int matchedNumPeaks;
 
-        public DoMatching(TheData data, String restype, String matcherName, org.apache.log4j.Logger log) {
-            this.data = data;
-            this.resType = restype;
+        public DoMatching(TheData data, String matcherName, org.apache.log4j.Logger log) {
+            this.data = data;          
             this.threadName = matcherName;
             this.log = log;
 
@@ -261,86 +246,70 @@ public class CosineSimilarity extends Matching {
                 }
             }
 
-            try {
-                if (oos != null) {
-                    oos.close();
-                }
-                if (fos != null) {
-                    fos.close();
-                }
-                log.info("Search completed succesfully.");
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            log.info("Getting results.");
-            List<ComparisonResult> simResult = new ArrayList<>();
-            FileInputStream fis = null;
-            ObjectInputStream ois = null;
-            try {
-                fis = new FileInputStream("temp.txt");
-                ois = new ObjectInputStream(fis);
-                ComparisonResult r = (ComparisonResult) ois.readObject();
-                while (r != null) {
-                    r = (ComparisonResult) ois.readObject();
-                    simResult.add(r);
-                }
-            } catch (FileNotFoundException | ClassNotFoundException ex) {
-                java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                // 
-            } finally {
+           List<ComparisonResult> simResult = new ArrayList<>();
+            
+            if (!cancelled) {
+                listener.updateprogressbar(confData.getExpSpectraIndex().size());
                 try {
-                    if (ois != null) {
-                        ois.close();
+                    if (oos != null) {
+                        oos.close();
                     }
-                    if (fis != null) {
-                        fis.close();
+                    if (fos != null) {
+                        fos.close();
                     }
-
-                    File file = new File("temp.txt");
-                    if (file.exists()) {
-                        file.delete();
-                    }
+                    log.info("Search completed succesfully.");
                 } catch (IOException ex) {
                     java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }
 
+                log.info(
+                        "Getting results.");
+                
+              
+                FileInputStream fis = null;
+                ObjectInputStream ois = null;
+
+                try {
+                    fis = new FileInputStream("temp.txt");
+                    ois = new ObjectInputStream(fis);
+                    ComparisonResult r = (ComparisonResult) ois.readObject();
+                    while (r != null) {
+                        r = (ComparisonResult) ois.readObject();
+                        simResult.add(r);
+                    }
+                } catch (FileNotFoundException | ClassNotFoundException ex) {
+                    java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    // 
+                } finally {
+                    try {
+                        if (ois != null) {
+                            ois.close();
+                        }
+                        if (fis != null) {
+                            fis.close();
+                        }
+
+                        File file = new File("temp.txt");
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                    } catch (IOException ex) {
+                        java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            else{
+                File fis = new File("temp.txt");
+                if(fis.exists()){
+                    fis.delete();
+                    
+                }
+            }
             return simResult;
         }
 
-        private void logTransform(Spectrum spec) {
-
-            List<Peak> pk = spec.getPeakList();
-            ArrayList<Peak> newPeaks = new ArrayList<>();
-            for (Peak p : pk) {
-                Peak tempPeak;
-                double mz = p.getMz();
-                double intensity = p.getIntensity();
-                mz = 10 * Math.log(mz);
-                intensity = 10 * Math.log(intensity);
-                tempPeak = new Peak(mz, intensity);
-                newPeaks.add(tempPeak);
-            }
-            spec.setPeakList(newPeaks);
-
-        }
-        
-        
-         private double minSqrError(List<Peak> v1, List<Peak> v2){
-            int len=v1.size();
-            double sum_err=0;
-            for(int i=0;i<len;i++){
-                double d1=v1.get(i).getIntensity();
-                double d2=v2.get(i).getIntensity();
-                double diff=d1-d2;
-                sum_err+= (diff*diff);
-                
-            }
-            return (sum_err/len);
-        }
-
+       
         private double cosineScore(List<Peak> v1, List<Peak> v2) {
 
             matchedIntA = 0;
@@ -403,7 +372,7 @@ public class CosineSimilarity extends Matching {
             double sqrtV2 = Math.sqrt(v2SquareSum);
             score = productSum / (sqrtV1 * sqrtV2);
 
-            double sum_sqr_error=minSqrError(matchedPeaksExp, matchedPeaksLib);
+            double sum_sqr_error=meanSqrError(matchedPeaksExp, matchedPeaksLib);
             if(sum_sqr_error!=0 && score!=0){
               score /= sum_sqr_error;
             }

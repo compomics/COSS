@@ -17,13 +17,12 @@ import com.compomics.coss.Model.ConfigHolder;
 import com.compomics.coss.View.*;
 import com.compomics.matching.CosineSimilarity;
 import com.compomics.matching.EuclideanDistance;
-import com.compomics.matching.Manhattan;
-//import com.compomics.matching.Cascade;
 import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
 import com.compomics.matching.Matching;
+import com.compomics.matching.MeanSquareError;
 import com.compomics.matching.UseMsRoben;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
@@ -191,17 +190,17 @@ public class MainFrameController implements UpdateListener {
             int scoring = settingsPnl.cboScoringFun.getSelectedIndex();
             switch (scoring) {
                 case 0:
-                    matching = new UseMsRoben(this, this.configData, "target");
+                    matching = new UseMsRoben(this, this.configData);
                     break;
                 case 1:
-                    matching = new CosineSimilarity(this, this.configData, "target");
+                    matching = new CosineSimilarity(this, this.configData);
                     break;
                 case 2:
-                    matching = new EuclideanDistance(this, this.configData, "target");
+                    matching = new MeanSquareError(this, this.configData);
                     break;
 
                 case 3:
-                    matching = new Manhattan(this, this.configData, "target");
+                    matching = new EuclideanDistance(this, this.configData);
                     break;
             }
 
@@ -997,11 +996,8 @@ public class MainFrameController implements UpdateListener {
 
                     if (result != null) {
 
-                        LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
-                        // Sort sort = new Sort();
-                        // sort.Quicksort(result, 0, result.size() - 1);
-                        Collections.sort(result);
-                        Collections.reverse(result);
+                        LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));                       
+                        
                         validateResult();
                         LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
 

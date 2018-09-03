@@ -7,6 +7,7 @@ package com.compomics.coss.Model;
 
 import com.compomics.ms2io.Spectrum;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  *
@@ -124,8 +125,10 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     
      @Override
     public int compareTo(MatchedLibSpectra t) {
-
-        return Double.compare(this.score, t.score);
+        BigDecimal bd1=BigDecimal.valueOf(this.score);
+        BigDecimal bd2=BigDecimal.valueOf(t.score);       
+        
+        return bd1.compareTo(bd2);
     }
 
    

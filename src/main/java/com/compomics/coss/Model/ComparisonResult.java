@@ -2,6 +2,7 @@ package com.compomics.coss.Model;
 
 import com.compomics.ms2io.Spectrum;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -47,8 +48,11 @@ public class ComparisonResult implements Comparable<ComparisonResult>, Serializa
 
     @Override
     public int compareTo(ComparisonResult t) {
-
-        return Double.compare(this.topScore, t.topScore);
+        
+         BigDecimal bd1=BigDecimal.valueOf(this.topScore);
+        BigDecimal bd2=BigDecimal.valueOf(t.topScore);       
+        
+        return bd1.compareTo(bd2);
     }
 
 }
