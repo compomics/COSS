@@ -15,11 +15,12 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 import com.compomics.coss.Model.ConfigHolder;
 import com.compomics.coss.View.*;
+import com.compomics.matching.CosineSimilarity;
+import com.compomics.matching.EuclideanDistance;
+import com.compomics.matching.Manhattan;
 //import com.compomics.matching.Cascade;
 import javax.swing.JFileChooser;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
 import com.compomics.matching.Matching;
@@ -30,10 +31,14 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import com.compomics.ms2io.*;
 import java.awt.BorderLayout;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Iterator;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import com.compomics.util.gui.spectrum.SpectrumPanel;
 import java.util.ArrayList;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -56,11 +61,16 @@ public class MainFrameController implements UpdateListener {
 
     // private ConfigHolder config = new ConfigHolder();
     Matching matching;
-    private static List<ArrayList<ComparisonResult>> result = null;
-    int cutoff_index;
+    private static List<ComparisonResult> result = null;
+    //private static List<ArrayList<ComparisonResult>> validatedResult = null;
+    private int cutoff_index_1percent;
+    private int cutoff_index_5percent;
+
     ConfigData configData;
     public boolean cencelled = false;
     public boolean isBussy = false;
+    String fileTobeConfigure;
+    boolean settingSimilar;
 
     public DefaultTableModel tblModelResult;
     public DefaultTableModel tblModelTarget;
@@ -70,7 +80,6 @@ public class MainFrameController implements UpdateListener {
     private int targSpectrumNum, resultNumber;
 
     private boolean isReaderReady;
-    private int cut_off_index;
 
     /**
      * Initialize objects, variables and components.
@@ -78,7 +87,9 @@ public class MainFrameController implements UpdateListener {
     //<editor-fold  defaultstate="Colapsed" desc="Initialize Components">
     public void init() {
 
-        configData = new ConfigData(null, null);
+        configData = new ConfigData();
+        fileTobeConfigure = "both";
+        settingSimilar = false;
         isReaderReady = false;
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
@@ -87,6 +98,7 @@ public class MainFrameController implements UpdateListener {
 
         mainView = new MainGUI(settingsPnl, resultPnl, targetView, this);
         mainView.pnlCommands.setLayout(new BorderLayout());
+
         // add gui appender
         LogTextAreaAppender logTextAreaAppender = new LogTextAreaAppender();
         logTextAreaAppender.setLogArea(mainView);
@@ -97,14 +109,21 @@ public class MainFrameController implements UpdateListener {
         layout.setConversionPattern("%d{yyyy-MM-dd HH:mm:ss} - %m%n");
         logTextAreaAppender.setLayout(layout);
 
-//        settingsPnl.txtFragmentTolerance.setText(Integer.toString(6));
-//        settingsPnl.txtPrecursorTolerance.setText(Integer.toString(20));
-//        settingsPnl.txtPrecursorCharge.setText(Integer.toString(3));
-        final String[] colNamesRes = {"No.", "Name/Title", "M/Z", "Charge", "Score", "Confidence(%)"};
-        final String[] colNamesExperimental = {"No.", "Name/Title", "M/Z", "Charge", "No. Peaks"};
+        final String[] colNamesRes = {"Title", "Scan Num.", "Sequence", "Protein", "M/Z", "Charge", "Score", "Confidence(%)","#Peaks","#FiltedPeaks", "TotalInt","MatchedInt"};        
+        final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Confidence(%)",  "#Peaks", "#FilteredPeaks", "TotalInt","MatchedInt","#MatchedPeaks"};
 
-        tblModelResult = new DefaultTableModel(colNamesRes, 0);
-        tblModelTarget = new DefaultTableModel(colNamesExperimental, 0);
+        tblModelResult = new DefaultTableModel(colNamesRes, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        tblModelTarget = new DefaultTableModel(colNamesExperimental, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
         spnModel = new SpinnerNumberModel(1, 1, 1, 1);
         targetView.spnSpectrum.setModel(spnModel);
@@ -127,10 +146,12 @@ public class MainFrameController implements UpdateListener {
      * Show the view of this controller.
      */
     public void showMainFrame() {
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         mainView.setBounds(0, 0, screenSize.width, screenSize.height - 40);
         mainView.setMinimumSize(new Dimension(530, 600));
         mainView.setVisible(true);
+
     }
 
     /**
@@ -143,6 +164,7 @@ public class MainFrameController implements UpdateListener {
             matching.stopMatching();
 
         } else {
+
             LOG.info("Nothing to cancel! Matching process is not running");
         }
     }
@@ -164,8 +186,25 @@ public class MainFrameController implements UpdateListener {
 
             setSearchSettings();
             this.cencelled = false;
-            matching = new UseMsRoben(this, this.configData, "target");
             mainView.setProgressValue(0);
+
+            int scoring = settingsPnl.cboScoringFun.getSelectedIndex();
+            switch (scoring) {
+                case 0:
+                    matching = new UseMsRoben(this, this.configData, "target");
+                    break;
+                case 1:
+                    matching = new CosineSimilarity(this, this.configData, "target");
+                    break;
+                case 2:
+                    matching = new EuclideanDistance(this, this.configData, "target");
+                    break;
+
+                case 3:
+                    matching = new Manhattan(this, this.configData, "target");
+                    break;
+            }
+
             SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
 
@@ -199,10 +238,9 @@ public class MainFrameController implements UpdateListener {
      * start search against decoy database
      */
     public void validateResult() {
-
         Validation validate = new Validation();
-        cut_off_index = validate.validate(result, 0.1);
-        result.subList(cut_off_index, result.size()).clear();
+        cutoff_index_1percent = validate.validate(result, 0.01);
+        cutoff_index_5percent = validate.validate(result, 0.05);
 
     }
 
@@ -211,12 +249,32 @@ public class MainFrameController implements UpdateListener {
      *
      */
     private void setSearchSettings() {
+        int scoringFun = settingsPnl.cboScoringFun.getSelectedIndex();
+        int maxPrecCharg = Integer.parseInt(settingsPnl.txtPrecursorCharge.getText());
+        double precTolerance = Double.parseDouble(settingsPnl.txtPrecursorTolerance.getText());
+        double fragTolerance = Double.parseDouble(settingsPnl.txtFragmentTolerance.getText());
+        boolean applyTransform = settingsPnl.chkTransform.isSelected();
+        int transformType = settingsPnl.cboTransformType.getSelectedIndex();
 
-        configData.setScoringFunction(settingsPnl.cboScoringFun.getSelectedIndex());
-        configData.setMaxPrecursorCharg(Integer.parseInt(settingsPnl.txtPrecursorCharge.getText()));
-        configData.setPrecTol(Double.parseDouble(settingsPnl.txtPrecursorTolerance.getText()));
-        configData.setfragTol(Double.parseDouble(settingsPnl.txtFragmentTolerance.getText()));
+        settingSimilar = false;
+        if (configData.getScoringFunction() == scoringFun
+                && configData.getMaxPrecursorCharg() == maxPrecCharg
+                && configData.getPrecTol() == precTolerance
+                && configData.getfragTol() == fragTolerance) {
+            settingSimilar = true;
 
+        }
+
+        //no need to reload settings if they are similar and flag up for not repeating same search
+        if (!settingSimilar) {
+            configData.setScoringFunction(scoringFun);
+            configData.setMaxPrecursorCharg(maxPrecCharg);
+            configData.setPrecTol(precTolerance);
+            configData.setfragTol(fragTolerance);
+            configData.applyTransform(applyTransform);
+            configData.setTransformType(transformType);
+
+        }
     }
 
     /**
@@ -284,21 +342,6 @@ public class MainFrameController implements UpdateListener {
                 validationMessages.add("Please provide a numeric fragment tolerance value.");
             }
         }
-
-//        if (mainView.getChkFilter().isSelected()) {
-//            if (mainView.getTxtCutOff().getText().isEmpty()) {
-//                validationMessages.add("Please a provide peak cutoff number when choosing the TopN intense peak selection filter.");
-//            } else {
-//                try {
-//                    Integer number = Integer.valueOf(mainView.getTxtCutOff().getText());
-//                    if (number < 0) {
-//                        validationMessages.add("Please provide a positive peak cutoff number value.");
-//                    }
-//                } catch (NumberFormatException nfe) {
-//                    validationMessages.add("Please provide a numeric peak cutoff number value.");
-//                }
-//            }
-//        }
         return validationMessages;
     }
 
@@ -327,8 +370,35 @@ public class MainFrameController implements UpdateListener {
             validationMessages.add(" Data Base Spectra file type is invalid." + " \n " + "Only .mgf and .msp file format supported");
         }
 
+        boolean file1Existed = false;
+        boolean file2Existed = false;
         if (validationMessages.isEmpty()) {
-            configData = new ConfigData(new File(tempS), new File(tempS2));
+
+            File f = new File(tempS);
+            if (!f.equals(configData.getExperimentalSpecFile())) {
+                configData.setExperimentalSpecFile(new File(tempS));
+            } else {
+                file1Existed = true;
+            }
+            f = new File(tempS2);
+            if (!f.equals(configData.getSpecLibraryFile())) {
+                configData.setSpecLibraryFile(new File(tempS2));
+            } else {
+                file2Existed = true;
+            }
+
+            if (file1Existed && file2Existed) {
+                this.fileTobeConfigure = "";
+            } else if (!file1Existed && !file2Existed) {
+                this.fileTobeConfigure = "both";
+            } else if (file1Existed && !file2Existed) {
+                this.fileTobeConfigure = "libSpec";
+
+            } else if (!file1Existed && file2Existed) {
+                this.fileTobeConfigure = "expSpec";
+            }
+            //configData=new ConfigData(new File(tempS), new File(tempS2));
+
         }
         return validationMessages;
     }
@@ -359,28 +429,48 @@ public class MainFrameController implements UpdateListener {
     private void displayResult() {
 
         try {
-            if (!result.get(targSpectrumNum).isEmpty()) {
+            if (result != null && !result.isEmpty() && result.get(targSpectrumNum).getMatchedLibSpec() != null && !result.get(targSpectrumNum).getMatchedLibSpec().isEmpty()) {
+
+                ComparisonResult res = result.get(targSpectrumNum);
+                Spectrum targSpec = res.getEspSpectrum();
+                if (this.resultNumber < 0) {
+                    this.resultNumber = 0;
+                }
+                Spectrum matchedSpec = res.getMatchedLibSpec().get(resultNumber).getSpectrum();
+
+                int sizeTarget=targSpec.getNumPeaks();
+                int sizeMatched=matchedSpec.getNumPeaks();
+                double[] mz_tar=new double[sizeTarget];
+                double[] int_tar=new double[sizeTarget];
+                double[] mz_matched=new double[sizeMatched];
+                double[] int_matched=new double[sizeMatched];
+                ArrayList<Peak> peaks=targSpec.getPeakList();
+                double precMass_tar=targSpec.getPCMass();
+                double precMass_match=matchedSpec.getPCMass();
+                String targCharge=targSpec.getCharge();
+                String matchedCharge=matchedSpec.getCharge();
+                String tarName=targSpec.getTitle();
+                String matchedName=matchedSpec.getTitle();
                 
-                int indexExp=result.get(targSpectrumNum).get(0).getMatchedExpIndex();                
-                Long posExp=configData.getExpSpectraIndex().get(indexExp).getPos();              
-                Spectrum targSpec = configData.getExpSpecReader().readAt(posExp);
-
-                ArrayList<ComparisonResult> singleResult = result.get(targSpectrumNum);
-
-                if(this.resultNumber<0){
-                    this.resultNumber=0;
+                int c = 0;
+                for (Peak p : peaks) {
+                    mz_tar[c] = p.getMz();
+                    int_tar[c] = p.getIntensity();
+                    c++;
                 }
-                if (singleResult != null) {
-                    ComparisonResult targMatchedResult = singleResult.get(this.resultNumber);
-                    Spectrum matchedSpec = configData.getLibSpecReader().readAt(targMatchedResult.getSpecPosition());
-                    resultPnl.pnlVisualSpectrum.removeAll();
-                    SpecPanel spcPanel = new SpecPanel(targSpec, matchedSpec);
-                    spcPanel.setPreferredSize(new Dimension(600, 300));
-
-                    resultPnl.pnlVisualSpectrum.add(spcPanel);
-                    //resultPnl.pnlVisualSpectrum.repaint();
-                    //resultPnl.pnlVisualSpectrum.revalidate();
+                peaks=matchedSpec.getPeakList();
+                c = 0;
+                for (Peak p : peaks) {
+                    mz_matched[c] = p.getMz();
+                    int_matched[c] = p.getIntensity();
+                    c++;
                 }
+                SpectrumPanel spanel = new SpectrumPanel(mz_tar, int_tar, precMass_tar, targCharge, tarName);
+                spanel.addMirroredSpectrum(mz_matched, int_matched, precMass_match, matchedCharge, matchedName, false, java.awt.Color.blue, java.awt.Color.cyan);
+
+                resultPnl.pnlVisualSpectrum.removeAll();
+                resultPnl.pnlVisualSpectrum.add(spanel);
+
             } else {
                 resultPnl.pnlVisualSpectrum.removeAll();
             }
@@ -398,47 +488,38 @@ public class MainFrameController implements UpdateListener {
      */
     private void fillExpSpectraTable() {
 
-        tblModelTarget.setRowCount(0);
-        int targetsize = 0;
-        if (configData.getExpSpectraIndex() != null) {
-            targetsize = result.size();// configData.getExpSpectraIndex().size();
+        if (result != null) {
+
+            tblModelTarget.setRowCount(0);
+            int resultSize = 0;
+            resultSize = result.size();// configData.getExpSpectraIndex().size();
             Spectrum expSpec;
-            Object[][] rows = new Object[targetsize][5];
-            
-            for (int p = 0; p < targetsize; p++){
-                // name = d.getSpectra1().get(p).getSpectrumTitle();
+            Object[] row = new Object[12];
+            ComparisonResult res;
+            MatchedLibSpectra matchedSpec;
+       
+       
+            for (int p = 0; p < resultSize; p++) {
+                res=result.get(p);
+                matchedSpec=res.getMatchedLibSpec().get(0);
+                expSpec = res.getEspSpectrum();
+                
+                row[0] = Integer.toString(p + 1);
+                row[1] = expSpec.getTitle();
+                row[2] = expSpec.getScanNumber();                
+                row[3] = expSpec.getPCMass();
+                row[4] = expSpec.getCharge();
+                double score = result.get(p).getTopScore();
+                row[5] = Double.toString(score);
+                double conf = (score / configData.getMaxScore()) * 100;
+                row[6] = Double.toString(Math.round(conf));
+                row[7] = expSpec.getNumPeaks();
+                row[8] = Integer.toString(matchedSpec.getTotalFilteredNumPeaks_Exp());
+                row[9] = Double.toString(matchedSpec.getSumFilteredIntensity_Exp());
+                row[10] = Double.toString(matchedSpec.getSumMatchedInt_Exp());
+                row[11] = Integer.toString(matchedSpec.getNumMatchedPeaks());
 
-                //expSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(p).getPos());
-                int indexExp=result.get(p).get(0).getMatchedExpIndex();
-                Long posExp=configData.getExpSpectraIndex().get(indexExp).getPos();
-                expSpec = configData.getExpSpecReader().readAt(posExp);
-            
-                rows[p][0] = indexExp;
-                //rows[p][1] = "ID" + Integer.toString(p + 1);
-                rows[p][1] = expSpec.getTitle();
-                rows[p][2] = expSpec.getPCMass();
-                rows[p][3] = expSpec.getCharge();
-                rows[p][4] = expSpec.getNumPeaks();
-
-                tblModelTarget.addRow(rows[p]);
-            }
-        } else if (configData.getEbiReader() != null) {
-
-            uk.ac.ebi.pride.tools.jmzreader.model.Spectrum expSpec;
-            Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> itr = configData.getEbiReader().getSpectrumIterator();
-            targetsize = configData.getEbiReader().getSpectraCount();
-            Object[][] rows = new Object[targetsize][5];
-            int p = 0;
-            while (itr.hasNext()) {
-                expSpec = itr.next();
-                rows[p][0] = p + 1;
-                // rows[p][1] = "ID" + Integer.toString(p + 1);
-                rows[p][1] = expSpec.getId();
-                rows[p][2] = expSpec.getPrecursorMZ();
-                rows[p][3] = expSpec.getPrecursorCharge();
-                rows[p][4] = expSpec.getPeakList().size();
-                tblModelTarget.addRow(rows[p]);
-                p++;
+                tblModelTarget.addRow(row);
             }
         }
 
@@ -450,93 +531,59 @@ public class MainFrameController implements UpdateListener {
      * @param target target spectrum index
      */
     public void fillBestmatchTable(int target) {
-        
-        this.targSpectrumNum = target;
-        ArrayList<ComparisonResult> singleResult = result.get(this.targSpectrumNum);
-        
 
-        if (!singleResult.isEmpty()) {
+        if (result != null && !result.isEmpty() && result.get(target).getMatchedLibSpec() != null && !result.get(target).getMatchedLibSpec().isEmpty()) {
+            this.targSpectrumNum = target;
+            ComparisonResult res = result.get(this.targSpectrumNum);
             tblModelResult.setRowCount(0);
-            
-            int i = 0;
-            Object[] rows = new Object[7];
 
-            for (ComparisonResult r : singleResult) {
+            Object[] row = new Object[12];
+            List<MatchedLibSpectra> specs = res.getMatchedLibSpec();
+            Spectrum spec;
+            double score;
 
-                rows[0] = Integer.toString(++i);
-                rows[1] = "ID" + Integer.toString(i);
-                rows[2] = r.getTitle();
-                rows[3] = r.getPrecMass();
-                rows[4] = r.getCharge();
-                rows[5] = r.getScore();
+            for (MatchedLibSpectra mSpec : specs) {
+// final String[] colNamesRes = {"Title", "Scan Num." , "Sequence", "Protein", "M/Z", "Charge", "Score", "Confidence(%)","#Peaks","#FiltedPeaks", "TotalInt","MatchedInt"};
+                spec = mSpec.getSpectrum();
+                score = mSpec.getScore();
+                row[0] = spec.getTitle();
+                row[1] = spec.getScanNumber();
+                row[2] = spec.getSequence();
+                row[3] = spec.getProtein();
+                row[4] = spec.getPCMass();
+                row[5] = spec.getCharge();
+                row[6] = Double.toString(score);
 
-                double conf = (r.getScore() / 400) * 100;
-                rows[6] = Math.round(conf);
-                tblModelResult.addRow(rows);
-                i++;
+                double conf = (score / 400) * 100;
+                row[7] = Double.toString(Math.round(conf));
+                row[8] = Integer.toString(mSpec.getSpectrum().getNumPeaks());
+                row[9] = Integer.toString(mSpec.getTotalFilteredNumPeaks_Lib());
+                row[10] = Double.toString(mSpec.getSumFilteredIntensity_Lib());
+                row[11] = Double.toString(mSpec.getSumMatchedInt_Lib());
+                tblModelResult.addRow(row);
 
             }
 
         } else {
             tblModelResult.setRowCount(0);
         }
-        
 
-        
-        //tblBestMatch.setRowSelectionInterval(0, tblBestMatch.getRowCount()-1);
-        
-       // this.resultNumber=0;
-       
         updateresultview(0);
 
     }
 
     /**
-     * fill table with best matched spectra
-     *
-     *
-     */
-//    public void fillBestmatchTable() {
-//
-//        //ArrayList<ComparisonResult> singleResult = resultTarget.get(target);
-//        int a = 0;
-//        Object[][] rows = new Object[10][8];
-//
-//        for (ArrayList<ComparisonResult> res : result) {
-//
-//            if (!res.isEmpty()) {
-//                // Long pos = res.get(0).getSpecPosition();
-//
-//                rows[a][0] = a + 1;
-//                rows[a][1] = "ID" + Integer.toString(a);
-//                rows[a][2] = res.get(0).getTitle();
-//                rows[a][3] = res.get(0).getPrecMass();
-//                rows[a][4] = res.get(0).getCharge();
-//                rows[a][5] = res.get(0).getScore();
-//
-//                double conf = (res.get(0).getScore() / 400) * 100;
-//                rows[a][6] = Math.round(conf);
-//                tblModelResult.addRow(rows[a]);
-//                a++;
-//            }
-//
-//        }
-//
-//        updateresultview(0);
-//
-//    }
-
-    /**
      * Updates progress bar value during the comparison process
      *
-     * @param percent
+     * @param taskCompleted
      */
     @Override
-    public void updateprogressbar(double percent) {
+    public void updateprogressbar(int taskCompleted) {
 
-        final double PERCENT = percent;
+        final double PERCENT = 100.0 / (double) configData.getExpSpectraIndex().size();
         SwingUtilities.invokeLater(() -> {
-            int v = (int) (100 * PERCENT);
+
+            int v = (int) (taskCompleted * PERCENT);
             mainView.setProgressValue(v);
             mainView.setProgressValue(Integer.toString(v) + "%");
         });
@@ -599,22 +646,102 @@ public class MainFrameController implements UpdateListener {
 
     }
 
-    private void saveResultExcel(String filename){
-        
-        
+    /**
+     * saves the result to user selected file
+     *
+     * @param type refers how result be saved, as excel import or coss object
+     * that can be displayed later type=0 for coss object type=1 to save result
+     * in excel format
+     */
+    public void saveResult(int type) throws IOException {
+
+        if (result != null) {
+
+            String parent = configData.getExperimentalSpecFile().getParent();
+            JFileChooser fileChooser = new JFileChooser(parent);
+            fileChooser.setDialogTitle("Specify a file to save");
+
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File filename = fileChooser.getSelectedFile();
+                String path = filename.getParent();
+                String fullName = filename.getName();
+                String fname = "";
+                if (fullName.contains(".")) {
+                    fname = filename.getName().substring(0, filename.getName().indexOf("."));
+                } else {
+                    fname = fullName;
+                }
+
+                if (filename.exists()) {
+                    int optionResult = JOptionPane.showConfirmDialog(mainView, "Are you sure, you wamt to overite the existing file?");
+                    if (optionResult == JOptionPane.YES_OPTION) {
+
+                        if (type == 0) {
+                            saveResultObject(path + "\\" + fname + ".cos");
+                        } else if (type == 1) {
+                            saveResultExcel(path + "\\" + fname);
+                        }
+
+                    } else if (optionResult == JOptionPane.NO_OPTION) {
+                        saveResult(type);
+
+                    }
+                } else if (type == 0) {
+                    saveResultObject(path + "\\" + fname + ".cos");
+                } else if (type == 1) {
+                    saveResultExcel(path + "\\" + fname);
+                }
+
+            }
+
+        } else {
+//            Log.info("No comparison result.");
+        }
+
+    }
+
+    /**
+     * Save results as COSS readable result objects
+     *
+     * @param filename
+     */
+    private void saveResultObject(String filename) throws IOException {
+        FileOutputStream fos = null;
+        try {
+
+            fos = new FileOutputStream(filename);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(result);
+            oos.close();
+        } catch (FileNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } finally {
+            fos.close();
+        }
+    }
+
+    /**
+     * Save results as excel file
+     */
+    private void saveResultExcel(String filename) {
+
         FileOutputStream fileOut = null;
         try {
-            
-            String[] columns = {"Index", "Name", "Prec. Mass", "Charge", "Score"};
+
+            String[] columns = {"Title", "Library Source", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score"};
             //List<Employee> employees =  new ArrayList<>();
-            
+
             // Create a Workbook
             Workbook workbook = new XSSFWorkbook(); // new HSSFWorkbook() for generating `.xls` file
             /* CreationHelper helps us create instances of various things like DataFormat,
             Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
             CreationHelper createHelper = workbook.getCreationHelper();
             // Create a Sheet
-            Sheet sheet = workbook.createSheet("Employee");
+            Sheet sheet = workbook.createSheet("Coss_Result");
             // Create a Font for styling header cells
             Font headerFont = workbook.createFont();
             headerFont.setBold(false);
@@ -626,8 +753,8 @@ public class MainFrameController implements UpdateListener {
             // Create a Row
             Row headerRow = sheet.createRow(0);
             // Create cells
-            int len=columns.length;
-            for(int i = 0; i < len; i++) {
+            int len = columns.length;
+            for (int i = 0; i < len; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
                 cell.setCellStyle(headerCellStyle);
@@ -636,32 +763,29 @@ public class MainFrameController implements UpdateListener {
             dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
             // Create Other rows and cells with employees data
             int rowNum = 1;
-            for(ArrayList<ComparisonResult> res: result) {
+            Spectrum spec;
+
+            for (ComparisonResult res : result) {
                 Row row = sheet.createRow(rowNum);
-                
-                row.createCell(0)
-                        .setCellValue(Integer.toString(rowNum));
-                
-                row.createCell(1)
-                        .setCellValue(res.get(0).getTitle());
-                
-                row.createCell(2)
-                        .setCellValue(res.get(0).getPrecMass());
-                
-                row.createCell(3)
-                        .setCellValue(res.get(0).getCharge());
-                
-               
-                row.createCell(4)
-                        .setCellValue(Double.toString(res.get(0).getScore()));
-                
+                spec = res.getEspSpectrum();
+                row.createCell(0).setCellValue(spec.getTitle());
+                row.createCell(1).setCellValue(res.getMatchedLibSpec().get(0).getSource());
+                row.createCell(2).setCellValue(spec.getScanNumber());
+                row.createCell(3).setCellValue(res.getMatchedLibSpec().get(0).getSequence());
+                row.createCell(4).setCellValue(spec.getPCMass());
+                row.createCell(5).setCellValue(spec.getCharge());
+                row.createCell(6).setCellValue(Double.toString(res.getTopScore()));
                 rowNum++;
-//                if(rowNum>=4)
-//                    break;
+
             }   // Resize all columns to fit the content size
-            for(int i = 0; i < columns.length; i++) {
+            for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);
             }   // Write the output to a file
+
+            int total_len = result.size();
+            sheet.shiftRows(cutoff_index_1percent, total_len, 1);
+            sheet.shiftRows(cutoff_index_5percent, total_len, 1);
+
             fileOut = new FileOutputStream(filename + ".xlsx");
             workbook.write(fileOut);
             fileOut.close();
@@ -679,62 +803,55 @@ public class MainFrameController implements UpdateListener {
             }
         }
     }
-    
-    
-    
+
     /**
-     * saves the result to user selected file
+     * Import previously generated COSS result
      */
-    public void saveResult() throws InterruptedException {
+    public void importResult() {
+        String parent = "D:\\";
+        if (configData.getExperimentalSpecFile() != null) {
+            parent = configData.getExperimentalSpecFile().getParent();
+        }
+        JFileChooser chooser = new JFileChooser(parent);
+        chooser.setDialogTitle("Choose COSS result file");
+        chooser.setFileFilter(new FileNameExtensionFilter("COSS Result", "cos"));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
 
-        if (result != null) {
+        int selected = chooser.showOpenDialog(null);
+        if (selected == JFileChooser.APPROVE_OPTION) {
+            String fileName = chooser.getSelectedFile().toString();
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try {
+                fis = new FileInputStream(fileName);
+                ois = new ObjectInputStream(fis);
+                result = null;
+                result = (List<ComparisonResult>) ois.readObject();
 
-            JFileChooser fileChooser = new JFileChooser("D:/");
-            fileChooser.setDialogTitle("Specify a file to save");
-
-            int userSelection = fileChooser.showSaveDialog(null);
-
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-                File filename = fileChooser.getSelectedFile();
-                
-                saveResultExcel(filename.getPath());
-                
-                
-                
-                
-                
-//                BufferedWriter writer = null;
-//                try {
-//
-//                    writer = new BufferedWriter(new FileWriter(filename));
-//                    for (ArrayList<ComparisonResult> singleTargetResult : result) {
-//                        for (ComparisonResult r : singleTargetResult) {
-//                            double confidence = (r.getScore() / 400.0) * 100.0;//value of the score
-//                            confidence = Math.round(confidence);
-//                            String op = r.getTitle() + "," + r.getCharge() + "," + r.getScanNum() + "," + Double.toString(r.getPrecMass()) + "," + Double.toString(r.getScore()) + "," + Double.toString(confidence);
-//                            writer.write(op);
-//                            writer.write("\n");
-//
-//                        }
-//                        writer.write("\n\n");
-//                    }
-//
-//                } catch (IOException e) {
-//
-//                } finally {
-//                    try {
-//                        if (writer != null) {
-//                            writer.close();
-//                        }
-//                    } catch (IOException e) {
-//                    }
-//                }
-
+            } catch (FileNotFoundException ex) {
+                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (IOException | ClassNotFoundException ex) {
+                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } finally {
+                try {
+                    ois.close();
+                    fis.close();
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
             }
 
-        } else {
-//            Log.info("No comparison result.");
+            if (result != null) {
+                fillExpSpectraTable();
+                fillBestmatchTable(0);
+                displayResult();
+            } else {
+                clearGraphicArea();
+            }
+
         }
+
     }
 
     /**
@@ -792,18 +909,47 @@ public class MainFrameController implements UpdateListener {
     public void spectrumDisplay(int specIndex) {
 
         targetView.pnlVizSpectrum.removeAll();
-        SpecPanel spec = new SpecPanel(null);
+        //SpecPanel spec = new SpecPanel(null);
+
+        double[] mz = new double[0];
+        double[] intensity = new double[0];
+        double precMass = 0;
+        String precCharge = "";
+        String name = "";
+        SpectrumPanel spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
 
         if (configData.getExpSpectraIndex() != null) {
             Spectrum tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specIndex).getPos());
-            spec = new SpecPanel(tSpec);
+            ArrayList<Peak> peaks = tSpec.getPeakList();
+            int lenPeaks = peaks.size();
+            mz = new double[lenPeaks];
+            intensity = new double[lenPeaks];
+            precMass = tSpec.getPCMass();
+            precCharge = tSpec.getCharge();
+            name = tSpec.getTitle();
+
+            int c = 0;
+            for (Peak p : peaks) {
+                mz[c] = p.getMz();
+                intensity[c] = p.getIntensity();
+                c++;
+            }
+            spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
+            //spanel.addMirroredSpectrum(d.getSpectra2().get(bestResultIndex).getMzValuesAsArray(), d.getSpectra2().get(bestResultIndex).getIntensityValuesAsArray(), 500, "+2", cf_data.getDBSpecFile().getName(), false, Color.blue, Color.blue);
+            // resultView.getSpltPanel().add(specPanel);
         }
 
-        spec.setPreferredSize(new Dimension(700, 300));
-        targetView.pnlVizSpectrum.add(spec);
+        //spec.setPreferredSize(new Dimension(700, 300));
+        targetView.pnlVizSpectrum.add(spanel);
         targetView.pnlVizSpectrum.repaint();
         targetView.pnlVizSpectrum.revalidate();
 
+    }
+
+    private void clearGraphicArea() {
+        resultPnl.pnlVisualSpectrum.removeAll();
+        tblModelTarget.setRowCount(0);
+        tblModelResult.setRowCount(0);
     }
 
     /**
@@ -821,7 +967,14 @@ public class MainFrameController implements UpdateListener {
                 Double.toString(configData.getfragTol()), Double.toString(configData.getPrecTol())};
             matching.InpArgs(args);
 
+            result = null;
+            LOG.info("COSS version 1.0");
+            LOG.info("Query spectra: " + configData.getExperimentalSpecFile().toString());
+            LOG.info("Library: " + configData.getSpecLibraryFile().toString());
+            LOG.info("Search started ");
+
             result = matching.dispatcher(LOG);
+
             return null;
 
         }
@@ -838,26 +991,27 @@ public class MainFrameController implements UpdateListener {
                     mainView.setProgressValue(Integer.toString(0) + "%");
 
                 } else {
-                    LOG.info("Spectrum Similarity Comparison Completed");
+                    LOG.info("Search Completed");
                     mainView.setProgressValue(100);
                     mainView.setProgressValue(Integer.toString(100) + "%");
 
                     if (result != null) {
 
-                        //validationPnl=new ValidationHistogramPanel(resultTarget, resultDecoy);
-                        
-                        Sort sort = new Sort();
-                        sort.Quicksort(result, 0, result.size() - 1);
+                        LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
+                        // Sort sort = new Sort();
+                        // sort.Quicksort(result, 0, result.size() - 1);
+                        Collections.sort(result);
+                        Collections.reverse(result);
                         validateResult();
-                        
+                        LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
+
                         fillExpSpectraTable();
                         fillBestmatchTable(0);
                         displayResult();
-                        
-                        
 
                     } else {
                         LOG.info("No comparison result.");
+                        clearGraphicArea();
                     }
 
                 }
@@ -891,7 +1045,7 @@ public class MainFrameController implements UpdateListener {
             mainView.searchBtnActive(false);
 
             LOG.info("Configuring Spectrum Reader ....");
-            ConfigSpecReaders cfReader = new ConfigSpecReaders(configData.getExperimentalSpecFile(), configData.getSpecLibraryFile(), configData);
+            ConfigSpecReaders cfReader = new ConfigSpecReaders(configData);
             cfReader.startConfig();
             return null;
         }

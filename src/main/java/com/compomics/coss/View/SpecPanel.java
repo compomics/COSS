@@ -309,8 +309,8 @@ public class SpecPanel extends JPanel implements MouseListener {
         double[] mz = new double[totalPeaks];
         double[] intensity = new double[totalPeaks];
         for (int p = 0; p < totalPeaks; p++) {
-            mz[p]=spec.getPeakListDouble()[0][p];
-            intensity[p]=spec.getPeakListDouble()[1][p];
+            mz[p]=spec.getPeakListDouble()[p][0];
+            intensity[p]=spec.getPeakListDouble()[p][1];
             
         }
 

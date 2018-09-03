@@ -1,79 +1,54 @@
 package com.compomics.coss.Model;
 
+import com.compomics.ms2io.Spectrum;
+import java.io.Serializable;
+import java.util.List;
+
 /**
  *
  * @author Genet
  */
-public class ComparisonResult implements Comparable<ComparisonResult> {
+public class ComparisonResult implements Comparable<ComparisonResult>, Serializable {
 
-    private String title;
-    private double precMass;
-    private String scan_num;
-    private String charge;
-    private double score;
-    private long spec_pos;
-    private int matched_expe_Index;
+    private double topScore;
+    private Spectrum expSpec;
+    List<MatchedLibSpectra> matchedSpectra;
+ 
 
-    public long getSpecPosition() {
-        return this.spec_pos;
+    /**
+     *
+     * @return
+     */
+    public Spectrum getEspSpectrum() {
+        return this.expSpec;
     }
 
-    public void setSpecPosition(long pos) {
-        this.spec_pos = pos;
+    public void setExpSpectrum(Spectrum spec) {
+        this.expSpec = spec;
     }
 
-    public void setTitle(String t) {
-        this.title = t;
+    public void setMatchedLibSpec(List<MatchedLibSpectra> matchedSpectra) {
+        this.matchedSpectra= matchedSpectra;
     }
 
-    public void setPrecMass(double d) {
-        this.precMass = d;
+    public List<MatchedLibSpectra> getMatchedLibSpec() {
+        return this.matchedSpectra;
     }
 
-    public void setScanNum(String s) {
-        this.scan_num = s;
+    public void setTopScore(double d) {
+        this.topScore = d;
     }
 
-    public void setCharge(String c) {
-        this.charge = c;
+    public double getTopScore() {
+        return this.topScore;
     }
 
-    public void setScore(double d) {
-        this.score = d;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public double getPrecMass() {
-        return this.precMass;
-    }
-
-    public String getScanNum() {
-        return this.scan_num;
-    }
-
-    public String getCharge() {
-        return this.charge;
-    }
-
-    public double getScore() {
-        return this.score;
-    }
-
-    public int getMatchedExpIndex() {
-        return this.matched_expe_Index;
-    }
-
-    public void setMatchedExpIndex(int expIndex) {
-        this.matched_expe_Index = expIndex;
-    }
+   
 
     @Override
     public int compareTo(ComparisonResult t) {
 
-        return Double.compare(this.score, t.score);
+        return Double.compare(this.topScore, t.topScore);
     }
 
 }

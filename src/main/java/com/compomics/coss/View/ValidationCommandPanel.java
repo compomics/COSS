@@ -80,7 +80,7 @@ public class ValidationCommandPanel extends JPanel {
                     public void actionPerformed(ActionEvent e) {
                        
                         
-                        control.validateResult();
+                      //  control.validateResult();
 
                     }
                 }

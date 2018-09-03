@@ -50,6 +50,7 @@ public class ResultPanel extends JPanel {
 
         tblBestMatch.setRowSelectionAllowed(true);
         tblBestMatch.setColumnSelectionAllowed(false);
+        tblBestMatch.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         jScrollPane1 = new JScrollPane();
         jScrollPane1.setViewportView(tblTargetSpectra);
@@ -111,7 +112,11 @@ public class ResultPanel extends JPanel {
             public void valueChanged(ListSelectionEvent lse) {
 
                 int index = tblBestMatch.getSelectedRow();
-                control.updateresultview(index);
+                 if(index >= 0){
+                     control.updateresultview(index);
+                     
+                 }
+                
 
             }
         });
@@ -119,7 +124,10 @@ public class ResultPanel extends JPanel {
         tblTargetSpectra.getSelectionModel().addListSelectionListener((ListSelectionEvent lse) -> {
             if (!lse.getValueIsAdjusting()) {
                 int targSpectrumIndex = tblTargetSpectra.getSelectedRow();
-                control.fillBestmatchTable(targSpectrumIndex);
+                if(targSpectrumIndex >= 0){
+                    control.fillBestmatchTable(targSpectrumIndex);
+                }
+               
 
             }
         });

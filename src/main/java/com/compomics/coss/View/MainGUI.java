@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,14 +24,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 
@@ -77,7 +73,7 @@ public class MainGUI extends JFrame {
         ImageIcon iconSetting = new ImageIcon("settingIcon.png");
 
         //Initialize components
-        menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
         
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
@@ -95,16 +91,20 @@ public class MainGUI extends JFrame {
         menuBar.add(helpMenu);
 
         // Items of the menue
-        open = new JMenuItem("Open", KeyEvent.VK_N);
-        save = new JMenuItem("Save", KeyEvent.VK_S);
-        exit = new JMenuItem("Exit", KeyEvent.VK_X);
-        copy = new JMenuItem("Copy", KeyEvent.VK_C);
-        paste = new JMenuItem("Paste", KeyEvent.VK_P);
-        about = new JMenuItem("About", KeyEvent.VK_A);
+        JMenuItem open = new JMenuItem("Open", KeyEvent.VK_N);
+        JMenuItem save = new JMenuItem("Save", KeyEvent.VK_S);
+        JMenuItem export = new JMenuItem("Export to Excel", KeyEvent.VK_R);
+        JMenuItem importResult = new JMenuItem("Import Result", KeyEvent.VK_M);
+        JMenuItem exit = new JMenuItem("Exit", KeyEvent.VK_X);
+        JMenuItem copy = new JMenuItem("Copy", KeyEvent.VK_C);
+        JMenuItem paste = new JMenuItem("Paste", KeyEvent.VK_P);
+        JMenuItem about = new JMenuItem("About", KeyEvent.VK_A);
         JMenuItem configSystem = new JMenuItem("Configure Library", KeyEvent.VK_L);
         
         fileMenu.add(open);
         fileMenu.add(save);
+        fileMenu.add(importResult);
+        fileMenu.add(export);
         fileMenu.add(exit);
         editMenu.add(copy);
         editMenu.add(paste);
@@ -120,25 +120,25 @@ public class MainGUI extends JFrame {
         pnlCommands = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlCommands.setLayout(new BorderLayout());
         
-        pnlLog = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel pnlLog = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlLog.setLayout(new BorderLayout());
         
         txtlog = new JTextArea();
-        scrLogArea = new JScrollPane();
+        JScrollPane scrLogArea = new JScrollPane();
         txtlog.setColumns(20);
         txtlog.setRows(5);
         scrLogArea.setViewportView(txtlog);
 
         //this.setSize(dmnsn);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
+        JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
         //tab.addTab("Settings", iconSetting,  new JScrollPane(pnlsetting));
         tab.addTab("Settings", new JScrollPane(pnlsetting));        
         tab.addTab("Result", new JScrollPane(pnlresult));
         //tab.setSize(WIDTH, WIDTH);
 
         srchCmdPnl = new SearchCommandPnl(control);
-        valdtCmdPnl = new ValidationCommandPanel(control);
+       // valdtCmdPnl = new ValidationCommandPanel(control);
         valdHistPnl=new ValidationHistogramPanel(null, null);
         srchCmdPnl.prgProgress.setStringPainted(true);
         srchCmdPnl.prgProgress.setForeground(Color.BLUE);
@@ -192,17 +192,35 @@ public class MainGUI extends JFrame {
         save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 try {
-                    control.saveResult();
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, "not saved, null value", ex);
+                    control.saveResult(0);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
         
+             
+        export.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                try {
+                    control.saveResult(1);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        
+        importResult.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ev) {
+                control.importResult();
+            }
+        });
+        
+        
         exit.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ev) {
                 int selectionOption = JOptionPane.showConfirmDialog(null,
-                        "Are you sure to close this window?", "Really Closing?",
+                        "Are you sure want to exit?", "Really Closing?",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
                 
@@ -237,7 +255,7 @@ public class MainGUI extends JFrame {
                     
                 } else {
                     pnlCommands.removeAll();
-                    pnlCommands.add(valdtCmdPnl, BorderLayout.EAST);
+                    //pnlCommands.add(valdtCmdPnl, BorderLayout.EAST);
                     //if (valdHistPnl != null) {
                     pnlCommands.add(valdHistPnl, BorderLayout.CENTER);
                    // }
@@ -285,28 +303,13 @@ public class MainGUI extends JFrame {
         srchCmdPnl.btnConfigReader.setEnabled(b);
     }
     
-    
-    
-    
-    private ValidationHistogramPanel valdHistPnl;
+       
+
     private SearchCommandPnl srchCmdPnl;
-    private ValidationCommandPanel valdtCmdPnl;
-    
-    private JMenuBar menuBar;
-    private JMenuItem open;
-    private JMenuItem save;
-    private JMenuItem exit;
-    private JMenuItem copy;
-    private JMenuItem paste;
-    private JMenuItem about;
-    private JTabbedPane tab;    
+    private ValidationHistogramPanel valdHistPnl;
     public JPanel pnlsetting;
-    public JPanel pnlresult;
-    
+    public JPanel pnlresult;    
     public JPanel pnlCommands;
-    private JPanel pnlLog;
-    
     public JTextArea txtlog;
-    private JScrollPane scrLogArea;
    
 }

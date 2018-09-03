@@ -110,6 +110,7 @@ public class MSRobin extends CumulativeBinomialProbabilityBasedScoring implement
                 // only probability
                 score = (1 - probability_part) * intensity_part;
             }
+           
             score += 0; // just making sure the value would not be negative zero           
             isCalculated = true;
         } catch (Exception ex) {

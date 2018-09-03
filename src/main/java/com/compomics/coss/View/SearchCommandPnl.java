@@ -66,6 +66,7 @@ public class SearchCommandPnl extends JPanel{
         
         //cancel button listener
         btnCancel.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent ev) {
 
                 control.stopSearch();

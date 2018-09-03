@@ -6,7 +6,7 @@
 package com.compomics.coss.Controller;
 
 import com.compomics.coss.Model.ComparisonResult;
-import java.util.ArrayList;
+import com.compomics.ms2io.Spectrum;
 import java.util.List;
 
 /**
@@ -19,34 +19,38 @@ public class Validation {
 
     }
 
-    public int validate(List<ArrayList<ComparisonResult>> result, double threshold) {
+    public int validate(List<ComparisonResult> result, double fdr_given) {
 
         int cutoff_index = 0;
         int numDecoy = 0;
         int numTarget = 0;
-        double fdr = 0;
+        double fdr_calculated=0;
+        Spectrum spec;
+        //int total_size=result.size();
         //double threshold = 0.01;
 
-        for (ArrayList<ComparisonResult> r : result) {
+        for (ComparisonResult r : result) {
             // ArrayList<ComparisonResult> rDecoy=decoyResult.get(c++);
-            if (!r.get(0).getTitle().endsWith("decoy")) {
+            spec=r.getEspSpectrum();
+            if (spec.getTitle().endsWith("decoy")) {
 
-                numTarget++;
+                numDecoy++;
 
             } else {
-                numDecoy++;
+                numTarget++;
             }
+            
+            fdr_calculated = (double)numDecoy/(numDecoy+numTarget);
+            //fdr_calculated = (numDecoy+numTarget)*fdr_given;// (double) total_size;
 
-            fdr = numDecoy / (double) numTarget;
-
-            if (fdr >= threshold) {
+            
+            if (fdr_calculated >= fdr_given ) {
                 break;
             }
-            cutoff_index++;
+           cutoff_index++;
 
         }
-        if(cutoff_index==0)
-            cutoff_index=result.size();
+        
         return cutoff_index;
 
     }

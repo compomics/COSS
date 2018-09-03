@@ -37,7 +37,7 @@ public class ValidationHistogramPanel extends JPanel {
             for(ArrayList<ComparisonResult> resT: resultTarget){
                 if(!resT.isEmpty())
                 {
-                    double score=resT.get(0).getScore();
+                    double score=resT.get(0).getTopScore();
                 
                     if(histTarget.containsKey(score)){
                         int val=histTarget.get(score)+1;
@@ -54,7 +54,7 @@ public class ValidationHistogramPanel extends JPanel {
                  
                  if(!resD.isEmpty())
                  {
-                    double score=resD.get(0).getScore();                
+                    double score=resD.get(0).getTopScore();                
                     if(histDecoy.containsKey(score)){
                         int val=histDecoy.get(score)+1;
                         histDecoy.replace(score, val);

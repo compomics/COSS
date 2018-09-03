@@ -38,6 +38,7 @@ public class SettingPanel extends JPanel {
         this.libDirectory = dir;
 
         init();
+        
 
     }
 
@@ -48,14 +49,15 @@ public class SettingPanel extends JPanel {
     private void init() {
 
         //Initializing and setting of component properties
-        Object[] scoringFun = new Object[3];
+        Object[] scoringFun = new Object[4];
         scoringFun[0] = "MsRobin";
-        scoringFun[1] = "Euclidian";
-        scoringFun[2] = "Wavlete";
+        scoringFun[1] = "Cosine";
+        scoringFun[2] = "Euclidean";
+        scoringFun[3] = "Manhattan";
 
         Object[] transform = new Object[2];
-        scoringFun[0] = "Log";
-        scoringFun[1] = "Linear";
+        transform[0] = "Log";
+        transform[1] = "Linear";
 
         //Buttons
         JButton btntargetspec = new JButton("...");
@@ -98,6 +100,7 @@ public class SettingPanel extends JPanel {
         txtLibrary = new JTextField("   ");
         txtLibrary.setEnabled(false);
         cboScoringFun = new JComboBox(scoringFun);
+        cboScoringFun.setEditable(false);
         cboTransformType = new JComboBox(transform);
 
         //Panels

@@ -48,12 +48,14 @@ public class ConfigSpecReaders {
     private final File fileLibrary;
     private final ConfigData cfData;
     private boolean isCanceled;
-
-    public ConfigSpecReaders(File expFile, File libFile, ConfigData cData) {
-        this.fileExperimnt = expFile;
-        this.fileLibrary = libFile;
+    private final String configFiles;
+    
+    public ConfigSpecReaders(ConfigData cData) {
+        this.fileExperimnt = cData.getExperimentalSpecFile();
+        this.fileLibrary = cData.getSpecLibraryFile();
         this.cfData = cData;
         isCanceled = false;
+        configFiles = "both";// fileTobeConfig;
     }
 
     public void cancelConfig(boolean cncl) {
@@ -62,63 +64,134 @@ public class ConfigSpecReaders {
 
     public void startConfig() {
         if (this.fileExperimnt.getName().endsWith("mgf") || this.fileExperimnt.getName().endsWith("msp")) {
-
-            dispatcher();
-
+            
+            switch (configFiles) {
+                case "both":
+                    dispatcher();
+                    //get ready reader for experimental spectrum file
+                    if (this.fileExperimnt.getName().endsWith("mgf")) {
+                        SpectraReader rd = new MgfReader(this.fileExperimnt, cfData.getExpSpectraIndex());
+                        cfData.setExpSpecReader(rd);
+                        
+                    } else if (this.fileExperimnt.getName().endsWith("msp")) {
+                        SpectraReader rd = new MspReader(this.fileExperimnt, cfData.getExpSpectraIndex());
+                        cfData.setExpSpecReader(rd);
+                        
+                    }   //get reader for spectral library file
+                    if (this.fileLibrary.getName().endsWith("mgf")) {
+                        SpectraReader rd = new MgfReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
+                        cfData.setLibSpecReader(rd);
+                        
+                    } else if (this.fileLibrary.getName().endsWith("msp")) {
+                        SpectraReader rd = new MspReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
+                        cfData.setLibSpecReader(rd);
+                    }   break;
+                case "expSpec":
+                    dispatcher(cfData.getExperimentalSpecFile());
+                    //get ready reader for experimental spectrum file
+                    if (this.fileExperimnt.getName().endsWith("mgf")) {
+                        SpectraReader rd = new MgfReader(this.fileExperimnt, cfData.getExpSpectraIndex());
+                        cfData.setExpSpecReader(rd);
+                        
+                    } else if (this.fileExperimnt.getName().endsWith("msp")) {
+                        SpectraReader rd = new MspReader(this.fileExperimnt, cfData.getExpSpectraIndex());
+                        cfData.setExpSpecReader(rd);
+                        
+                    }   break;
+                case "libSpec":
+                    dispatcher(cfData.getExperimentalSpecFile());
+                    //get reader for spectral library file
+                    if (this.fileLibrary.getName().endsWith("mgf")) {
+                        SpectraReader rd = new MgfReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
+                        cfData.setLibSpecReader(rd);
+                        
+                    } else if (this.fileLibrary.getName().endsWith("msp")) {
+                        SpectraReader rd = new MspReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
+                        cfData.setLibSpecReader(rd);
+                    }   break;
+            //Do nothing
+                case "":
+                    break;
+                default:
+                    break;               
+            }
+            
         } else {
 
             try {
                 dispatcher(true);
-            } catch (JMzReaderException ex) {
-                Logger.getLogger(ConfigSpecReaders.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (MzXMLParsingException ex) {
+            } catch (JMzReaderException | MzXMLParsingException ex) {
                 Logger.getLogger(ConfigSpecReaders.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
     }
-
+    
+    
     private boolean dispatcher() {
         try {
+            
             ExecutorService executors = Executors.newFixedThreadPool(2);
             Future<List<IndexKey>>[] fut = new Future[2];
 
-            //Generate Index or get from the file if existed for library spectrum
-            GetIndexList indexHandler = new GetIndexList(this.fileLibrary, "spectrum");
+            String fName=this.fileLibrary.getName().substring(0, this.fileLibrary.getName().indexOf("."));            
+            String path=this.fileLibrary.getParent();
+            File tempFile=new File(path + "\\" +fName +".idx");
+            int indxFile=0;
+            if(tempFile.exists()){
+                indxFile=1;
+            }
+            
+            //Generate index list of spectrum library file
+            GetIndexList indexHandler = new GetIndexList(this.fileLibrary, indxFile, "library");
             fut[0] = executors.submit(indexHandler);
 
             //Generate Index for experimental spectrum
-            indexHandler = new GetIndexList(this.fileExperimnt, "spectrum");
+            indexHandler = new GetIndexList(this.fileExperimnt, 0, "experiment");
             fut[1] = executors.submit(indexHandler);
 
             //wait untill the thread is finished and set the index values
             cfData.setSpectralLibraryIndex(fut[0].get());
             cfData.setExpSpectraIndex(fut[1].get());
-            executors.shutdown();
-
             //sort library spectrum
             Collections.sort(cfData.getSpectraLibraryIndex());
+            executors.shutdown();
 
-            //get ready reader for experimental spectrum file
-            if (this.fileExperimnt.getName().endsWith("mgf")) {
-                SpectraReader rd = new MgfReader(this.fileExperimnt, cfData.getExpSpectraIndex());
-                cfData.setExpSpecReader(rd);
+           
 
-            } else if (this.fileExperimnt.getName().endsWith("msp")) {
-                SpectraReader rd = new MspReader(this.fileExperimnt, cfData.getExpSpectraIndex());
-                cfData.setExpSpecReader(rd);
+        } catch (InterruptedException | ExecutionException ex) {
+            Logger.getLogger(ConfigSpecReaders.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-            }
+        return true;
+    }
 
-            //get reader for spectral library file
-            if (this.fileLibrary.getName().endsWith("mgf")) {
-                SpectraReader rd = new MgfReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
-                cfData.setLibSpecReader(rd);
+    private boolean dispatcher(File file) {
+        try {
+            
+                ExecutorService executors = Executors.newSingleThreadExecutor();
+                Future<List<IndexKey>>[] fut = new Future[1];
 
-            } else if (this.fileLibrary.getName().endsWith("msp")) {
-                SpectraReader rd = new MspReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
-                cfData.setLibSpecReader(rd);
-            }
+                if(file.equals(this.fileExperimnt)){
+                    GetIndexList indexHandler = new GetIndexList(file, 0, "experiment");
+                    fut[0] = executors.submit(indexHandler);
+                    cfData.setExpSpectraIndex(fut[0].get());
+                }else if(file.equals(this.fileLibrary)){
+                    String fName=this.fileLibrary.getName().substring(0, this.fileLibrary.getName().indexOf("."));            
+                    String path=this.fileLibrary.getParent();
+                    File tempFile=new File(path + "\\" +fName +".idx");
+                    int indxFile=0;
+                    if(tempFile.exists()){
+                        indxFile=1;
+                    }
+
+                    GetIndexList indexHandler = new GetIndexList(file, indxFile, "library");
+                    fut[0] = executors.submit(indexHandler);
+                    cfData.setSpectralLibraryIndex(fut[0].get());
+                    //sort library spectrum
+                    Collections.sort(cfData.getSpectraLibraryIndex());
+            }       
+            executors.shutdown();
 
         } catch (InterruptedException ex) {
             Logger.getLogger(ConfigSpecReaders.class.getName()).log(Level.SEVERE, null, ex);
@@ -139,7 +212,7 @@ public class ConfigSpecReaders {
             Future<List<IndexKey>> fut;
 
             //Generate Index for library spectrum
-            GetIndexList ipHandler = new GetIndexList(this.fileLibrary, "spectrum");
+            GetIndexList ipHandler = new GetIndexList(this.fileLibrary, 0, "library");
             fut = executors.submit(ipHandler);
 
             //get Iterator for jmzml spectra reader for experimental spectra file
@@ -205,11 +278,13 @@ public class ConfigSpecReaders {
     private class GetIndexList implements Callable<List<IndexKey>> {
 
         private final File file;
-        private final String aboutFile;
+        private final int indxFile;
+        private final String thrName;
 
-        public GetIndexList(File file, String aboutFile) {
+        public GetIndexList(File file, int indxFile, String threadName) {
             this.file = file;
-            this.aboutFile = aboutFile;
+            this.indxFile = indxFile;
+            this.thrName=threadName;
         }
 
         @Override
@@ -217,13 +292,23 @@ public class ConfigSpecReaders {
             List<IndexKey> indxList = null;
 
             try {
-                if (this.aboutFile.equals("spectrum")) {
-                    Indexer giExp = new Indexer(this.file);
-                    indxList = giExp.generate();
-                } else if (this.aboutFile.equals("index")) {
-                    Indexer indxer = new Indexer();
-                    indxList = indxer.readFromFile(this.file);
+                
+                if(this.thrName.equals("library")){
+                    if (this.indxFile == 0) {
+                        Indexer giExp = new Indexer(this.file);
+                        indxList = giExp.generate();                    
+                        //giExp.saveIndex2File(this.file);
+                    }else if (this.indxFile == 1) {      
+                        Indexer indxer = new Indexer();
+                        indxList = indxer.readFromFile(this.file);
+                    }
+                }else if(this.thrName.equals("experiment")){
+                        Indexer giExp = new Indexer(this.file);
+                        indxList = giExp.generate();                 
+                       
+                    
                 }
+                 
 
             } catch (IOException e) {
                 e.printStackTrace();
