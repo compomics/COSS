@@ -1,7 +1,7 @@
 /target/
 
 # NetBeans specific
-nbproject/private/
+nbproject/
 build/
 nbbuild/
 dist/
