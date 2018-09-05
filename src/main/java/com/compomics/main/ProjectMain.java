@@ -1,6 +1,6 @@
 package com.compomics.main;
 
-import com.compomics.coss.Controller.*;
+import com.compomics.coss.controller.MainFrameController;
 import java.awt.Dimension;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
