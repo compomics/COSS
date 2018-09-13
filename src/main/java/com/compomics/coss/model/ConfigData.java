@@ -23,6 +23,8 @@ public class ConfigData {
     private SpectraReader rdExperimental = null;
     private SpectraReader rdLibrary = null;
     private JMzReader ebiReader = null;
+  
+    private boolean isDecoySpecAvailable;
 
     //Decoy database index and reader
     private List<IndexKey> decoyDBIndex;
@@ -35,7 +37,6 @@ public class ConfigData {
     private int MSRobinOption;
     private int intensityOption;
     private int maxPrecursorCharge;
-    private double maxScore;
     private boolean transform;
     private int tranformType;
 
@@ -217,11 +218,13 @@ public class ConfigData {
         return this.logText;
     }
 
-    public double getMaxScore() {
-        return this.maxScore;
+  
+    public boolean isDecoyAvailable() {
+        return this.isDecoySpecAvailable;
     }
 
-    public void setMaxScore(double score) {
-        this.maxScore = score;
+    public void setDecoyAvailability(boolean decoySpec) {
+        this.isDecoySpecAvailable = decoySpec;
     }
+    
 }

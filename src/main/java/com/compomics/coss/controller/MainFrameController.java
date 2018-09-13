@@ -67,7 +67,7 @@ public class MainFrameController implements UpdateListener {
     // private ConfigHolder config = new ConfigHolder();
     Matching matching;
     private static List<ComparisonResult> result = null;
-    //private static List<ArrayList<ComparisonResult>> validatedResult = null;
+
     private int cutoff_index_1percent;
     private int cutoff_index_5percent;
 
@@ -114,8 +114,8 @@ public class MainFrameController implements UpdateListener {
         layout.setConversionPattern("%d{yyyy-MM-dd HH:mm:ss} - %m%n");
         logTextAreaAppender.setLayout(layout);
 
-        final String[] colNamesRes = {"Title", "Scan Num.", "Sequence", "Protein", "M/Z", "Charge", "Score", "Confidence(%)", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt"};
-        final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Confidence(%)", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
+        final String[] colNamesRes = {"Title", "Scan Num.", "Sequence", "Protein", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
+        final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Validation", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
 
         tblModelResult = new DefaultTableModel(colNamesRes, 0) {
             @Override
@@ -193,16 +193,18 @@ public class MainFrameController implements UpdateListener {
             this.cencelled = false;
             mainView.setProgressValue(0);
 
-            int scoring = settingsPnl.cboScoringFun.getSelectedIndex();
+            int scoring = settingsPnl.cmbScoringFun.getSelectedIndex();
+            configData.setScoringFunction(scoring);
             switch (scoring) {
                 case 0:
                     matching = new UseMsRoben(this, this.configData);
                     break;
                 case 1:
-                    matching = new CosineSimilarity(this, this.configData);
+                    
+                   // matching = new CosineSimilarity(this, this.configData);
                     break;
                 case 2:
-                    matching = new MeanSquareError(this, this.configData);
+                    //matching = new MeanSquareError(this, this.configData);
                     break;
 
             }
@@ -251,12 +253,18 @@ public class MainFrameController implements UpdateListener {
      *
      */
     private void setSearchSettings() {
-        int scoringFun = settingsPnl.cboScoringFun.getSelectedIndex();
+        int scoringFun = settingsPnl.cmbScoringFun.getSelectedIndex();
         int maxPrecCharg = Integer.parseInt(settingsPnl.txtPrecursorCharge.getText());
         double precTolerance = Double.parseDouble(settingsPnl.txtPrecursorTolerance.getText());
         double fragTolerance = Double.parseDouble(settingsPnl.txtFragmentTolerance.getText());
         boolean applyTransform = settingsPnl.chkTransform.isSelected();
-        int transformType = settingsPnl.cboTransformType.getSelectedIndex();
+        int transformType = settingsPnl.cmbTransformType.getSelectedIndex();
+        if(settingsPnl.cmbFragTolUnit.getSelectedIndex() != 0){
+            fragTolerance /=(double)1000;
+        }
+//        if(settingsPnl.cmbPrcTolUnit.getSelectedIndex() !=0){
+//            precTolerance /=(double)1000;
+//        }
 
         settingSimilar = false;
         if (configData.getScoringFunction() == scoringFun
@@ -286,7 +294,7 @@ public class MainFrameController implements UpdateListener {
 
         settingsPnl.txttargetspec.setText(ConfigHolder.getInstance().getString("target.spectra.path"));
         settingsPnl.txtLibrary.setText(ConfigHolder.getInstance().getString("spectra.library.path"));
-        settingsPnl.cboScoringFun.setSelectedIndex(ConfigHolder.getInstance().getInt("matching.algorithm"));
+        settingsPnl.cmbScoringFun.setSelectedIndex(ConfigHolder.getInstance().getInt("matching.algorithm"));
         settingsPnl.txtPrecursorCharge.setText(Integer.toString(ConfigHolder.getInstance().getInt("max.charge")));
         settingsPnl.txtPrecursorTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("precursor.tolerance")));
         settingsPnl.txtFragmentTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("fragment.tolerance")));
@@ -513,8 +521,20 @@ public class MainFrameController implements UpdateListener {
                 row[4] = expSpec.getCharge();
                 double score = result.get(p).getTopScore();
                 row[5] = Double.toString(score);
-                double conf = score * 100;
-                row[6] = Double.toString(Math.round(conf));
+
+                if (configData.isDecoyAvailable()) {
+                    if (p <= cutoff_index_1percent) {
+                        //conf= score * 100;
+                        row[6] = "< 1%FDR";// Double.toString(Math.round(conf));
+                    } else if (p < cutoff_index_5percent) {
+                        row[6] = "<5% FDR ";
+                    } else {
+                        row[6] = ">5% FDR";
+                    }
+                } else {
+                    row[6] = "NA";
+                }
+
                 row[7] = expSpec.getNumPeaks();
                 row[8] = Integer.toString(matchedSpec.getTotalFilteredNumPeaks_Exp());
                 row[9] = Double.toString(matchedSpec.getSumFilteredIntensity_Exp());
@@ -545,7 +565,7 @@ public class MainFrameController implements UpdateListener {
             double score;
 
             for (MatchedLibSpectra mSpec : specs) {
-// final String[] colNamesRes = {"Title", "Scan Num." , "Sequence", "Protein", "M/Z", "Charge", "Score", "Confidence(%)","#Peaks","#FiltedPeaks", "TotalInt","MatchedInt"};
+// final String[] colNamesRes = {"Title", "Scan Num." , "Sequence", "Protein", "M/Z", "Charge", "Score","#Peaks","#FiltedPeaks", "TotalInt","MatchedInt"};
                 spec = mSpec.getSpectrum();
                 score = mSpec.getScore();
                 row[0] = spec.getTitle();
@@ -555,13 +575,11 @@ public class MainFrameController implements UpdateListener {
                 row[4] = spec.getPCMass();
                 row[5] = spec.getCharge();
                 row[6] = Double.toString(score);
-
-                double conf = score * 100;
-                row[7] = Double.toString(Math.round(conf));
-                row[8] = Integer.toString(mSpec.getSpectrum().getNumPeaks());
-                row[9] = Integer.toString(mSpec.getTotalFilteredNumPeaks_Lib());
-                row[10] = Double.toString(mSpec.getSumFilteredIntensity_Lib());
-                row[11] = Double.toString(mSpec.getSumMatchedInt_Lib());
+                row[7] = Integer.toString(mSpec.getSpectrum().getNumPeaks());
+                row[8] = Integer.toString(mSpec.getTotalFilteredNumPeaks_Lib());
+                row[9] = Double.toString(mSpec.getSumFilteredIntensity_Lib());
+                row[10] = Double.toString(mSpec.getSumMatchedInt_Lib());
+                row[11] = Double.toString(mSpec.getNumMatchedPeaks());
                 tblModelResult.addRow(row);
 
             }
@@ -734,7 +752,7 @@ public class MainFrameController implements UpdateListener {
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"Title", "Library Source", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score"};
+            String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
@@ -768,17 +786,41 @@ public class MainFrameController implements UpdateListener {
             Spectrum spec;
 
             for (ComparisonResult res : result) {
+                List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
+                // int lenMspec = mSpec.size();
+                //for (int s = 0; s < lenMspec; s++) {
+                int s = 0;
                 Row row = sheet.createRow(rowNum);
                 spec = res.getEspSpectrum();
                 row.createCell(0).setCellValue(spec.getTitle());
-                row.createCell(1).setCellValue(res.getMatchedLibSpec().get(0).getSource());
+                row.createCell(1).setCellValue(mSpec.get(s).getSource());
                 row.createCell(2).setCellValue(spec.getScanNumber());
-                row.createCell(3).setCellValue(res.getMatchedLibSpec().get(0).getSequence());
+                row.createCell(3).setCellValue(mSpec.get(s).getSequence());
                 row.createCell(4).setCellValue(spec.getPCMass());
                 row.createCell(5).setCellValue(spec.getCharge());
                 row.createCell(6).setCellValue(Double.toString(res.getTopScore()));
+                if (configData.isDecoyAvailable()) {
+                    if (rowNum - 1 <= cutoff_index_1percent) {
+                        //conf= score * 100;
+                        row.createCell(7).setCellValue("<1% FDR");
+                    } else if (rowNum - 1 <= cutoff_index_5percent) {
+                        row.createCell(7).setCellValue("<5% FDR");
+                    } else {
+                        row.createCell(7).setCellValue(">5% FDR");
+                    }
+                } else {
+                    row.createCell(7).setCellValue("NA");
+                }
+                row.createCell(8).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()));
+                row.createCell(9).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()));
+                row.createCell(10).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()));
+                row.createCell(11).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()));
+                row.createCell(12).setCellValue(Integer.toString(mSpec.get(s).getNumMatchedPeaks()));
+                row.createCell(13).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()));
+                row.createCell(14).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()));
                 rowNum++;
 
+                //}
             }   // Resize all columns to fit the content size
             for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);
@@ -960,19 +1002,23 @@ public class MainFrameController implements UpdateListener {
         tblModelResult.setRowCount(0);
     }
 
+    int decoyType=0;
+    Generate gn=null;
+    File libFile=null;
     public void generateDeoy(int i) {
-        
         String tempS2 = settingsPnl.txtLibrary.getText();
         if ("".equals(tempS2)) {
-             showMessageDialog("Validation errors","No spectra library given", JOptionPane.WARNING_MESSAGE);
-           
+            showMessageDialog("Validation errors", "No spectra library given", JOptionPane.WARNING_MESSAGE);
+
         } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")) {
-            showMessageDialog("Validation errors","File format not supported", JOptionPane.WARNING_MESSAGE);
-        }else{
-        
-            File libFile=new File(tempS2);
-            Generate gn = new Generate();
-            gn.start(libFile, i);
+            showMessageDialog("Validation errors", "File format not supported", JOptionPane.WARNING_MESSAGE);
+        } else {
+
+            libFile = new File(tempS2);
+            gn = new Generate(LOG, this);
+            SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
+            workerThread.execute();
+            
         }
 
     }
@@ -1024,9 +1070,12 @@ public class MainFrameController implements UpdateListener {
 
                         LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
 
-                        validateResult();
-                        LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
-
+                        if (configData.isDecoyAvailable()) {
+                            validateResult();
+                            LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
+                        } else {
+                            LOG.info("No decoy spectra found in library");
+                        }
                         fillExpSpectraTable();
                         fillBestmatchTable(0);
                         displayResult();
@@ -1115,4 +1164,41 @@ public class MainFrameController implements UpdateListener {
 
     }
 
+    /**
+     * swing thread generating decoy
+     */
+    private class SwingDecoyGeneratorThread extends SwingWorker<Void, Void> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+
+            // isBussy = true;        
+            mainView.readerBtnActive(false);
+            mainView.searchBtnActive(false);
+
+            LOG.info("Generating decoy ....");
+
+            gn.start(libFile, decoyType);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+
+            try {
+
+                LOG.info("Decoy library generation completed");              
+                isReaderReady = true;
+                isBussy = false;
+                mainView.readerBtnActive(true);
+                mainView.searchBtnActive(true);
+               
+            } catch (CancellationException ex) {
+                LOG.info("the spectrum similarity score pipeline run was cancelled");
+            } finally {
+
+            }
+        }
+
+    }
 }

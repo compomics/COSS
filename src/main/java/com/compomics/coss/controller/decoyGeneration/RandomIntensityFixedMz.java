@@ -5,6 +5,7 @@
  */
 package com.compomics.coss.controller.decoyGeneration;
 
+import com.compomics.coss.controller.UpdateListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,6 +14,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,33 +28,36 @@ import java.util.logging.Logger;
  */
 public class RandomIntensityFixedMz extends GenerateDecoyLib {
 
-    public RandomIntensityFixedMz(File f) {
-        super(f);
+    File randomIntShift;
+
+    public RandomIntensityFixedMz(File f, UpdateListener lr, org.apache.log4j.Logger log) {
+        super(f, lr, log);
     }
 
     @Override
     public File Generate() {
-        File randomIntShift = null;
         BufferedWriter bw = null;
         BufferedReader br = null;
         String filename;
+        String fileExtension = "";
 
         if (file.getName().endsWith("mgf")) {
             filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-            randomIntShift = new File(file.getParent(), filename + "_randIntshift" + ".mgf");
+            randomIntShift = new File(file.getParent(), filename + "_mzshift" + ".mgf");
+            fileExtension = "mgf";
 
         } else if (file.getName().endsWith("msp")) {
             filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-            randomIntShift = new File(file.getParent(), filename + "_randIntshift" + ".msp");
+            randomIntShift = new File(file.getParent(), filename + "_mzshift" + ".msp");
+            fileExtension = "msp";
 
         }
 
         try {
+            int count = 1;
+
             br = new BufferedReader(new FileReader(file));
             bw = new BufferedWriter(new FileWriter(randomIntShift));
-
-            int count = 0;
-
             String line = br.readLine();
             List<String[]> lines = new ArrayList<>();
             List<double[][]> peaks = new ArrayList<>();
@@ -118,7 +127,7 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
 
                 } else {
                     bw.write(line + "\n");
-                    if (line.startsWith("Name")) {
+                    if ((line.startsWith("Name") && fileExtension.equals("msp")) || (line.startsWith("TITLE") && fileExtension.equals("mgf"))) {
                         line+="_decoy";
                         System.out.println("Current spectrum index :  " + Integer.toString(count));
                         count++;
@@ -129,16 +138,22 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
 
             }
 
+       
+
+           
+
         } catch (IOException ex) {
-            Logger.getLogger(com.compomics.coss.controller.decoyGeneration.RandomIntensityFixedMz.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 br.close();
                 bw.close();
             } catch (IOException ex) {
-                Logger.getLogger(com.compomics.coss.controller.decoyGeneration.RandomIntensityFixedMz.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return randomIntShift;
+           return randomIntShift; 
     }
+
+  
 }

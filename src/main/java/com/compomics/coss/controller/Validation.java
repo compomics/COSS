@@ -32,8 +32,8 @@ public class Validation {
 
         for (ComparisonResult r : result) {
             // ArrayList<ComparisonResult> rDecoy=decoyResult.get(c++);
-            spec=r.getEspSpectrum();
-            if (spec.getTitle().endsWith("decoy")) {
+            spec=r.getMatchedLibSpec().get(0).getSpectrum();
+            if (spec.getTitle().contains("decoy")) {
 
                 numDecoy++;
 
@@ -41,14 +41,14 @@ public class Validation {
                 numTarget++;
             }
             
-            fdr_calculated = (double)numDecoy/(numDecoy+numTarget);
+            fdr_calculated = numDecoy/(double)(numDecoy+numTarget);
             //fdr_calculated = (numDecoy+numTarget)*fdr_given;// (double) total_size;
 
-            
-            if (fdr_calculated >= fdr_given ) {
+            cutoff_index++;
+            if (fdr_calculated > fdr_given ) {
                 break;
             }
-           cutoff_index++;
+           
         }
         
         return cutoff_index;

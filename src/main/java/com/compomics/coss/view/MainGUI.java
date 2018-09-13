@@ -100,6 +100,7 @@ public class MainGUI extends JFrame {
         
         JMenuItem fixedMzShift = new JMenuItem("Fixed M/Z Shift");
         JMenuItem randIntFixedMzShift = new JMenuItem("Fixed M/Z random Intensity");
+        randIntFixedMzShift.setEnabled(false);
         JMenuItem randMzIntShift = new JMenuItem("Random M/Z and Intensity");
         
         decoyMenu.add(fixedMzShift);
@@ -194,84 +195,59 @@ public class MainGUI extends JFrame {
         }
         );
         
-        save.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                try {
-                    control.saveResult(0);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        save.addActionListener((ActionEvent ev) -> {
+            try {
+                control.saveResult(0);
+            } catch (IOException ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         
        
              
-        export.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                try {
-                    control.saveResult(1);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        export.addActionListener((ActionEvent ev) -> {
+            try {
+                control.saveResult(1);
+            } catch (IOException ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
+        importResult.addActionListener((ActionEvent ev) -> {
+            control.importResult();
+        });
+        
+        
+        exit.addActionListener((ActionEvent ev) -> {
+            int selectionOption = JOptionPane.showConfirmDialog(null,
+                    "Are you sure want to exit?", "Really Closing?",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+            
+            if (selectionOption == JOptionPane.YES_OPTION) {
+                if (control.isBussy) {
+                    control.stopSearch();
                 }
+                System.exit(0);
             }
         });
         
-        importResult.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                control.importResult();
-            }
+        configSystem.addActionListener((ActionEvent e) -> {
+            //control.chooseLibraryFile();
+            // frmNewLibrary.setVisible(true);
         });
         
         
-        exit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-                int selectionOption = JOptionPane.showConfirmDialog(null,
-                        "Are you sure want to exit?", "Really Closing?",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
-                
-                if (selectionOption == JOptionPane.YES_OPTION) {
-                    if (control.isBussy) {
-                        control.stopSearch();
-                    }
-                    System.exit(0);
-                }
-            }
-        });
-        
-        configSystem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //control.chooseLibraryFile();      
-                // frmNewLibrary.setVisible(true);
-
-            }
-        }
-        );
-        
-        
-         fixedMzShift.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-               
-                    control.generateDeoy(0);
-               
-            }
+         fixedMzShift.addActionListener((ActionEvent ev) -> {
+             control.generateDeoy(0);
         });
          
-         randIntFixedMzShift.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-               
-                    control.generateDeoy(1);
-               
-            }
+         randIntFixedMzShift.addActionListener((ActionEvent ev) -> {
+             control.generateDeoy(1);
         });
          
-         randMzIntShift.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ev) {
-               
-                    control.generateDeoy(2);
-               
-            }
+         randMzIntShift.addActionListener((ActionEvent ev) -> {
+             control.generateDeoy(2);
         });
         
 //        tab.addChangeListener((ChangeEvent e) -> {

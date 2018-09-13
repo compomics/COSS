@@ -22,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
 public class CosineSimilarity extends Matching {
 
     private final ConfigData confData;
-    private final double massWindow=100;
+    private final double massWindow = 100;
     boolean stillReading;
     UpdateListener listener;
     double fragTolerance;//used to compare two peaks with in fragment tolerance deviation
@@ -63,9 +64,9 @@ public class CosineSimilarity extends Matching {
         this.confData = cnfData;
 
     }
-    
-     public CosineSimilarity(ConfigData cnfData) {
-         this.listener=null;
+
+    public CosineSimilarity(ConfigData cnfData) {
+        this.listener = null;
         cancelled = false;
         this.taskCompleted = 0;
         this.confData = cnfData;
@@ -126,7 +127,7 @@ public class CosineSimilarity extends Matching {
         int matchedNumPeaks;
 
         public DoMatching(TheData data, String matcherName, org.apache.log4j.Logger log) {
-            this.data = data;          
+            this.data = data;
             this.threadName = matcherName;
             this.log = log;
 
@@ -146,7 +147,8 @@ public class CosineSimilarity extends Matching {
                 java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            confData.setMaxScore(0);
+            boolean isFound = false;
+
             while (stillReading || (!data.expSpec.isEmpty() && !data.selectedLibSpec.isEmpty())) {
                 try {
 
@@ -164,49 +166,68 @@ public class CosineSimilarity extends Matching {
                             double score;
                             Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
 
-//                            Spectrum sp1Transformed=sp1;
-//                            Spectrum sp2Transformed=sp2;
-//                            if(confData.applyTransform() && confData.getTransformType()==0){
-//                                logTransform(sp1Transformed);
-//                                logTransform(sp2Transformed);
-//                            }
-                            int topN = 10;
-                         
-                            // List<Double> scores = new ArrayList<>();
-
-                            // for (int topN = 3; topN <= 10; topN++) {
-                            TopNPeaks filterA = new DivideAndTopNPeaks(sp1, topN, massWindow);
-                            TopNPeaks filterB = new DivideAndTopNPeaks(sp2, topN, massWindow);
-
-                            ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks();
-                            ArrayList<Peak> fP_spectrumB = filterB.getFilteredPeaks();
-
-                            int lenA = fP_spectrumA.size();
-                            int lenB = fP_spectrumB.size();
-
-                            score = cosineScore(fP_spectrumA, fP_spectrumB);
-                            //scores.add(score);
-                            //}
-
-                            //double finalScore = Collections.max(scores);
-                            //scores.clear();
-                            MatchedLibSpectra mSpec = new MatchedLibSpectra();
-                            mSpec.setScore(score);
-                            mSpec.setSequence(sp2.getSequence());
                             if (sp2.getTitle().contains("decoy")) {
-                                mSpec.setSource("decoy");
-                            } else {
-                                mSpec.setSource("target");
+                                isFound = true;
                             }
-                            mSpec.setNumMathcedPeaks(matchedNumPeaks);
-                            mSpec.setSpectrum(sp2);
-                            mSpec.setSumFilteredIntensity_Exp(totalIntA);
-                            mSpec.setSumFilteredIntensity_Lib(totalIntB);
-                            mSpec.setSumMatchedInt_Exp(matchedIntA);
-                            mSpec.setSumMatchedInt_Lib(matchedIntB);
-                            mSpec.settotalFilteredNumPeaks_Exp(lenA);
-                            mSpec.settotalFilteredNumPeaks_Lib(lenB);
-                            specResult.add(mSpec);
+
+                            double mIntA = 0;
+                            double mIntB = 0;
+                            double tIntA = 0;
+                            double tIntB = 0;
+                            int mNumPeaks = 0;
+                            int tempLenA = 0;
+                            int tempLenB = 0;
+                            double tempScore = 0;
+
+                            List<Double> scores = new ArrayList<>();
+                            for (int topN = 1; topN < 11; topN++) {
+                                TopNPeaks filterA = new DivideAndTopNPeaks(sp1, topN, massWindow);
+                                TopNPeaks filterB = new DivideAndTopNPeaks(sp2, topN, massWindow);
+
+                                ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks();
+                                ArrayList<Peak> fP_spectrumB = filterB.getFilteredPeaks();
+
+                                int lenA = fP_spectrumA.size();
+                                int lenB = fP_spectrumB.size();
+
+                                if (lenB < lenA) {
+                                    score = calculateScore(fP_spectrumA, fP_spectrumB, false);
+                                } else {
+                                    score = calculateScore(fP_spectrumB, fP_spectrumA, true);
+                                }
+                                
+                                 if (tempScore <= score) {
+                                    tempScore = score;
+                                    mIntA = matchedIntA;
+                                    mIntB = matchedIntB;
+                                    tIntA = totalIntA;
+                                    tIntB = totalIntB;
+                                    tempLenA=lenA;
+                                    tempLenB=lenB;
+                                    mNumPeaks = matchedNumPeaks;
+                                }
+                                scores.add(score);
+                            }
+                            double finalScore=Collections.max(scores);
+                            if (finalScore > 0) {
+                                MatchedLibSpectra mSpec = new MatchedLibSpectra();
+                                mSpec.setScore(finalScore);//(Collections.max(scores));
+                                mSpec.setSequence(sp2.getSequence());
+                                if (sp2.getTitle().contains("decoy")) {
+                                    mSpec.setSource("decoy");
+                                } else {
+                                    mSpec.setSource("target");
+                                }
+                                mSpec.setNumMathcedPeaks(mNumPeaks);
+                                mSpec.setSpectrum(sp2);
+                                mSpec.setSumFilteredIntensity_Exp(tIntA);
+                                mSpec.setSumFilteredIntensity_Lib(tIntB);
+                                mSpec.setSumMatchedInt_Exp(mIntA);
+                                mSpec.setSumMatchedInt_Lib(mIntB);
+                                mSpec.settotalFilteredNumPeaks_Exp(tempLenA);
+                                mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
+                                specResult.add(mSpec);
+                            }
 
                         } catch (Exception ex) {
 
@@ -231,7 +252,7 @@ public class CosineSimilarity extends Matching {
                         List<MatchedLibSpectra> tempMatch = new ArrayList<>();
                         int tempLen = 0;
                         while (tempLen < len && tempLen < 10) {
-                            tempMatch.add(specResult.get(0));
+                            tempMatch.add(specResult.get(tempLen));
                             tempLen = tempMatch.size();
                         }
                         compResult.setMatchedLibSpec(tempMatch);
@@ -250,10 +271,11 @@ public class CosineSimilarity extends Matching {
                 }
             }
 
-           List<ComparisonResult> simResult = new ArrayList<>();
-            
+            confData.setDecoyAvailability(isFound);
+            List<ComparisonResult> simResult = new ArrayList<>();
+
             if (!cancelled) {
-                listener.updateprogressbar(confData.getExpSpectraIndex().size());
+                //listener.updateprogressbar(confData.getExpSpectraIndex().size());
                 try {
                     if (oos != null) {
                         oos.close();
@@ -266,10 +288,8 @@ public class CosineSimilarity extends Matching {
                     java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                log.info(
-                        "Getting results.");
-                
-              
+                log.info("Getting results.");
+
                 FileInputStream fis = null;
                 ObjectInputStream ois = null;
 
@@ -302,18 +322,16 @@ public class CosineSimilarity extends Matching {
                         java.util.logging.Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-            }
-            else{
+            } else {
                 File fis = new File("temp.txt");
-                if(fis.exists()){
+                if (fis.exists()) {
                     fis.delete();
-                    
+
                 }
             }
             return simResult;
         }
 
-       
         private double cosineScore(List<Peak> v1, List<Peak> v2) {
 
             //prepare for matched mz peaks
@@ -362,17 +380,97 @@ public class CosineSimilarity extends Matching {
                 v1SquareSum += matchedPeaksExp.get(a).getIntensity() * matchedPeaksExp.get(a).getIntensity();
                 v2SquareSum += matchedPeaksLib.get(a).getIntensity() * matchedPeaksLib.get(a).getIntensity();
 
-                matchedIntA +=matchedPeaksExp.get(a).getIntensity();
+                matchedIntA += matchedPeaksExp.get(a).getIntensity();
                 matchedIntB += matchedPeaksLib.get(a).getIntensity();
             }
 
             double sqrtV1 = Math.sqrt(v1SquareSum);
             double sqrtV2 = Math.sqrt(v2SquareSum);
-            score = productSum / (sqrtV1 * sqrtV2);
+            if (sqrtV1 != 0 && sqrtV2 != 0) {
+                score = productSum / (sqrtV1 * sqrtV2);
+            }
 
             return score;
         }
 
+        private double calculateScore(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2, boolean isReversed) {
+
+            HashSet<Peak> mPeaks_2 = new HashSet<Peak>(); //matched peaks from filteredExpMS2_2
+            HashSet<Peak> mPeaks_1 = new HashSet<Peak>();
+            double intensities_1 = 0;
+            double intensities_2 = 0;
+            double explainedIntensities_1 = 0;
+            double explainedIntensities_2 = 0;
+            boolean is_intensities2_ready = false;
+            double productSum = 0;
+            double v1SquareSum = 0;
+            double v2SquareSum = 0;
+
+            for (int i = 0; i < filteredExpMS2_1.size(); i++) {
+                Peak p1 = filteredExpMS2_1.get(i);
+                double mz_p1 = p1.getMz(),
+                        intensity_p1 = p1.getIntensity(),
+                        diff = fragTolerance,// Based on Da.. not ppm...
+                        foundInt_1 = 0,
+                        foundInt_2 = 0;
+                intensities_1 += intensity_p1;
+                Peak matchedPeak_2 = null;
+                for (Peak peak_expMS2_2 : filteredExpMS2_2) {
+                    double tmp_mz_p2 = peak_expMS2_2.getMz(),
+                            tmp_diff = (tmp_mz_p2 - mz_p1),
+                            tmp_intensity_p2 = peak_expMS2_2.getIntensity();
+                    if (!is_intensities2_ready) {
+                        intensities_2 += tmp_intensity_p2;
+                    }
+                    if (Math.abs(tmp_diff) < diff) {
+                        matchedPeak_2 = peak_expMS2_2;
+
+                        diff = Math.abs(tmp_diff);
+                        foundInt_1 = intensity_p1;
+                        foundInt_2 = tmp_intensity_p2;
+                    } else if (tmp_diff == diff) {
+                        // so this peak is indeed in between of two peaks
+                        // So, just the one on the left side is being chosen..
+                    }
+                }
+                is_intensities2_ready = true;
+                if (foundInt_1 != 0 && !mPeaks_2.contains(matchedPeak_2)) {
+                    mPeaks_2.add(matchedPeak_2);
+                    mPeaks_1.add(p1);
+
+                    explainedIntensities_1 += foundInt_1;
+                    explainedIntensities_2 += foundInt_2;
+
+                    productSum += foundInt_1 * foundInt_2;
+                    v1SquareSum += foundInt_1 * foundInt_1;
+                    v2SquareSum += foundInt_2 * foundInt_2;
+
+                }
+
+            }
+
+            if (!isReversed) {
+                totalIntA = intensities_1;
+                totalIntB = intensities_2;
+                matchedIntA = explainedIntensities_1;
+                matchedIntB = explainedIntensities_2;
+
+            } else {
+                totalIntA = intensities_2;
+                totalIntB = intensities_1;
+                matchedIntA = explainedIntensities_2;
+                matchedIntB = explainedIntensities_1;
+            }
+            matchedNumPeaks = mPeaks_2.size();
+            int n = mPeaks_2.size();
+            double sqrtV1 = Math.sqrt(v1SquareSum);
+            double sqrtV2 = Math.sqrt(v2SquareSum);
+            double score = 0;
+            if (sqrtV1 != 0 && sqrtV2 != 0) {
+                score = productSum / (sqrtV1 * sqrtV2);
+            }
+            return score;
+        }
 
         private class InnerIteratorSync<T> {
 

@@ -5,6 +5,7 @@
  */
 package com.compomics.coss.controller.decoyGeneration;
 
+import com.compomics.coss.controller.UpdateListener;
 import java.io.File;
 
 /**
@@ -13,34 +14,41 @@ import java.io.File;
  */
 public class Generate {
 
-    public Generate() {
-    }
-    
-    public void start(File file, int type){
-      GenerateDecoyLib gen=null;
-      File decoyFile=null;
-        switch(type){
-            case 0: gen=new FixedMzShift(file);    
-            break;       
-            
-            case 1: gen=new RandomIntensityFixedMz(file);        
-            break;
-            
-            case 2: gen=new RandomMzIntShift(file);        
-            break;     
-        }
-        if(gen!=null){
-            decoyFile = gen.Generate();
-        }
-        
+    private org.apache.log4j.Logger log;
+    private UpdateListener listener;
 
-     //Concatenating library with decoy file 
-      MergeFiles m=new MergeFiles(file, decoyFile);
-      m.Merge();
-      
-      decoyFile.delete();      
-        
+    public Generate(org.apache.log4j.Logger log, UpdateListener lstner) {
+        this.log = log;
+        this.listener = lstner;
     }
-    
-    
+
+    public void start(File file, int type) {
+        GenerateDecoyLib gen = null;
+       
+        switch (type) {
+            case 0:
+                gen = new FixedMzShift(file, listener, log);
+                break;
+
+            case 1:
+                gen = new RandomIntensityFixedMz(file, listener,log);
+                break;
+
+            case 2:
+                gen = new RandomMzIntShift(file, listener, log);
+                break;
+        }
+        if (gen != null) {
+            log.info("Generating decoy spectra");
+            File decoyFile = gen.Generate();
+            
+            log.info("Appending decoy to library");
+            MergeFiles m = new MergeFiles(file, decoyFile);
+            m.Merge();
+            decoyFile.delete();
+            log.info("Decoy generation completed");
+        }
+
+    }
+
 }

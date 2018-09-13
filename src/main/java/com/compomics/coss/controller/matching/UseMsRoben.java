@@ -58,20 +58,20 @@ public class UseMsRoben extends Matching {
 
     }
 
-     public UseMsRoben(ConfigData cnfData) {
-         this.listener=null;
+    public UseMsRoben(ConfigData cnfData) {
+        this.listener = null;
         cancelled = false;
         this.taskCompleted = 0;
         this.confData = cnfData;
 
     }
+
     @Override
     public void InpArgs(String... args) {
 
         this.MsRobinOption = Integer.parseInt(args[0]);
         this.IntensityOption = Integer.parseInt(args[1]);
         this.fragTolerance = Double.parseDouble(args[2]);
-        this.fragTolerance /= 1000.0;
         this.precTlerance = Double.parseDouble(args[3]);
 
     }
@@ -211,6 +211,7 @@ public class UseMsRoben extends Matching {
                      * ******************************************************************************
                      */
                     int numTasks = confData.getExpSpectraIndex().size();
+                  
                     for (int a = 0; a < numTasks; a++) {
 
                         expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
@@ -331,7 +332,10 @@ public class UseMsRoben extends Matching {
                 Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            confData.setMaxScore(0);
+              int numDecoy=0;
+              int numLib=0;
+              //double maxScore=0;
+           
             while (stillReading || (!data.expSpec.isEmpty() && !data.selectedLibSpec.isEmpty())) {
                 try {
 
@@ -344,68 +348,90 @@ public class UseMsRoben extends Matching {
                     InnerIteratorSync<Spectrum> iteratorSpectra = new InnerIteratorSync(sb.iterator());
                     List<MatchedLibSpectra> specResult = new ArrayList<>();
 
+                    numLib++;
                     while (iteratorSpectra.iter.hasNext()) {
 
                         try {
                             Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
+                            if(sp2.getTitle().contains("decoy")){                              
+                                numDecoy++;
+                            }
 //                            if (confData.applyTransform() && confData.getTransformType() == 0) {
 //                                logTransform(sp1);
 //                                logTransform(sp2);
 //                            }
 
-                            int lenA = 0;
-                            int lenB = 0;
-                            // List<Double> scores = new ArrayList<>();
-                            //for (int topN = 1; topN < 11; topN++) {
+                            double mIntA = 0;
+                            double mIntB = 0;
+                            double tIntA = 0;
+                            double tIntB = 0;
+                            int mNumPeaks = 0;
+                            int tempLenA=0;
+                            int tempLenB=0;
+                            double tempScore = 0;
+                            
+                            List<Double> scores = new ArrayList<>();
+                            for (int topN = 1; topN < 11; topN++) {
+                                TopNPeaks filterA = new DivideAndTopNPeaks(sp1, topN, massWindow);
+                                TopNPeaks filterB = new DivideAndTopNPeaks(sp2, topN, massWindow);
+                                double probability = (double) topN / (double) massWindow;
+                                ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks();
+                                ArrayList<Peak> fP_spectrumB = filterB.getFilteredPeaks();
+                                int lenA = fP_spectrumA.size();
+                                int lenB = fP_spectrumB.size();
+                                double score;
 
-                            int topN = 10;
-                            TopNPeaks filterA = new DivideAndTopNPeaks(sp1, topN, massWindow);
-                            TopNPeaks filterB = new DivideAndTopNPeaks(sp2, topN, massWindow);
-                            double probability = (double) topN / (double) massWindow;
-                            ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks();
-                            ArrayList<Peak> fP_spectrumB = filterB.getFilteredPeaks();
-                            lenA = fP_spectrumA.size();
-                            lenB = fP_spectrumB.size();
-                            double score = 0;
+                                double[] results;
+                                if (lenB < lenA) {
+                                    results = prepareData(fP_spectrumA, fP_spectrumB, false);
+                                } else {
+                                    results = prepareData(fP_spectrumB, fP_spectrumA, true);
+                                }
 
-                            double[] results;
-                            if (lenB < lenA) {
-                                results = prepareData(fP_spectrumA, fP_spectrumB, false);
-                            } else {
-                                results = prepareData(fP_spectrumB, fP_spectrumA, true);
+                                int totalN = (int) results[0],
+                                        n = (int) results[1];
+                                double tmp_intensity_part = results[2];
+                                MSRobin object = new MSRobin(probability, totalN, n, tmp_intensity_part, MsRobinOption);
+
+                                score = object.getScore();
+
+                                if (tempScore <= score) {
+                                    tempScore = score;
+                                    mIntA = matchedIntA;
+                                    mIntB = matchedIntB;
+                                    tIntA = totalIntA;
+                                    tIntB = totalIntB;
+                                    tempLenA=lenA;
+                                    tempLenB=lenB;
+                                    mNumPeaks = matchedNumPeaks;
+                                }
+                                scores.add(score);                         
+                                intensity_part = object.getIntensity_part();
+                                probability_part = object.getProbability_part();
                             }
-
-                            int totalN = (int) results[0],
-                                    n = (int) results[1];
-                            double tmp_intensity_part = results[2];
-                            MSRobin object = new MSRobin(probability, totalN, n, tmp_intensity_part, MsRobinOption);
-
-                            score = object.getScore()/ ((double) lenA * 10.0);
-                          
-                            //scores.add(score);//                           
-                            intensity_part = object.getIntensity_part();
-                            probability_part = object.getProbability_part();
-                            //  }
-                            if (score > 0) {
+                            double finalScore = Collections.max(scores);
+//                            if(finalScore>maxScore){
+//                                maxScore=finalScore;
+//                            }
+                            if (finalScore > 1) {
                                 MatchedLibSpectra mSpec = new MatchedLibSpectra();
-                                mSpec.setScore(score);//(Collections.max(scores));
+                                mSpec.setScore(finalScore);//(Collections.max(scores));
                                 mSpec.setSequence(sp2.getSequence());
                                 if (sp2.getTitle().contains("decoy")) {
                                     mSpec.setSource("decoy");
                                 } else {
                                     mSpec.setSource("target");
                                 }
-                                mSpec.setNumMathcedPeaks(matchedNumPeaks);
+                                mSpec.setNumMathcedPeaks(mNumPeaks);
                                 mSpec.setSpectrum(sp2);
-                                mSpec.setSumFilteredIntensity_Exp(totalIntA);
-                                mSpec.setSumFilteredIntensity_Lib(totalIntB);
-                                mSpec.setSumMatchedInt_Exp(matchedIntA);
-                                mSpec.setSumMatchedInt_Lib(matchedIntB);
-                                mSpec.settotalFilteredNumPeaks_Exp(lenA);
-                                mSpec.settotalFilteredNumPeaks_Lib(lenB);
+                                mSpec.setSumFilteredIntensity_Exp(tIntA);
+                                mSpec.setSumFilteredIntensity_Lib(tIntB);
+                                mSpec.setSumMatchedInt_Exp(mIntA);
+                                mSpec.setSumMatchedInt_Lib(mIntB);
+                                mSpec.settotalFilteredNumPeaks_Exp(tempLenA);
+                                mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
                                 specResult.add(mSpec);
                             }
-
 
                         } catch (Exception ex) {
 
@@ -453,10 +479,20 @@ public class UseMsRoben extends Matching {
                 }
             }
 
+            if(numDecoy==0){
+                log.info("No decoy spectra found to validate result");
+                confData.setDecoyAvailability(false);
+            }
+            if(numDecoy<numLib){
+                log.info("Number of decoy spectra is too small to validate result");
+                confData.setDecoyAvailability(false);
+            }else{
+                confData.setDecoyAvailability(true);
+            }
             List<ComparisonResult> simResult = new ArrayList<>();
 
             if (!cancelled) {
-                listener.updateprogressbar(confData.getExpSpectraIndex().size());
+                //listener.updateprogressbar(confData.getExpSpectraIndex().size());
                 try {
                     if (oos != null) {
                         oos.close();
@@ -481,6 +517,14 @@ public class UseMsRoben extends Matching {
                     ComparisonResult r = (ComparisonResult) ois.readObject();
                     while (r != null) {
                         r = (ComparisonResult) ois.readObject();
+//                        List<MatchedLibSpectra> mspec=r.getMatchedLibSpec();
+//                        for(MatchedLibSpectra ms: mspec){
+//                            double d= ms.getScore();
+//                            d/=maxScore;
+//                            d*=(double)100;
+//                            ms.setScore(d);
+//                        }
+//                        r.setTopScore(r.getMatchedLibSpec().get(0).getScore());
                         simResult.add(r);
                     }
                 } catch (FileNotFoundException | ClassNotFoundException ex) {

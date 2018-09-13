@@ -53,7 +53,7 @@ public class MeanSquareError extends Matching {
     private final ConfigData confData;
 
     boolean stillReading;
-    UpdateListener listener;    
+    UpdateListener listener;
     double fragTolerance;
     double precTlerance;
     boolean cancelled = false;
@@ -67,13 +67,14 @@ public class MeanSquareError extends Matching {
 
     }
 
-     public MeanSquareError(ConfigData cnfData) {
-        this.listener=null;
+    public MeanSquareError(ConfigData cnfData) {
+        this.listener = null;
         cancelled = false;
         this.taskCompleted = 0;
         this.confData = cnfData;
 
     }
+
     @Override
     public void InpArgs(String... args) {
         this.fragTolerance = Double.parseDouble(args[2]);
@@ -372,8 +373,8 @@ public class MeanSquareError extends Matching {
                 Logger.getLogger(UseMsRoben.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-//            double maxScore=0;
-            confData.setMaxScore(0);
+            boolean isFound = false;
+
             while (stillReading || (!data.expSpec.isEmpty() && !data.selectedLibSpec.isEmpty())) {
                 try {
 
@@ -390,56 +391,74 @@ public class MeanSquareError extends Matching {
 
                         try {
                             Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
+                            if (sp2.getTitle().contains("decoy")) {
+                                isFound = true;
+                            }
 //                            if (confData.applyTransform() && confData.getTransformType() == 0) {
 //                                logTransform(sp1);
 //                                logTransform(sp2);
 //                            }
 
+
+                            double mIntA = 0;
+                            double mIntB = 0;
+                            double tIntA = 0;
+                            double tIntB = 0;
+                            int mNumPeaks = 0;
+                            int tempLenA=0;
+                            int tempLenB=0;
+                            double tempScore = Double.MAX_VALUE;
+                            
                             List<Double> scores = new ArrayList<>();
-                            int lenA = 0;
-                            int lenB = 0;
-
-                            for (int topN = 1; topN < 11; topN++) {
-
-                                // topN = 10;
+                            //int topN=10;
+                            for (int topN = 1; topN < 11; topN++) {                               
                                 TopNPeaks filterA = new DivideAndTopNPeaks(sp1, topN, massWindow);
                                 TopNPeaks filterB = new DivideAndTopNPeaks(sp2, topN, massWindow);
 
                                 ArrayList<Peak> fP_spectrumA = filterA.getFilteredPeaks();
                                 ArrayList<Peak> fP_spectrumB = filterB.getFilteredPeaks();
-                                lenA = fP_spectrumA.size();
-                                lenB = fP_spectrumB.size();
+                                int lenA = fP_spectrumA.size();
+                                int lenB = fP_spectrumB.size();
                                 double score;
                                 if (lenB < lenA) {
                                     score = calculateScore(fP_spectrumA, fP_spectrumB, false);
                                 } else {
                                     score = calculateScore(fP_spectrumB, fP_spectrumA, true);
                                 }
-                             
-
-                                fP_spectrumA.clear();
-                                fP_spectrumB.clear();
+                                
+                                
+                                if (tempScore >= score) {
+                                    tempScore = score;
+                                    mIntA = matchedIntA;
+                                    mIntB = matchedIntB;
+                                    tIntA = totalIntA;
+                                    tIntB = totalIntB;
+                                    tempLenA=lenA;
+                                    tempLenB=lenB;
+                                    mNumPeaks = matchedNumPeaks;
+                                }
                                 scores.add(score);
-
                             }
-                            // if (score > 0) {
-                            MatchedLibSpectra mSpec = new MatchedLibSpectra();
-                            mSpec.setScore(Collections.max(scores));
-                            mSpec.setSequence(sp2.getSequence());
-                            if (sp2.getTitle().contains("decoy")) {
-                                mSpec.setSource("decoy");
-                            } else {
-                                mSpec.setSource("target");
+                            double finalScore=Collections.min(scores);
+                            if (finalScore != Double.MAX_VALUE) {
+                                MatchedLibSpectra mSpec = new MatchedLibSpectra();
+                                mSpec.setScore(finalScore);//(Collections.max(scores));
+                                mSpec.setSequence(sp2.getSequence());
+                                if (sp2.getTitle().contains("decoy")) {
+                                    mSpec.setSource("decoy");
+                                } else {
+                                    mSpec.setSource("target");
+                                }
+                                mSpec.setNumMathcedPeaks(mNumPeaks);
+                                mSpec.setSpectrum(sp2);
+                                mSpec.setSumFilteredIntensity_Exp(tIntA);
+                                mSpec.setSumFilteredIntensity_Lib(tIntB);
+                                mSpec.setSumMatchedInt_Exp(mIntA);
+                                mSpec.setSumMatchedInt_Lib(mIntB);
+                                mSpec.settotalFilteredNumPeaks_Exp(tempLenA);
+                                mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
+                                specResult.add(mSpec);
                             }
-                            mSpec.setNumMathcedPeaks(matchedNumPeaks);
-                            mSpec.setSpectrum(sp2);
-                            mSpec.setSumFilteredIntensity_Exp(totalIntA);
-                            mSpec.setSumFilteredIntensity_Lib(totalIntB);
-                            mSpec.setSumMatchedInt_Exp(matchedIntA);
-                            mSpec.setSumMatchedInt_Lib(matchedIntB);
-                            mSpec.settotalFilteredNumPeaks_Exp(lenA);
-                            mSpec.settotalFilteredNumPeaks_Lib(lenB);
-                            specResult.add(mSpec);
 
                         } catch (Exception ex) {
 
@@ -486,10 +505,11 @@ public class MeanSquareError extends Matching {
                 }
             }
 
+            confData.setDecoyAvailability(isFound);
             List<ComparisonResult> simResult = new ArrayList<>();
 
             if (!cancelled) {
-                listener.updateprogressbar(confData.getExpSpectraIndex().size());
+                //listener.updateprogressbar(confData.getExpSpectraIndex().size());
                 try {
                     if (oos != null) {
                         oos.close();
@@ -548,14 +568,18 @@ public class MeanSquareError extends Matching {
         }
 
         private double calculateScore(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2, boolean isReversed) {
-
+            
+            double sumSqrError=0;
             HashSet<Peak> mPeaks_2 = new HashSet<Peak>(); //matched peaks from filteredExpMS2_2
-            double intensities_1 = 0;
-            double intensities_2 = 0;
-            double explainedIntensities_1 = 0;
-            double explainedIntensities_2 = 0;
+            double intensities_1 = 0,
+                    intensities_2 = 0,
+                    explainedIntensities_1 = 0,
+                    explainedIntensities_2 = 0;
+            double alpha_alpha = 0,
+                    beta_beta = 0,
+                    alpha_beta = 0;
             boolean is_intensities2_ready = false;
-            double sumSqrError = 0;
+
             for (int i = 0; i < filteredExpMS2_1.size(); i++) {
                 Peak p1 = filteredExpMS2_1.get(i);
                 double mz_p1 = p1.getMz(),
@@ -585,16 +609,20 @@ public class MeanSquareError extends Matching {
                 is_intensities2_ready = true;
                 if (foundInt_1 != 0 && !mPeaks_2.contains(matchedPeak_2)) {
                     mPeaks_2.add(matchedPeak_2);
+                    alpha_alpha += foundInt_1 * foundInt_1;
+                    beta_beta += foundInt_2 * foundInt_2;
+                    alpha_beta += foundInt_1 * foundInt_2;
 
                     explainedIntensities_1 += foundInt_1;
                     explainedIntensities_2 += foundInt_2;
+
                     double err = foundInt_1 - foundInt_2;
                     sumSqrError += err * err;
                 }
 
             }
 
-             if (!isReversed) {
+            if (!isReversed) {
                 totalIntA = intensities_1;
                 totalIntB = intensities_2;
                 matchedIntA = explainedIntensities_1;
@@ -606,11 +634,13 @@ public class MeanSquareError extends Matching {
                 matchedIntA = explainedIntensities_2;
                 matchedIntB = explainedIntensities_1;
             }
+
             matchedNumPeaks = mPeaks_2.size();
-            int n = mPeaks_2.size();
+            
+
             double mse = Double.MAX_VALUE;
-            if (n != 0) {
-                mse = sumSqrError / (double) n;
+            if (matchedNumPeaks != 0) {
+                mse = (sumSqrError + 1) / (double) matchedNumPeaks;
             }
             return mse;
         }

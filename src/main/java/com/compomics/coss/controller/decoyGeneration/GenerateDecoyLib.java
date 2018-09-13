@@ -5,6 +5,7 @@
  */
 package com.compomics.coss.controller.decoyGeneration;
 
+import com.compomics.coss.controller.UpdateListener;
 import com.compomics.ms2io.IndexKey;
 import com.compomics.ms2io.Indexer;
 import com.compomics.ms2io.MgfReader;
@@ -22,28 +23,28 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.compomics.ms2io.Peak;
 import com.compomics.ms2io.SpectraReader;
 import com.compomics.ms2io.SpectraWriter;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Genet
  */
-public abstract class GenerateDecoyLib {
+public abstract class GenerateDecoyLib{
 
     protected final File file;
+     protected final UpdateListener lstnr;
     protected File decoyFile;
     protected  SpectraReader rd;
     protected  SpectraWriter wr;
     protected List<IndexKey> indxList;
+    protected org.apache.log4j.Logger log;
     
 
-    public GenerateDecoyLib(File f) {
+    public GenerateDecoyLib(File f, UpdateListener lr, org.apache.log4j.Logger log) {
 
+        this.log=log;
         this.file = f;
+        this.lstnr=lr;
     }
     
     public abstract File Generate();
