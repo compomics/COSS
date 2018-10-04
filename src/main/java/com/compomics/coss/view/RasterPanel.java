@@ -16,7 +16,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
 import org.apache.commons.math3.util.Precision;

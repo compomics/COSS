@@ -39,6 +39,7 @@ public class ConfigData {
     private int maxPrecursorCharge;
     private boolean transform;
     private int tranformType;
+    private int massWindow;
 
     
 
@@ -50,7 +51,13 @@ public class ConfigData {
 
     }
 
+    public int getMassWindow(){
+        return this.massWindow;
+    }
     
+    public void setMassWindow(int mwindow){
+        this.massWindow=mwindow;
+    }
     
     public boolean applyTransform() {
         return this.transform;

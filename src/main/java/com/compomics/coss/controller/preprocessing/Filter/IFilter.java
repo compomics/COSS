@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.compomics.coss.controller.matching;
+package com.compomics.coss.controller.preprocessing.Filter;
+
+import com.compomics.ms2io.Spectrum;
+
+
 
 /**
  *
  * @author Genet
  */
-public enum MatchingAlgorithm {
+public interface IFilter {
     
-    MSROBIN,
-    COSINE,
-    MSE;    
+     Spectrum removePrecursor(Spectrum spec, double fragmentTolerance);
+      
+     Spectrum filter(Spectrum spec, double threshold);
     
 }

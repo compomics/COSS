@@ -98,7 +98,7 @@
                 </executions>
             </plugin>
             
-             <!--By default test is skipped for deployment -->            
+            <!--By default test is skipped for deployment -->            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -265,11 +265,25 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
+        
+        <dependency>
+            <groupId>commons-configuration</groupId>
+            <artifactId>commons-configuration</artifactId>
+            <version>1.7</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math</artifactId>
+            <version>2.2</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.0</version>
+            <version>3.6</version>
         </dependency>
+        
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-core</artifactId>
@@ -281,11 +295,7 @@
             <artifactId>AbsoluteLayout</artifactId>
             <version>SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>commons-configuration</groupId>
-            <artifactId>commons-configuration</artifactId>
-            <version>1.7</version>
-        </dependency>
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>

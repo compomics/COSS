@@ -1,23 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller.featureExtraction;
 
 import com.compomics.ms2io.Spectrum;
 import com.compomics.ms2io.Peak;
 import java.util.ArrayList;
 import java.util.Collections;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Genet
  */
-public class DivideAndTopNPeaks extends TopNPeaks {
+public class DivideAndTopNPeaks implements Features {
 
-    private int topN;
-    private double windowMassSize = 100;
+    private final int topN;
+    private double windowMassSize = 100;    
+    private final Spectrum expSpectrum;
+    private final Logger LOGGER;
 
     /**
      * This constructs an object to filter out spectra based on 100Da window and
@@ -26,34 +24,20 @@ public class DivideAndTopNPeaks extends TopNPeaks {
      * @param expSpectrum is an experimental spectrum
      * @param topN is picked peak numbers with highest intensities
      */
-    public DivideAndTopNPeaks(Spectrum expSpectrum, int topN) {
-        super.expSpectrum = expSpectrum;
+    public DivideAndTopNPeaks(Spectrum expSpec, int topN, double windowmassSize, Logger log) {
+        this.expSpectrum = expSpec;
         this.topN = topN;
-//        LOGGER = Logger.getLogger(ConfigHolder.class);
+        this.windowMassSize=windowmassSize;        
+        this.LOGGER=log;
+        
     }
 
-    /**
-     * This constructs an object with a given window size instead of a default
-     * value.
-     *
-     * The default window size is 100Da
-     *
-     * @param expSpectrum is an experimental spectrum
-     * @param topN is picked peak numbers with highest intensities
-     * @param windowMassSize size of window, based on this a given spectrum is
-     * divided into smaller parts.
-     *
-     */
-    public DivideAndTopNPeaks(Spectrum expSpectrum, int topN, double windowMassSize) {
-        super.expSpectrum = expSpectrum;
-        this.topN = topN;
-        this.windowMassSize = windowMassSize;
-//        LOGGER = Logger.getLogger(ConfigHolder.class);
-    }
-
+  
+   
     @Override
-    protected void process() {
+    public ArrayList<Peak>  getFeatures() {
         ArrayList<Peak> cPeaks = new ArrayList<>();
+        ArrayList<Peak> filteredPeaks=new ArrayList<>();
         int len = 0;
         double startMz = 0;
         double limitMz = 0;
@@ -91,8 +75,7 @@ public class DivideAndTopNPeaks extends TopNPeaks {
             String srtLen = Integer.toString(len);
             String srtMzMin = Double.toString(startMz);
             String srtTemp = Integer.toString(temp);
-
-            System.out.println("Len, minMz and Temp : " + srtLen + ", " + srtMzMin + ", " + srtTemp);
+            LOGGER.info("Len, minMz and Temp : " + srtLen + ", " + srtMzMin + ", " + srtTemp);           
             throw ex;
         }
 
@@ -107,22 +90,8 @@ public class DivideAndTopNPeaks extends TopNPeaks {
                 filteredPeaks.add(tmpCPeakToAdd);
             }
         }
-    }
-
-    public int getTopN() {
-        return topN;
-    }
-
-    public void setTopN(int topN) {
-        this.topN = topN;
-    }
-
-    public double getWindowMassSize() {
-        return windowMassSize;
-    }
-
-    public void setWindowMassSize(double windowMassSize) {
-        this.windowMassSize = windowMassSize;
+        
+        return filteredPeaks;
     }
 
 }

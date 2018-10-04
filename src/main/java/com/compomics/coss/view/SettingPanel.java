@@ -46,9 +46,9 @@ public class SettingPanel extends JPanel {
 
         //Initializing and setting of component properties
         Object[] scoringFun = new Object[3];
-        scoringFun[0] = "MsRobin";
-        scoringFun[1] = "Cosine Similarity";
-        scoringFun[2] = "MeanSquare Error";
+        scoringFun[0] = "MSROBIN";
+        scoringFun[1] = "COSINE";
+        scoringFun[2] = "MSE";
 
         Object[] transform = new Object[2];
         transform[0] = "Log";

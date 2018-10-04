@@ -29,7 +29,7 @@ import java.io.IOException;
 import javax.swing.SwingUtilities;
 import com.compomics.coss.controller.matching.Matching;
 import com.compomics.coss.controller.matching.MeanSquareError;
-import com.compomics.coss.controller.matching.UseMsRoben;
+import com.compomics.coss.controller.matching.Dispartcher;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SpinnerNumberModel;
@@ -65,7 +65,7 @@ public class MainFrameController implements UpdateListener {
     private TargetDB_View targetView;
 
     // private ConfigHolder config = new ConfigHolder();
-    Matching matching;
+    Dispartcher dispatcher;
     private static List<ComparisonResult> result = null;
 
     private int cutoff_index_1percent;
@@ -164,9 +164,15 @@ public class MainFrameController implements UpdateListener {
      */
     public void stopSearch() {
 
-        if (matching != null) {
+        if (dispatcher != null) {
             this.cencelled = true;
-            matching.stopMatching();
+            dispatcher.stopMatching();
+            mainView.setProgressValue(0);
+            //mainView.setProgressValue("");
+            mainView.searchBtnActive(true);
+            mainView.readerBtnActive(true);
+           
+            
 
         } else {
 
@@ -192,23 +198,7 @@ public class MainFrameController implements UpdateListener {
             setSearchSettings();
             this.cencelled = false;
             mainView.setProgressValue(0);
-
-            int scoring = settingsPnl.cmbScoringFun.getSelectedIndex();
-            configData.setScoringFunction(scoring);
-            switch (scoring) {
-                case 0:
-                    matching = new UseMsRoben(this, this.configData);
-                    break;
-                case 1:
-                    
-                   // matching = new CosineSimilarity(this, this.configData);
-                    break;
-                case 2:
-                    //matching = new MeanSquareError(this, this.configData);
-                    break;
-
-            }
-
+            dispatcher = new Dispartcher(this.configData, this, LOG);
             SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
 
@@ -259,14 +249,17 @@ public class MainFrameController implements UpdateListener {
         double fragTolerance = Double.parseDouble(settingsPnl.txtFragmentTolerance.getText());
         boolean applyTransform = settingsPnl.chkTransform.isSelected();
         int transformType = settingsPnl.cmbTransformType.getSelectedIndex();
-        if(settingsPnl.cmbFragTolUnit.getSelectedIndex() != 0){
-            fragTolerance /=(double)1000;
+        int massWindow = 100;
+
+        if (settingsPnl.cmbFragTolUnit.getSelectedIndex() != 0) {
+            fragTolerance /= (double) 1000;
         }
 //        if(settingsPnl.cmbPrcTolUnit.getSelectedIndex() !=0){
 //            precTolerance /=(double)1000;
 //        }
 
         settingSimilar = false;
+
         if (configData.getScoringFunction() == scoringFun
                 && configData.getMaxPrecursorCharg() == maxPrecCharg
                 && configData.getPrecTol() == precTolerance
@@ -283,6 +276,7 @@ public class MainFrameController implements UpdateListener {
             configData.setfragTol(fragTolerance);
             configData.applyTransform(applyTransform);
             configData.setTransformType(transformType);
+            configData.setMassWindow(massWindow);
 
         }
     }
@@ -298,6 +292,7 @@ public class MainFrameController implements UpdateListener {
         settingsPnl.txtPrecursorCharge.setText(Integer.toString(ConfigHolder.getInstance().getInt("max.charge")));
         settingsPnl.txtPrecursorTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("precursor.tolerance")));
         settingsPnl.txtFragmentTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("fragment.tolerance")));
+        // settingsPnl.txtMassWindow.setText(Integer.toString(ConfigHolder.getInstance().getInt("mass.window")));
 
     }
 
@@ -1002,9 +997,10 @@ public class MainFrameController implements UpdateListener {
         tblModelResult.setRowCount(0);
     }
 
-    int decoyType=0;
-    Generate gn=null;
-    File libFile=null;
+    int decoyType = 0;
+    Generate gn = null;
+    File libFile = null;
+
     public void generateDeoy(int i) {
         String tempS2 = settingsPnl.txtLibrary.getText();
         if ("".equals(tempS2)) {
@@ -1018,7 +1014,7 @@ public class MainFrameController implements UpdateListener {
             gn = new Generate(LOG, this);
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();
-            
+
         }
 
     }
@@ -1033,18 +1029,14 @@ public class MainFrameController implements UpdateListener {
 
             isBussy = true;
             mainView.searchBtnActive(false);
-
-            String[] args = {Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()),
-                Double.toString(configData.getfragTol()), Double.toString(configData.getPrecTol())};
-            matching.InpArgs(args);
-
+            
             result = null;
             LOG.info("COSS version 1.0");
             LOG.info("Query spectra: " + configData.getExperimentalSpecFile().toString());
             LOG.info("Library: " + configData.getSpecLibraryFile().toString());
             LOG.info("Search started ");
 
-            result = matching.dispatcher(LOG);
+            result = dispatcher.dispatch();
 
             return null;
 
@@ -1187,12 +1179,12 @@ public class MainFrameController implements UpdateListener {
 
             try {
 
-                LOG.info("Decoy library generation completed");              
+                LOG.info("Decoy library generation completed");
                 isReaderReady = true;
                 isBussy = false;
                 mainView.readerBtnActive(true);
                 mainView.searchBtnActive(true);
-               
+
             } catch (CancellationException ex) {
                 LOG.info("the spectrum similarity score pipeline run was cancelled");
             } finally {

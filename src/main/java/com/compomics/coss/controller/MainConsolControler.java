@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.compomics.coss.model.ConfigData;
 import com.compomics.coss.controller.matching.CosineSimilarity;
 import com.compomics.coss.controller.matching.MeanSquareError;
-import com.compomics.coss.controller.matching.UseMsRoben;
+import com.compomics.coss.controller.matching.Dispartcher;
 import com.compomics.ms2io.Spectrum;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,7 +37,7 @@ public class MainConsolControler {
      */
     // static ConfigHolder config = new ConfigHolder();
     static ConfigData configData;
-    static Matching matching;
+    static Dispartcher dispatcher;
     private boolean isReaderReady;
     private boolean isBussy;
 
@@ -123,20 +123,20 @@ public class MainConsolControler {
         int scoring = configData.getScoringFunction();
         switch (scoring) {
             case 0:
-                matching = new UseMsRoben(this.configData);
+                dispatcher = new Dispartcher(configData, lstner, LOG);
                 break;
             case 1:
-                matching = new CosineSimilarity(this.configData);
+                dispatcher = new CosineSimilarity(this.configData);
                 break;
             case 2:
-                matching = new MeanSquareError(this.configData);
+                dispatcher = new MeanSquareError(this.configData);
                 break;
 
         }
 
         String[] arg = {Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()),
             Double.toString(configData.getfragTol()), Double.toString(configData.getPrecTol())};
-        matching.InpArgs(arg);
+        dispatcher.InpArgs(arg);
 
         List<ComparisonResult> result = null;
         LOG.info("COSS version 1.0");
@@ -144,7 +144,7 @@ public class MainConsolControler {
         LOG.info("Library: " + configData.getSpecLibraryFile().toString());
         LOG.info("Search started ");
 
-        result = matching.dispatcher(LOG);
+        result = dispatcher.dispatcher(LOG);
         return result;
 
     }
