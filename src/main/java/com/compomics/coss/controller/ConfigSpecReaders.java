@@ -66,7 +66,7 @@ public class ConfigSpecReaders {
             
             switch (configFiles) {
                 case "both":
-                    dispatcher();
+                    dispatcher();//read and configure both experimental and libray spectrum file
                     //get ready reader for experimental spectrum file
                     if (this.fileExperimnt.getName().endsWith("mgf")) {
                         SpectraReader rd = new MgfReader(this.fileExperimnt, cfData.getExpSpectraIndex());
@@ -85,7 +85,7 @@ public class ConfigSpecReaders {
                         SpectraReader rd = new MspReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
                         cfData.setLibSpecReader(rd);
                     }   break;
-                case "expSpec":
+                case "expSpec": //configure only expspectrum file
                     dispatcher(cfData.getExperimentalSpecFile());
                     //get ready reader for experimental spectrum file
                     if (this.fileExperimnt.getName().endsWith("mgf")) {
@@ -97,7 +97,7 @@ public class ConfigSpecReaders {
                         cfData.setExpSpecReader(rd);
                         
                     }   break;
-                case "libSpec":
+                case "libSpec": //read and configure only library spectrum because exp spectrum is already configured
                     dispatcher(cfData.getExperimentalSpecFile());
                     //get reader for spectral library file
                     if (this.fileLibrary.getName().endsWith("mgf")) {
@@ -150,7 +150,8 @@ public class ConfigSpecReaders {
             //wait untill the thread is finished and set the index values
             cfData.setSpectralLibraryIndex(fut[0].get());
             cfData.setExpSpectraIndex(fut[1].get());
-            //sort library spectrum
+            
+            //sort library spectrum based on precursor mass - increasing order
             Collections.sort(cfData.getSpectraLibraryIndex());
             executors.shutdown();
 

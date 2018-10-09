@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.compomics.coss.controller.matching;
+package com.compomics.coss.model;
 
 import com.compomics.ms2io.Spectrum;
 import java.util.ArrayList;
@@ -19,32 +19,40 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Genet
  */
-public class TheData {
+public class TheDataUnderComparison {
 
-    protected BlockingQueue<Spectrum> expSpec = null;
-    protected BlockingQueue<ArrayList<Spectrum>> selectedLibSpec = null;
+    private BlockingQueue<Spectrum> expSpec = null;
+    private BlockingQueue<ArrayList<Spectrum>> selectedLibSpec = null;
 
-    protected TheData(ArrayBlockingQueue<Spectrum> expS, ArrayBlockingQueue<ArrayList<Spectrum>> libS) {
+    public TheDataUnderComparison(ArrayBlockingQueue<Spectrum> expS, ArrayBlockingQueue<ArrayList<Spectrum>> libS) {
 
         this.expSpec = expS;
         this.selectedLibSpec = libS;
 
     }
 
-    protected void putExpSpec(Spectrum s) throws InterruptedException {
+    public void putExpSpec(Spectrum s) throws InterruptedException {
         this.expSpec.put(s);
     }
 
-    protected void putLibSpec(ArrayList<Spectrum> s) throws InterruptedException {
+    public void putLibSpec(ArrayList<Spectrum> s) throws InterruptedException {
         this.selectedLibSpec.put(s);
     }
 
-    protected Spectrum pollExpSpec() throws InterruptedException {
+    public Spectrum pollExpSpec() throws InterruptedException {
         return this.expSpec.poll(1, TimeUnit.SECONDS);
     }
 
-    protected ArrayList<Spectrum> pollLibSpec() throws InterruptedException {
+    public ArrayList<Spectrum> pollLibSpec() throws InterruptedException {
         return this.selectedLibSpec.poll(1, TimeUnit.SECONDS);
+    }
+    
+    public BlockingQueue<Spectrum> getExpSpec(){
+        return expSpec;
+    }
+    
+    public BlockingQueue<ArrayList<Spectrum>>  getLibSelectedSpec(){
+        return selectedLibSpec;
     }
 
 }

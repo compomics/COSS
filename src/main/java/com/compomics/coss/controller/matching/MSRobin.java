@@ -5,7 +5,6 @@
  */
 package com.compomics.coss.controller.matching;
 
-import com.compomics.coss.controller.UpdateListener;
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.Peak;
 import java.util.ArrayList;
@@ -48,11 +47,10 @@ public class MSRobin extends Score {
 
     /**
      * @param confData
-     * @param lstnr
      * @param log
      */
-    public MSRobin(ConfigData confData, UpdateListener lstnr, org.apache.log4j.Logger log) {
-        super(confData, lstnr, log);
+    public MSRobin(ConfigData confData, org.apache.log4j.Logger log) {
+        super(confData,log);
 
     }
 

@@ -1,5 +1,6 @@
 package com.compomics.coss.controller.matching;
 
+import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.Peak;
 import com.compomics.ms2io.Spectrum;
@@ -21,14 +22,14 @@ import uk.ac.ebi.pride.tools.jmzreader.model.impl.CvParam;
  */
 public class DataProducer implements Runnable { //procucer thread
 
-    private final TheData data;
+    private final TheDataUnderComparison data;
     private final ConfigData confData;
     private final double precTolerance;
     private boolean stillReading;
     private boolean cancelled;
     
 
-    public DataProducer(TheData data, ConfigData confData) {
+    public DataProducer(TheDataUnderComparison data, ConfigData confData) {
 
         this.data = data;
         this.confData = confData;

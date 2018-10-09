@@ -5,6 +5,8 @@
  */
 package com.compomics.coss.controller.matching;
 
+import com.compomics.coss.model.TheDataUnderComparison;
+import com.compomics.coss.controller.Dispartcher;
 import com.compomics.coss.controller.UpdateListener;
 import com.compomics.coss.controller.featureExtraction.DivideAndTopNPeaks;
 import com.compomics.coss.model.ComparisonResult;
@@ -34,7 +36,7 @@ import java.util.logging.Logger;
 public class Matcher implements Callable<List<ComparisonResult>> {
 
     private final ConfigData confData;
-    private final TheData data;
+    private final TheDataUnderComparison data;
     private final DataProducer procucer;
     private final org.apache.log4j.Logger log;
     private final Score algorithm;
@@ -42,7 +44,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
     private boolean cancelled;
     
 
-    public Matcher(Score algorithm, DataProducer dprducer, TheData data, ConfigData confData, UpdateListener lstner, org.apache.log4j.Logger log) {
+    public Matcher(Score algorithm, DataProducer dprducer, TheDataUnderComparison data, ConfigData confData, UpdateListener lstner, org.apache.log4j.Logger log) {
         this.algorithm = algorithm;
         this.procucer = dprducer;
         this.data = data;
@@ -81,10 +83,10 @@ public class Matcher implements Callable<List<ComparisonResult>> {
         int massWindow = confData.getMassWindow();
 
         int specCount=0;
-        while (this.procucer.isReading() || (!data.expSpec.isEmpty() && !data.selectedLibSpec.isEmpty())) {
+        while (this.procucer.isReading() || (!data.getExpSpec().isEmpty() && !data.getLibSelectedSpec().isEmpty())) {
             try {
 
-                if (data.expSpec.isEmpty() || data.selectedLibSpec.isEmpty()) {
+                if (data.getExpSpec().isEmpty() || data.getLibSelectedSpec().isEmpty()) {
 //                    if(specCount >= confData.getExpSpectraIndex().size()){
 //                        break;
 //                    }
@@ -179,7 +181,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 }
 
                 taskCompleted++;
-                listener.updateprogressbar(taskCompleted);
+                listener.updateprogress(taskCompleted);
                 //log.info(Integer.toString(taskCompleted));
 
                 if (!specResult.isEmpty()) {
@@ -233,7 +235,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
         List<ComparisonResult> simResult = new ArrayList<>();
 
         if (!cancelled) {
-            //listener.updateprogressbar(confData.getExpSpectraIndex().size());
+            //listener.updateprogress(confData.getExpSpectraIndex().size());
             try {
                 if (oos != null) {
                     oos.close();

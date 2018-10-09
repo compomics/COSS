@@ -50,9 +50,15 @@ public class SettingPanel extends JPanel {
         scoringFun[1] = "COSINE";
         scoringFun[2] = "MSE";
 
-        Object[] transform = new Object[2];
-        transform[0] = "Log";
-        transform[1] = "Linear";
+        Object[] transform = new Object[4];
+        transform[0] = "Log2";
+        transform[1] = "Log10";
+        transform[2] = "Linear";
+        transform[3] = "SquareRoot";
+        
+        Object[] filter = new Object[2];
+        filter[0] = "HighPass";
+        filter[1] = "LowPass";
 
         //Buttons
         JButton btntargetspec = new JButton("...");
@@ -61,12 +67,14 @@ public class SettingPanel extends JPanel {
         JButton btnSave = new JButton("Save My Settings");
         JButton btnClear = new JButton("Clear Inputs");
         JButton btnLoad = new JButton("Loadd from Fiile");
+        btnApplyPreprocess.setEnabled(false);
 
         //Labels
         JLabel lbldblib = new JLabel("Spectral Library");
         JLabel lbltargetspec = new JLabel("Target Spectra");
         JLabel lblAlgorithmType = new JLabel("Scoring Function");
         JLabel lblCutOff = new JLabel("CutOff");
+        JLabel lblMassWindow=new JLabel("Filter WindowSize");
         JLabel lblFragmentTolerance = new JLabel("Fragment Tolerance");
         JLabel lblPrecursorCharge = new JLabel("Precursor Charge");
         JLabel lblPrecursorTolerance = new JLabel("Precursor Tolerance");
@@ -81,6 +89,8 @@ public class SettingPanel extends JPanel {
         //Text field
         //txtdbspec = new JTextField();
         txttargetspec = new JTextField();
+        txtMassWindow=new JTextField();
+        txtMassWindow.setEnabled(false);
         txtCutOff = new JTextField();
         txtCutOff.setEnabled(false);
         txtFragmentTolerance = new JTextField();
@@ -107,6 +117,9 @@ public class SettingPanel extends JPanel {
 
         cmbTransformType = new JComboBox(transform);
         cmbTransformType.setEnabled(false);
+        
+        cmbFilterType = new JComboBox(filter);
+        cmbFilterType.setEnabled(false);
 
         //Panels
         JPanel pnlInputs = new JPanel();
@@ -225,7 +238,16 @@ public class SettingPanel extends JPanel {
                                         .addComponent(lblCutOff)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(txtCutOff, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(chkFilter)
+                                .addGroup(pnlPreprocessingLayout.createSequentialGroup()                                       
+                                        .addComponent(lblMassWindow)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtMassWindow, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(pnlPreprocessingLayout.createSequentialGroup()
+                                        .addComponent(chkFilter)
+                                        .addGap(20, 20, 20)
+                                        .addGroup(pnlPreprocessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(cmbFilterType, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                
                                 .addComponent(chkRemovePrecursor)
                                 .addGroup(pnlPreprocessingLayout.createSequentialGroup()
                                         .addComponent(chkTransform)
@@ -238,20 +260,27 @@ public class SettingPanel extends JPanel {
         pnlPreprocessingLayout.setVerticalGroup(
                 pnlPreprocessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(pnlPreprocessingLayout.createSequentialGroup()
-                        .addComponent(chkFilter)
+                        .addGroup(pnlPreprocessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(chkFilter)
+                                .addComponent(cmbFilterType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                       
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pnlPreprocessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(lblCutOff)
                                 .addComponent(txtCutOff, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
+                        .addGroup(pnlPreprocessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(lblMassWindow)
+                                .addComponent(txtMassWindow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addComponent(chkRemovePrecursor)
                         .addGap(18, 18, 18)
                         .addGroup(pnlPreprocessingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(chkTransform)
                                 .addComponent(cmbTransformType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(22, 22, 22)
                         .addComponent(btnApplyPreprocess)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(5, 5, 5))
         );
 
         //End of preprocessing panel layout
@@ -405,6 +434,7 @@ public class SettingPanel extends JPanel {
     public JTextField txttargetspec;
     public JTextField txtLibrary;
     public JTextField txtCutOff;
+    public JTextField txtMassWindow;
     public JTextField txtFragmentTolerance;
     public JTextField txtPrecursorCharge;
     public JTextField txtPrecursorTolerance;
@@ -417,6 +447,7 @@ public class SettingPanel extends JPanel {
     //Combo Boxs   
     //public JComboBox cboSpectraLibrary;
     public JComboBox cmbScoringFun;
+    public JComboBox cmbFilterType;
     public JComboBox cmbTransformType;
     public JComboBox cmbPrcTolUnit;
     public JComboBox cmbFragTolUnit;

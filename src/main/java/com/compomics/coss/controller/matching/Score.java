@@ -27,13 +27,11 @@ public abstract class Score {
     
    
     protected final ConfigData confData;
-    protected final UpdateListener listener;
     protected final org.apache.log4j.Logger log;
      
 
-    public Score(ConfigData confData, UpdateListener lstnr, org.apache.log4j.Logger log) {
-        this.confData=confData;
-        this.listener = lstnr;
+    public Score(ConfigData confData, org.apache.log4j.Logger log) {
+        this.confData=confData;     
         this.log=log;
 
     }

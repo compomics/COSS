@@ -13,58 +13,76 @@ import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
  */
 public class ConfigData {
 
-    //User input experimental and library spectra file
-    String logText = "";
+    //User input experimental and library spectra file   
     private File experimentalSpecFile = null;
     private File specLibraryFile = null;
-
-    private List<IndexKey> expIndex = null;
-    private List<IndexKey> libIndex = null;
-    private SpectraReader rdExperimental = null;
-    private SpectraReader rdLibrary = null;
-    private JMzReader ebiReader = null;
-  
-    private boolean isDecoySpecAvailable;
-
-    //Decoy database index and reader
-    private List<IndexKey> decoyDBIndex;
-    private SpectraReader rdDecoyDB;
-
-    //User input Search Settings
+    
+    //scoring function
     private int ScoringFun;//index
+    
+    //instrument settings
     private double precTol;
     private double fragTol;
     private int MSRobinOption;
     private int intensityOption;
     private int maxPrecursorCharge;
-    private boolean transform;
+    
+    //preprocessing settings
+    private boolean isTransform;
     private int tranformType;
+    private boolean isFilter;
+    private int filterType;
+    private boolean isPCMremoved;
     private int massWindow;
-
+    private int cutOff;
+    
     
 
+    //parameters to be assigned based on the imput
+    private List<IndexKey> expIndex = null;
+    private List<IndexKey> libIndex = null;
+    private SpectraReader rdExperimental = null;
+    private SpectraReader rdLibrary = null;
+    private JMzReader ebiReader = null;
+    private boolean isDecoySpecAvailable;
+
+    //Decoy database index and reader
+    private List<IndexKey> decoyDBIndex;
+    private SpectraReader rdDecoyDB;
+    
+    //initial log text
+     String logText = "";
+
+    //User input Search Settings
     /**
      * constructor
      */
     public ConfigData() {
-        
 
     }
 
-    public int getMassWindow(){
+    public int getMassWindow() {
         return this.massWindow;
     }
-    
-    public void setMassWindow(int mwindow){
-        this.massWindow=mwindow;
+
+    public void setMassWindow(int mwindow) {
+        this.massWindow = mwindow;
     }
-    
+
     public boolean applyTransform() {
-        return this.transform;
+        return this.isTransform;
     }
 
     public void applyTransform(boolean t) {
-        this.transform = t;
+        this.isTransform = t;
+    }
+    
+    public boolean applyFilter() {
+        return this.isFilter;
+    }
+
+    public void applyFilter(boolean t) {
+        this.isFilter = t;
     }
 
     public int getTransformType() {
@@ -73,6 +91,31 @@ public class ConfigData {
 
     public void setTransformType(int t) {
         this.tranformType = t;
+    }
+    
+     public int getFilterType() {
+        return this.filterType;
+    }
+
+    public void setFilterType(int t) {
+        this.filterType = t;
+    }
+    
+    
+    public boolean getIsPCMRemove() {
+        return this.isPCMremoved;
+    }
+
+    public void setIsPCMRemoved(boolean  t) {
+        this.isPCMremoved = t;
+    }
+    
+     public int getCutOff() {
+        return this.cutOff;
+    }
+
+    public void setCutOff(int t) {
+        this.cutOff = t;
     }
 
     /**
@@ -225,7 +268,6 @@ public class ConfigData {
         return this.logText;
     }
 
-  
     public boolean isDecoyAvailable() {
         return this.isDecoySpecAvailable;
     }
@@ -233,5 +275,5 @@ public class ConfigData {
     public void setDecoyAvailability(boolean decoySpec) {
         this.isDecoySpecAvailable = decoySpec;
     }
-    
+
 }

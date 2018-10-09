@@ -1,16 +1,20 @@
-package com.compomics.coss.controller.matching;
+package com.compomics.coss.controller;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 import com.compomics.coss.controller.UpdateListener;
+import com.compomics.coss.controller.matching.DataProducer;
+import com.compomics.coss.controller.matching.MSRobin;
+import com.compomics.coss.controller.matching.Matcher;
+import com.compomics.coss.controller.matching.Score;
+import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.ms2io.Spectrum;
 import com.compomics.coss.model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.model.ConfigData;
 import java.util.logging.Logger;
-import scala.reflect.internal.ClassfileConstants;
 
 /**
  *
@@ -33,12 +37,15 @@ public class Dispartcher {
         this.log = log;
 
     }
+   
 
     public void stopMatching() {
 
         match.cancel();
         producer.cancel();
-        this.listener.updateprogressbar(0);
+        if(this.listener!=null){
+            this.listener.updateprogress(0);
+        }
 
     }
 
@@ -50,7 +57,7 @@ public class Dispartcher {
             Score scoreObj = null;
             switch (confData.getScoringFunction()) {
                 case 0:
-                    scoreObj = new MSRobin(this.confData, this.listener, this.log);
+                    scoreObj = new MSRobin(this.confData,this.log);
                     break;
 //                case 1: scoreObj = new MSRobin(this.confData, this.listener, this.log);
 //                break;
@@ -62,7 +69,7 @@ public class Dispartcher {
             if (scoreObj != null) {
                 ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(20, true);
                 ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(20, true);
-                TheData data = new TheData(expspec, libSelected);
+                TheDataUnderComparison data = new TheDataUnderComparison(expspec, libSelected);
              
                 producer = new DataProducer(data, confData);
                 match = new Matcher(scoreObj,producer,data, confData, listener, log);

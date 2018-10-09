@@ -22,14 +22,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 import com.compomics.coss.model.ConfigHolder;
-import com.compomics.coss.controller.matching.CosineSimilarity;
 import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
-import com.compomics.coss.controller.matching.Matching;
-import com.compomics.coss.controller.matching.MeanSquareError;
-import com.compomics.coss.controller.matching.Dispartcher;
 import java.awt.Toolkit;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.SpinnerNumberModel;
@@ -244,12 +240,18 @@ public class MainFrameController implements UpdateListener {
      */
     private void setSearchSettings() {
         int scoringFun = settingsPnl.cmbScoringFun.getSelectedIndex();
+        
         int maxPrecCharg = Integer.parseInt(settingsPnl.txtPrecursorCharge.getText());
         double precTolerance = Double.parseDouble(settingsPnl.txtPrecursorTolerance.getText());
         double fragTolerance = Double.parseDouble(settingsPnl.txtFragmentTolerance.getText());
+        
         boolean applyTransform = settingsPnl.chkTransform.isSelected();
         int transformType = settingsPnl.cmbTransformType.getSelectedIndex();
-        int massWindow = 100;
+        boolean applyFilter=settingsPnl.chkFilter.isSelected();
+        int filterType=settingsPnl.cmbFilterType.getSelectedIndex();        
+        int massWindow = Integer.parseInt(settingsPnl.txtMassWindow.getText());;
+        int cutOff= Integer.parseInt(settingsPnl.txtCutOff.getText());
+        boolean removePCM=settingsPnl.chkRemovePrecursor.isSelected();
 
         if (settingsPnl.cmbFragTolUnit.getSelectedIndex() != 0) {
             fragTolerance /= (double) 1000;
@@ -269,11 +271,20 @@ public class MainFrameController implements UpdateListener {
         }
 
         //no need to reload settings if they are similar and flag up for not repeating same search
-        if (!settingSimilar) {
+        if (!settingSimilar) {            
             configData.setScoringFunction(scoringFun);
+            configData.setIntensityOption(0);
+            configData.setMsRobinOption(0);
+            
+            //instrument settings
             configData.setMaxPrecursorCharg(maxPrecCharg);
             configData.setPrecTol(precTolerance);
             configData.setfragTol(fragTolerance);
+             //preprocessing settings
+            configData.applyFilter(applyFilter);
+            configData.setFilterType(filterType);
+            configData.setCutOff(cutOff);
+            configData.setIsPCMRemoved(removePCM);
             configData.applyTransform(applyTransform);
             configData.setTransformType(transformType);
             configData.setMassWindow(massWindow);
@@ -286,13 +297,46 @@ public class MainFrameController implements UpdateListener {
      */
     public void LoadData() {
 
+        //spectral data inputs
         settingsPnl.txttargetspec.setText(ConfigHolder.getInstance().getString("target.spectra.path"));
         settingsPnl.txtLibrary.setText(ConfigHolder.getInstance().getString("spectra.library.path"));
+        
+        //Scoring function
         settingsPnl.cmbScoringFun.setSelectedIndex(ConfigHolder.getInstance().getInt("matching.algorithm"));
+        
+        //MS instrument based settings
         settingsPnl.txtPrecursorCharge.setText(Integer.toString(ConfigHolder.getInstance().getInt("max.charge")));
         settingsPnl.txtPrecursorTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("precursor.tolerance")));
         settingsPnl.txtFragmentTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("fragment.tolerance")));
-        // settingsPnl.txtMassWindow.setText(Integer.toString(ConfigHolder.getInstance().getInt("mass.window")));
+        
+        //Preprocessing settings
+        boolean applyFilter=false;
+        boolean applyTransform=false;
+        boolean removePCM=false;
+        int useFilter=ConfigHolder.getInstance().getInt("noise.filtering");
+        int useTransform=ConfigHolder.getInstance().getInt("transformation");
+        int removePrecursor=ConfigHolder.getInstance().getInt("precursor.peak.removal");
+         if(useFilter==1){
+             applyFilter=true;
+         }
+         
+         if(useTransform==1){
+             applyTransform=true;
+         }
+         
+         if(removePrecursor==1){
+             removePCM=true;
+         }
+         
+        settingsPnl.txtMassWindow.setText(Integer.toString(ConfigHolder.getInstance().getInt("mass.window")));
+        settingsPnl.chkFilter.setSelected(applyFilter);
+        settingsPnl.chkTransform.setSelected(applyTransform);
+        settingsPnl.cmbFilterType.setSelectedIndex(ConfigHolder.getInstance().getInt("filter.type"));
+        settingsPnl.cmbTransformType.setSelectedIndex(ConfigHolder.getInstance().getInt("transform.type"));
+        settingsPnl.chkRemovePrecursor.setSelected(removePCM);
+        settingsPnl.txtCutOff.setText(Integer.toString(ConfigHolder.getInstance().getInt("cut.off")));
+        
+       
 
     }
 
@@ -593,7 +637,7 @@ public class MainFrameController implements UpdateListener {
      * @param taskCompleted
      */
     @Override
-    public void updateprogressbar(int taskCompleted) {
+    public void updateprogress(int taskCompleted) {
 
         final double PERCENT = 100.0 / (double) configData.getExpSpectraIndex().size();
         SwingUtilities.invokeLater(() -> {

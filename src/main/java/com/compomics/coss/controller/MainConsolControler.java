@@ -2,16 +2,13 @@ package com.compomics.coss.controller;
 
 import com.compomics.coss.model.ComparisonResult;
 import com.compomics.coss.model.ConfigHolder;
-import com.compomics.coss.controller.matching.Matching;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.compomics.coss.model.ConfigData;
-import com.compomics.coss.controller.matching.CosineSimilarity;
-import com.compomics.coss.controller.matching.MeanSquareError;
-import com.compomics.coss.controller.matching.Dispartcher;
+import com.compomics.coss.model.MatchedLibSpectra;
 import com.compomics.ms2io.Spectrum;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -30,18 +27,18 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  *
  * @author Genet
  */
-public class MainConsolControler {
+public class MainConsolControler implements UpdateListener {
 
     /**
      * @param args the command line arguments
      */
     // static ConfigHolder config = new ConfigHolder();
+    private static final Logger LOG = Logger.getLogger(MainFrameController.class);
     static ConfigData configData;
     static Dispartcher dispatcher;
-    private boolean isReaderReady;
-    private boolean isBussy;
-
-    private static final Logger LOG = Logger.getLogger(MainConsolControler.class);
+    List<ComparisonResult> result = new ArrayList<>();
+    int cutoff_index_1percent;
+    int cutoff_index_5percent;
 
     /**
      * the main method
@@ -49,45 +46,46 @@ public class MainConsolControler {
      * @param args
      */
     public static void main(String[] args) {
-//        try {
-//
-//            configData = new ConfigData();
-//            List<ComparisonResult> result = new ArrayList<>();
-//            MainConsolControler mc = new MainConsolControler();
-//
-//            //Load user inputs from properties file
-//            mc.loadData();
-//            //validate user input configData
-//            List<String> valdMsg = mc.validateSettings();
-//
-//            if (!valdMsg.isEmpty()) {
-//                StringBuilder message = new StringBuilder();
-//                for (String validationMessage : valdMsg) {
-//                    message.append(validationMessage).append(System.lineSeparator());
-//                }
-//                LOG.info("Validation errors" + message.toString());
-//            } else {
-//                //Read spectral configData both target and db spectra
-//                mc.configReader();
-//                if ((configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) && configData.getSpectraLibraryIndex() != null) {
-//
-//                    result = mc.startMatching();
-//                    String fullName = configData.getExperimentalSpecFile().getName();
-//                    String fname = "";
-//                    if (fullName.contains(".")) {
-//                        fname = fullName.substring(0, fullName.indexOf("."));
-//                    } else {
-//                        fname = fullName;
-//                    }
-//                    mc.saveResultExcel(result, fname);
-//
-//                }
-//
-//            }
-//
-//        } catch (Exception ex) {
-//            LOG.info(null + " " + ex);
-//        }
+        try {
+
+            configData = new ConfigData();
+
+            MainConsolControler mc = new MainConsolControler();
+
+            //Load user inputs from properties file
+            mc.loadData();
+            //validate user input configData
+            List<String> valdMsg = mc.validateSettings();
+
+            if (!valdMsg.isEmpty()) {
+                StringBuilder message = new StringBuilder();
+                for (String validationMessage : valdMsg) {
+                    message.append(validationMessage).append(System.lineSeparator());
+                }
+                LOG.info("Validation errors" + message.toString());
+            } else {
+                //Read spectral configData both target and db spectra
+                mc.configReader();
+
+                if ((configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) && configData.getSpectraLibraryIndex() != null) {
+
+                    mc.startMatching();
+                    String fullName = configData.getExperimentalSpecFile().getName();
+                    String fname = "";
+                    if (fullName.contains(".")) {
+                        fname = fullName.substring(0, fullName.indexOf("."));
+                    } else {
+                        fname = fullName;
+                    }
+                     String path =  configData.getExperimentalSpecFile().getParent();
+                    mc.saveResultExcel(path + "\\" + fname);
+                }
+
+            }
+
+        } catch (Exception ex) {
+            LOG.info(null + " " + ex);
+        }
 
     }
 
@@ -96,56 +94,85 @@ public class MainConsolControler {
      */
     private void loadData() {
         //Reading User inputs and set to config configData 
-        configData.setScoringFunction(ConfigHolder.getInstance().getInt("matching.algorithm"));
-        configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
-        configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance"));
-        configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance"));
-        configData.setIntensityOption(ConfigHolder.getInstance().getInt("intensity.option"));
+
         File fileQuery = new File(ConfigHolder.getInstance().getString("target.spectra.path"));
         File fileLib = new File(ConfigHolder.getInstance().getString("spectra.library.path"));
         configData.setSpecLibraryFile(fileLib);
         configData.setExperimentalSpecFile(fileQuery);
 
+        //Scoring function
+        configData.setScoringFunction(ConfigHolder.getInstance().getInt("matching.algorithm"));
+        configData.setIntensityOption(ConfigHolder.getInstance().getInt("intensity.option"));
+        configData.setMsRobinOption(ConfigHolder.getInstance().getInt("msRobin.option"));
+
+        //MS instrument based settings
+        configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
+
+        configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance"));
+        configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance") / (double) 1000);
+
+        //Preprocessing settings
+        boolean applyFilter = false;
+        boolean applyTransform = false;
+        boolean removePCM = false;
+        int useFilter = ConfigHolder.getInstance().getInt("noise.filtering");
+        int useTransform = ConfigHolder.getInstance().getInt("transformation");
+        int removePrecursor = ConfigHolder.getInstance().getInt("precursor.peak.removal");
+        if (useFilter == 1) {
+            applyFilter = true;
+        }
+
+        if (useTransform == 1) {
+            applyTransform = true;
+        }
+
+        if (removePrecursor == 1) {
+            removePCM = true;
+        }
+
+        configData.applyFilter(applyFilter);
+        configData.setFilterType(useFilter);
+        configData.setCutOff(ConfigHolder.getInstance().getInt("cut.off"));
+        configData.setIsPCMRemoved(removePCM);
+        configData.applyTransform(applyTransform);
+        configData.setTransformType(useTransform);
+        configData.setMassWindow(ConfigHolder.getInstance().getInt("mass.window"));
+
     }
 
     private void configReader() {
-
-        isBussy = true;
-        isReaderReady = false;
         LOG.info("Configuring Spectrum Reader ....");
         ConfigSpecReaders cfReader = new ConfigSpecReaders(configData);
         cfReader.startConfig();
 
     }
 
-    private List<ComparisonResult> startMatching() {
+    private void startMatching() {
 
-        int scoring = configData.getScoringFunction();
-        switch (scoring) {
-            case 0:
-                dispatcher = new Dispartcher(configData, lstner, LOG);
-                break;
-            case 1:
-                dispatcher = new CosineSimilarity(this.configData);
-                break;
-            case 2:
-                dispatcher = new MeanSquareError(this.configData);
-                break;
-
-        }
-
-        String[] arg = {Integer.toString(configData.getMsRobinOption()), Integer.toString(configData.getIntensityOption()),
-            Double.toString(configData.getfragTol()), Double.toString(configData.getPrecTol())};
-        dispatcher.InpArgs(arg);
-
-        List<ComparisonResult> result = null;
+      //  List<ComparisonResult> result = null;
         LOG.info("COSS version 1.0");
         LOG.info("Query spectra: " + configData.getExperimentalSpecFile().toString());
         LOG.info("Library: " + configData.getSpecLibraryFile().toString());
         LOG.info("Search started ");
 
-        result = dispatcher.dispatcher(LOG);
-        return result;
+        dispatcher = new Dispartcher(this.configData, this, LOG);
+        result = dispatcher.dispatch();
+        if (configData.isDecoyAvailable() && result != null) {
+            validateResult();
+            LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
+        } else {
+            LOG.info("No decoy spectra found in library");
+        }
+
+    }
+    
+      /**
+     * start search against decoy database
+     */
+    public void validateResult() {
+        Validation validate = new Validation();
+        cutoff_index_1percent = validate.validate(result, 0.01);
+        cutoff_index_5percent = validate.validate(result, 0.05);
 
     }
 
@@ -187,20 +214,14 @@ public class MainConsolControler {
     }
 
     /**
-     * Save the result to file selected by the user
-     *
-     * @param result result of the comparison
-     * @param path the file path to which the result to be written
-     */
-    /**
      * Save results as excel file
      */
-    private void saveResultExcel(List<ComparisonResult> result, String filename) {
+    private void saveResultExcel(String filename) {
 
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"Title", "Library Source", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score"};
+            String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
@@ -234,25 +255,50 @@ public class MainConsolControler {
             Spectrum spec;
 
             for (ComparisonResult res : result) {
+                List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
+                // int lenMspec = mSpec.size();
+                //for (int s = 0; s < lenMspec; s++) {
+                int s = 0;
                 Row row = sheet.createRow(rowNum);
                 spec = res.getEspSpectrum();
                 row.createCell(0).setCellValue(spec.getTitle());
-                row.createCell(1).setCellValue(res.getMatchedLibSpec().get(0).getSource());
+                row.createCell(1).setCellValue(mSpec.get(s).getSource());
                 row.createCell(2).setCellValue(spec.getScanNumber());
-                row.createCell(3).setCellValue(res.getMatchedLibSpec().get(0).getSequence());
+                row.createCell(3).setCellValue(mSpec.get(s).getSequence());
                 row.createCell(4).setCellValue(spec.getPCMass());
                 row.createCell(5).setCellValue(spec.getCharge());
                 row.createCell(6).setCellValue(Double.toString(res.getTopScore()));
+                if (configData.isDecoyAvailable()) {
+                    if (rowNum - 1 <= cutoff_index_1percent) {
+                        //conf= score * 100;
+                        row.createCell(7).setCellValue("<1% FDR");
+                    } else if (rowNum - 1 <= cutoff_index_5percent) {
+                        row.createCell(7).setCellValue("<5% FDR");
+                    } else {
+                        row.createCell(7).setCellValue(">5% FDR");
+                    }
+                } else {
+                    row.createCell(7).setCellValue("NA");
+                }
+                row.createCell(8).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()));
+                row.createCell(9).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()));
+                row.createCell(10).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()));
+                row.createCell(11).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()));
+                row.createCell(12).setCellValue(Integer.toString(mSpec.get(s).getNumMatchedPeaks()));
+                row.createCell(13).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()));
+                row.createCell(14).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()));
                 rowNum++;
 
+                //}
             }   // Resize all columns to fit the content size
             for (int i = 0; i < columns.length; i++) {
                 sheet.autoSizeColumn(i);
             }   // Write the output to a file
 
-            //int total_len = result.size();
-            //sheet.shiftRows(cutoff_index_1percent, total_len, 1);
-            // sheet.shiftRows(cutoff_index_5percent, total_len, 1);
+            int total_len = result.size();
+            sheet.shiftRows(cutoff_index_1percent, total_len, 1);
+            sheet.shiftRows(cutoff_index_5percent, total_len, 1);
+
             fileOut = new FileOutputStream(filename + ".xlsx");
             workbook.write(fileOut);
             fileOut.close();
@@ -269,5 +315,15 @@ public class MainConsolControler {
                 java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
         }
+    }
+
+    @Override
+    public void updateprogress(int taskCompleted) {
+
+        final double PERCENT = 100.0 / (double) configData.getExpSpectraIndex().size();
+
+        int v = (int) (taskCompleted * PERCENT);
+        System.out.println(Integer.toString(v) + "%");
+
     }
 }
