@@ -18,7 +18,7 @@ public class ConfigData {
     private File specLibraryFile = null;
     
     //scoring function
-    private int ScoringFun;//index
+    private int scoringFun;//index
     
     //instrument settings
     private double precTol;
@@ -181,11 +181,11 @@ public class ConfigData {
     }
 
     public int getScoringFunction() {
-        return this.ScoringFun;
+        return this.scoringFun;
     }
 
     public void setScoringFunction(int matchAlgorithm) {
-        this.ScoringFun = matchAlgorithm;
+        this.scoringFun = matchAlgorithm;
     }
 
     public File getExperimentalSpecFile() {

@@ -169,10 +169,13 @@ public class MainConsolControler implements UpdateListener {
       /**
      * start search against decoy database
      */
+    List<ComparisonResult> validatedRes;
     public void validateResult() {
         Validation validate = new Validation();
-        cutoff_index_1percent = validate.validate(result, 0.01);
-        cutoff_index_5percent = validate.validate(result, 0.05);
+        List<ComparisonResult> validatedRes=validate.validate(result, 0.01);
+        
+        //cutoff_index_1percent = validate.validate(result, 0.01);
+        //cutoff_index_5percent = validate.validate(result, 0.05);
 
     }
 

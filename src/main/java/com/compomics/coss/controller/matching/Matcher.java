@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.TheDataUnderComparison;
@@ -42,15 +37,14 @@ public class Matcher implements Callable<List<ComparisonResult>> {
     private final Score algorithm;
     private final UpdateListener listener;
     private boolean cancelled;
-    
 
-    public Matcher(Score algorithm, DataProducer dprducer, TheDataUnderComparison data, ConfigData confData, UpdateListener lstner, org.apache.log4j.Logger log) {
-        this.algorithm = algorithm;
-        this.procucer = dprducer;
-        this.data = data;
-        this.confData = confData;
-        this.listener = lstner;
-        this.log = log;
+    public Matcher(Score al, DataProducer dp, TheDataUnderComparison dt, ConfigData cfd, UpdateListener lsr, org.apache.log4j.Logger lg) {
+        this.algorithm = al;
+        this.procucer = dp;
+        this.data = dt;
+        this.confData = cfd;
+        this.listener = lsr;
+        this.log = lg;
         cancelled = false;
 
     }
@@ -59,14 +53,11 @@ public class Matcher implements Callable<List<ComparisonResult>> {
         this.cancelled = true;
     }
 
-    // double intensity_part = 0, probability_part = 0;
     @Override
     public List<ComparisonResult> call() {
 
         ObjectOutputStream oos = null;
         FileOutputStream fos = null;
-
-        
 
         try {
             fos = new FileOutputStream("temp.txt");
@@ -79,33 +70,38 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
         int taskCompleted = 0;
         int numDecoy = 0;
-        int numLib = 0;
+        int numTarget = 0;
         int massWindow = confData.getMassWindow();
 
-        int specCount=0;
         while (this.procucer.isReading() || (!data.getExpSpec().isEmpty() && !data.getLibSelectedSpec().isEmpty())) {
             try {
 
                 if (data.getExpSpec().isEmpty() || data.getLibSelectedSpec().isEmpty()) {
-//                    if(specCount >= confData.getExpSpectraIndex().size()){
-//                        break;
-//                    }
+
                     continue;
                 }
-
                 Spectrum sp1 = data.pollExpSpec();
                 ArrayList sb = data.pollLibSpec();
+                int numSelectedLibSpec=sb.size();
+                List<MatchedLibSpectra> specResult = new ArrayList<>(numSelectedLibSpec);
                 InnerIteratorSync<Spectrum> iteratorSpectra = new InnerIteratorSync(sb.iterator());
-                List<MatchedLibSpectra> specResult = new ArrayList<>();
 
-                numLib++;
+                
                 while (iteratorSpectra.iter.hasNext()) {
+                    //10 score results out which the maximum is going to be taken
+                     List<Double> scores = new ArrayList<>(10);
 
                     try {
                         Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
                         if (sp2.getTitle().contains("decoy")) {
                             numDecoy++;
                         }
+                        
+                        else{
+                            numTarget++;
+                        }
+                        
+                        
                         double mIntA = 0;
                         double mIntB = 0;
                         double tIntA = 0;
@@ -115,25 +111,22 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         int tempLenB = 0;
                         double tempScore = 0;
 
-                        List<Double> scores = new ArrayList<>();
                         for (int topN = 1; topN < 11; topN++) {
-                            ArrayList<Peak> selectedPeaks_exp;
-                            ArrayList<Peak> selectedPeaks_lib;
-
                             DivideAndTopNPeaks obj = new DivideAndTopNPeaks(sp1, topN, massWindow, log);
-                            selectedPeaks_exp = obj.getFeatures();
-
+                            ArrayList<Peak> selectedPeaks_exp = obj.getFeatures();
                             obj = new DivideAndTopNPeaks(sp2, topN, massWindow, log);
-                            selectedPeaks_lib = obj.getFeatures();
+                            ArrayList<Peak> selectedPeaks_lib = obj.getFeatures();
 
                             int lenA = selectedPeaks_exp.size();
                             int lenB = selectedPeaks_lib.size();
-                            algorithm.setSumTotalIntExp(algorithm.getTotalIntensity(selectedPeaks_exp));
-                            algorithm.setSumTotalIntExp(algorithm.getTotalIntensity(selectedPeaks_lib));
+                            algorithm.setSumTotalIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
+                            algorithm.setSumTotalIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
                             
-                            double score;
 
-                            score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
+                            double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
+
+                            selectedPeaks_exp.clear();
+                            selectedPeaks_lib.clear();
 
                             if (tempScore < score) {
                                 tempScore = score;
@@ -150,6 +143,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             //double probability_part = object.getProbability_part();
                         }
                         double finalScore = Collections.max(scores);
+                        //scores.clear();
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
 //                            }
@@ -158,9 +152,9 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             mSpec.setScore(finalScore);//(Collections.max(scores));
                             mSpec.setSequence(sp2.getSequence());
                             if (sp2.getTitle().contains("decoy")) {
-                                mSpec.setSource("decoy");
+                                mSpec.setSource(1);
                             } else {
-                                mSpec.setSource("target");
+                                mSpec.setSource(0);
                             }
                             mSpec.setNumMathcedPeaks(mNumPeaks);
                             mSpec.setSpectrum(sp2);
@@ -182,7 +176,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                 taskCompleted++;
                 listener.updateprogress(taskCompleted);
-                //log.info(Integer.toString(taskCompleted));
 
                 if (!specResult.isEmpty()) {
                     ComparisonResult compResult = new ComparisonResult();
@@ -191,16 +184,19 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                     Collections.reverse(specResult);
 
                     //only top 10 scores returned if exists
-                    int len = specResult.size();
+                    //int len = specResult.size();
 
+                   //int num_top10Res= numSelectedLibSpec > 10? 10 : numSelectedLibSpec;
                     List<MatchedLibSpectra> tempMatch = new ArrayList<>();
+                    int tempResSize=specResult.size();
                     int tempLen = 0;
                     int c = 0;
-                    while (tempLen < len && tempLen < 10) {
+                    while (tempLen < tempResSize && tempLen < 10) {
                         tempMatch.add(specResult.get(c));
                         tempLen = tempMatch.size();
                         c++;
                     }
+                    //specResult.clear();
                     if (!tempMatch.isEmpty()) {
                         compResult.setMatchedLibSpec(tempMatch);
                         compResult.setTopScore(tempMatch.get(0).getScore());
@@ -208,6 +204,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         //simResult.add(compResult);  
                         oos.writeObject(compResult);
                         oos.flush();
+                        tempMatch.clear();
                     }
                 }
 
@@ -217,22 +214,23 @@ public class Matcher implements Callable<List<ComparisonResult>> {
             if (cancelled) {
                 break;
             }
-            
-            specCount++;
-            
+
+            // specCount++;
         }
 
         if (numDecoy == 0) {
             log.info("No decoy spectra found to validate result");
             confData.setDecoyAvailability(false);
         }
-        if (numDecoy < numLib) {
+        if (numDecoy < numTarget) {
             log.info("Number of decoy spectra is too small to validate result");
             confData.setDecoyAvailability(false);
         } else {
             confData.setDecoyAvailability(true);
         }
-        List<ComparisonResult> simResult = new ArrayList<>();
+        
+        
+        List<ComparisonResult> simResult = new ArrayList<>(confData.getExpSpectraIndex().size());
 
         if (!cancelled) {
             //listener.updateprogress(confData.getExpSpectraIndex().size());

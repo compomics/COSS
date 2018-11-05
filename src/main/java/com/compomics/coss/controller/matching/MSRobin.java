@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
@@ -13,35 +8,9 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
- * This class calculates cumulative binominal probability based scores with
- * considering intensities from experimental spectra to
- * cumulativeBinomialProbability these.
+ 
  *
- * n: number of matched peaks
- *
- * N: number of peaks of a spectrum with a bigger peak list
- *
- * p: probability,topN/windowSize from a Filter object. Note that topN is [1-10]
- *
- * Note that cumulative binominal probability function calculates the score as
- * inclusive (not exclusive)
- *
- * Intensity_part(IP): [(0.5*(Explained_Intensities A/All_Intensities
- * A))+(0.5*(Explained_Intensities B/All_intensitiesB))]
- *
- * For each filtered peakList with a given topN parameter, p is calculated as
- * explained and cumulative binominal probability based scoring function part is
- * calculated as:
- *
- * Probability_Part (PP) = -10*[-log(P)]
- *
- * Later on, intensity part is introduced as with two options:
- *
- * (option0) Final_score = PP*Sqrt(IP)
- *
- * (option1) Final_score = PP*IP *
- *
- * @author Sule
+ * @author Genet
  */
 public class MSRobin extends Score {
 
@@ -111,12 +80,9 @@ public class MSRobin extends Score {
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
             
         }
-
-        matchedNumPeaks = mPeaksExp.size();
-
         
+        matchedNumPeaks = mPeaksExp.size();        
         intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
-
         double finalScore = getfinalScore(totalN, probability, intensity_part);
         return finalScore;
     }
@@ -168,15 +134,21 @@ public class MSRobin extends Score {
         double alpha_alpha = 0,
                 beta_beta = 0,
                 alpha_beta = 0;
+        double expSpecMatchedInt=0;
+        double libSpecMatchedInt=0;
+        
         for (int k = 0; k < matchedNumPeaks; k++) {
             alpha_alpha += mPeaksExp.get(k).getIntensity() * mPeaksExp.get(k).getIntensity();
             beta_beta += mPeaksLib.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
             alpha_beta += mPeaksExp.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
 
-            sumMatchedIntExp += mPeaksExp.get(k).getIntensity();
-            sumMatchedIntLib += mPeaksLib.get(k).getIntensity();
+            expSpecMatchedInt+=mPeaksExp.get(k).getIntensity();
+            libSpecMatchedInt+=mPeaksLib.get(k).getIntensity();
             
         }
+        
+            sumMatchedIntExp = expSpecMatchedInt;
+            sumMatchedIntLib = libSpecMatchedInt;
 
         if (sumTotalIntExp == 0 || sumTotalIntLib == 0) {
             return 0;

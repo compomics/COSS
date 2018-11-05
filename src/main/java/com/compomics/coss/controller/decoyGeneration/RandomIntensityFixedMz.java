@@ -14,11 +14,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,12 +25,12 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
 
     File randomIntShift;
 
-    public RandomIntensityFixedMz(File f, UpdateListener lr, org.apache.log4j.Logger log) {
-        super(f, lr, log);
+    public RandomIntensityFixedMz(File f, org.apache.log4j.Logger log) {
+        super(f,log);
     }
 
     @Override
-    public File Generate() {
+    public File generate() {
         BufferedWriter bw = null;
         BufferedReader br = null;
         String filename;

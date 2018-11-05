@@ -14,6 +14,7 @@ public class ComparisonResult implements Comparable<ComparisonResult>, Serializa
     private double topScore;
     private Spectrum expSpec;
     List<MatchedLibSpectra> matchedSpectra;
+    private double fdr=0;
  
 
     /**
@@ -26,6 +27,14 @@ public class ComparisonResult implements Comparable<ComparisonResult>, Serializa
 
     public void setExpSpectrum(Spectrum spec) {
         this.expSpec = spec;
+    }
+    
+    public void setFDR(double f){
+        this.fdr=f;
+    }
+    
+    public double getFDR(){
+        return this.fdr;
     }
 
     public void setMatchedLibSpec(List<MatchedLibSpectra> matchedSpectra) {

@@ -4,6 +4,7 @@ import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.Peak;
 import com.compomics.ms2io.Spectrum;
+import com.sun.jersey.api.Responses;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +55,7 @@ public class DataProducer implements Runnable { //procucer thread
         try {
             Spectrum expSpec = new Spectrum();
             uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec;
-            double massErrorFraction = this.precTolerance / 1000000.0;
+          
 
             if (confData.getExpSpectraIndex() == null && confData.getEbiReader() != null) {
 
@@ -109,7 +110,7 @@ public class DataProducer implements Runnable { //procucer thread
                     expSpec.setPeakList(peakList);
                     expSpec.setNumPeaks(peakList.size());
 
-                    da_error = parentMass * massErrorFraction;
+                    da_error = parentMass * this.precTolerance;
                     ArrayList libSpec = confData.getLibSpecReader().readPart(expSpec.getPCMass(), da_error);
                     data.putExpSpec(expSpec);
                     data.putLibSpec(libSpec);
@@ -130,13 +131,15 @@ public class DataProducer implements Runnable { //procucer thread
                  */
                 int numTasks = confData.getExpSpectraIndex().size();
 
+                ArrayList libSpec;
                 for (int a = 0; a < numTasks; a++) {
 
                     expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
                     double mass = expSpec.getPCMass();
 
-                    double da_error = mass * massErrorFraction;// (10 * mass) / 1000000.0;
-                    ArrayList libSpec = confData.getLibSpecReader().readPart(mass, da_error);
+                    double da_error = mass * this.precTolerance;
+                  
+                    libSpec = confData.getLibSpecReader().readPart(mass, da_error);
 
                     data.putExpSpec(expSpec);
                     data.putLibSpec(libSpec);

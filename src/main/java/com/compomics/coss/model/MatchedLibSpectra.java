@@ -20,7 +20,7 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     
     private Spectrum spectrum;
     private double score;
-    private String source;
+    private int source;
     private String sequence;
 
     private int totalFilteredNumPeaks_query = 0;
@@ -49,11 +49,11 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     public void setScore(double score){
         this.score=score;
     }
-     public String getSource() {
+     public int getSource() {
         return this.source;
     }
 
-    public void setSource(String src) {
+    public void setSource(int src) {
         this.source = src;
     }
 

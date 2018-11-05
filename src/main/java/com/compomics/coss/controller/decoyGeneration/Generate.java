@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller.decoyGeneration;
 
 import com.compomics.coss.controller.UpdateListener;
@@ -14,12 +9,11 @@ import java.io.File;
  */
 public class Generate {
 
-    private org.apache.log4j.Logger log;
-    private UpdateListener listener;
+    private final org.apache.log4j.Logger log;
 
-    public Generate(org.apache.log4j.Logger log, UpdateListener lstner) {
-        this.log = log;
-        this.listener = lstner;
+    public Generate(org.apache.log4j.Logger lg, UpdateListener lstner) {
+        this.log = lg;
+        //this.listener = lstner;
     }
 
     public void start(File file, int type) {
@@ -27,20 +21,20 @@ public class Generate {
        
         switch (type) {
             case 0:
-                gen = new FixedMzShift(file, listener, log);
+                gen = new FixedMzShift(file,  log);
                 break;
 
             case 1:
-                gen = new RandomIntensityFixedMz(file, listener,log);
+                gen = new RandomIntensityFixedMz(file, log);
                 break;
 
             case 2:
-                gen = new RandomMzIntShift(file, listener, log);
+                gen = new RandomMzIntShift(file,  log);
                 break;
         }
         if (gen != null) {
             log.info("Generating decoy spectra");
-            File decoyFile = gen.Generate();
+            File decoyFile = gen.generate();
             
             log.info("Appending decoy to library");
             MergeFiles m = new MergeFiles(file, decoyFile);

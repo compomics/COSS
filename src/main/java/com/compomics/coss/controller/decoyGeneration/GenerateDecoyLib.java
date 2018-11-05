@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller.decoyGeneration;
 
-import com.compomics.coss.controller.UpdateListener;
 import com.compomics.ms2io.IndexKey;
 import com.compomics.ms2io.Indexer;
 import com.compomics.ms2io.MgfReader;
@@ -32,7 +26,7 @@ import java.io.IOException;
 public abstract class GenerateDecoyLib{
 
     protected final File file;
-     protected final UpdateListener lstnr;
+    // protected final UpdateListener lstnr;
     protected File decoyFile;
     protected  SpectraReader rd;
     protected  SpectraWriter wr;
@@ -40,14 +34,13 @@ public abstract class GenerateDecoyLib{
     protected org.apache.log4j.Logger log;
     
 
-    public GenerateDecoyLib(File f, UpdateListener lr, org.apache.log4j.Logger log) {
-
-        this.log=log;
+    public GenerateDecoyLib(File f, org.apache.log4j.Logger lg) {
+        this.log=lg;
         this.file = f;
-        this.lstnr=lr;
+       // this.lstnr=lr;
     }
     
-    public abstract File Generate();
+    public abstract File generate();
 
     protected String shuffle(String aaSequence) {
         
@@ -127,9 +120,9 @@ public abstract class GenerateDecoyLib{
     protected void shuffle(ArrayList<Peak> peakList) {
 
         ArrayList<Double> intensity=new ArrayList<>();
-        for(Peak pk:peakList){
+        peakList.stream().forEach((pk) -> {
             intensity.add(pk.getIntensity());
-        }
+        });
         
         Collections.shuffle(intensity);
         int count=0;
@@ -166,20 +159,15 @@ public abstract class GenerateDecoyLib{
         
         if (file.getName().endsWith("mgf")) {
             decoyFile = new File(file.getParent(), fileName + "_shuffledSeq" + ".mgf");
-            this.rd = new MgfReader(file, indxList);
-            this.wr = new MgfWriter(decoyFile);
+            rd = new MgfReader(file, indxList);
+            wr = new MgfWriter(decoyFile);
 
         } else if (file.getName().endsWith("msp")) {
             decoyFile = new File(file.getParent(), fileName + "shuffledSeq" + ".msp");
-            this.rd = new MspReader(file, indxList);
-            this.wr = new MspWriter(decoyFile);
+            rd = new MspReader(file, indxList);
+            wr = new MspWriter(decoyFile);
 
         }
-
-          
         
     }
-
-    
-
 }

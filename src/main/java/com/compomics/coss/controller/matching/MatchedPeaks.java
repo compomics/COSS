@@ -58,7 +58,7 @@ public class MatchedPeaks {
     
     public Map getMatchedPeaks(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2, double fragTolerance){
         List<Peak> mPeaks_2 = new ArrayList<>(); //matched peaks from filteredExpMS2_2
-        List<Peak> mPeaks_1 = new ArrayList<>(); //matched peaks from filteredExpMS2_2
+        List<Peak> mPeaks_1 = new ArrayList<>(); //matched peaks from filteredExpMS2_1
         Map<String, List<Peak>> map=new TreeMap<>();
 
         for (int i = 0; i < filteredExpMS2_1.size(); i++) {
@@ -75,7 +75,7 @@ public class MatchedPeaks {
                     matchedPeak_2 = peak_expMS2_2;
                     diff = Math.abs(tmp_diff);
                     found = true;
-                } else if (tmp_diff == diff) {
+                } else if (diff == tmp_diff) {
                     // so this peak is indeed in between of two peaks
                     // So, just the one on the left side is being chosen..
                 }

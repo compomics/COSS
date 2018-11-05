@@ -5,7 +5,6 @@
  */
 package com.compomics.coss.controller.decoyGeneration;
 
-import com.compomics.coss.controller.UpdateListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,11 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,12 +25,12 @@ public class RandomMzIntShift extends GenerateDecoyLib {
 
     File randomIntMz = null;
 
-    public RandomMzIntShift(File f, UpdateListener lr, org.apache.log4j.Logger log) {
-        super(f, lr, log);
+    public RandomMzIntShift(File f, org.apache.log4j.Logger log) {
+        super(f, log);
     }
 
     @Override
-    public File Generate() {
+    public File generate() {
         BufferedWriter bw = null;
         BufferedReader br = null;
         String filename;

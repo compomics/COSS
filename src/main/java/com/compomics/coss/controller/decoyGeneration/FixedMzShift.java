@@ -23,12 +23,12 @@ public class FixedMzShift extends GenerateDecoyLib {
 
     File mzShift = null;
 
-    public FixedMzShift(File f, UpdateListener lr, org.apache.log4j.Logger log) {
-        super(f, lr, log);
+    public FixedMzShift(File f, org.apache.log4j.Logger log) {
+        super(f,log);
     }
 
     @Override
-    public File Generate() {
+    public File generate() {
         BufferedWriter bw = null;
         BufferedReader br = null;
         String filename;

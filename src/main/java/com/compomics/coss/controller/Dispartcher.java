@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.logging.Level;
-import com.compomics.coss.controller.UpdateListener;
+import com.compomics.coss.controller.matching.CosineSimilarity;
 import com.compomics.coss.controller.matching.DataProducer;
 import com.compomics.coss.controller.matching.MSRobin;
 import com.compomics.coss.controller.matching.Matcher;
+import com.compomics.coss.controller.matching.MeanSquareError;
 import com.compomics.coss.controller.matching.Score;
 import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.ms2io.Spectrum;
@@ -31,19 +32,18 @@ public class Dispartcher {
     private DataProducer producer;
     private Matcher match;
 
-    public Dispartcher(ConfigData cnfData, UpdateListener lstner, org.apache.log4j.Logger log){
+    public Dispartcher(ConfigData cnfData, UpdateListener lstner, org.apache.log4j.Logger log) {
         this.listener = lstner;
         this.confData = cnfData;
         this.log = log;
 
     }
-   
 
     public void stopMatching() {
 
         match.cancel();
         producer.cancel();
-        if(this.listener!=null){
+        if (this.listener != null) {
             this.listener.updateprogress(0);
         }
 
@@ -57,12 +57,16 @@ public class Dispartcher {
             Score scoreObj = null;
             switch (confData.getScoringFunction()) {
                 case 0:
-                    scoreObj = new MSRobin(this.confData,this.log);
+                    scoreObj = new MSRobin(this.confData, this.log);
                     break;
-//                case 1: scoreObj = new MSRobin(this.confData, this.listener, this.log);
-//                break;
-//                case 2: scoreObj = new MSRobin(this.confData, this.listener, this.log);
-//                break;
+                case 1:
+                    scoreObj = new CosineSimilarity(this.confData, this.log);
+                    break;
+                case 2:
+                    scoreObj = new MeanSquareError(this.confData, this.log);
+                    break;
+                default: scoreObj = new MSRobin(this.confData, this.log);
+                    break;
 
             }
 
@@ -70,9 +74,9 @@ public class Dispartcher {
                 ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(20, true);
                 ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(20, true);
                 TheDataUnderComparison data = new TheDataUnderComparison(expspec, libSelected);
-             
+
                 producer = new DataProducer(data, confData);
-                match = new Matcher(scoreObj,producer,data, confData, listener, log);
+                match = new Matcher(scoreObj, producer, data, confData, listener, log);
 
                 ExecutorService executor = Executors.newFixedThreadPool(2);
 

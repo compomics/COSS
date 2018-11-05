@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller.matching;
 
-import com.compomics.coss.controller.UpdateListener;
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.Peak;
 import java.util.ArrayList;
@@ -30,9 +24,9 @@ public abstract class Score {
     protected final org.apache.log4j.Logger log;
      
 
-    public Score(ConfigData confData, org.apache.log4j.Logger log) {
+    public Score(ConfigData confData, org.apache.log4j.Logger lg) {
         this.confData=confData;     
-        this.log=log;
+        this.log=lg;
 
     }
 
@@ -56,8 +50,11 @@ public abstract class Score {
       
     }
     
-    protected double getTotalIntensity(ArrayList<Peak> peaks){
+    protected double calculateTotalIntensity(ArrayList<Peak> peaks){
         double sum=0;
+//        for(Peak p:peaks){
+//            sum+=p.getIntensity();
+//        }
         sum = peaks.stream().map((p) -> p.getIntensity()).reduce(sum, (accumulator, _item) -> accumulator + _item);
         
         return sum;

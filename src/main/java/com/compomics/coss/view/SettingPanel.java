@@ -14,7 +14,6 @@ import com.compomics.coss.controller.MainFrameController;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.util.Arrays;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -58,16 +57,16 @@ public class SettingPanel extends JPanel {
         
         Object[] filter = new Object[2];
         filter[0] = "HighPass";
-        filter[1] = "LowPass";
+        filter[1] = "   ";
 
         //Buttons
         JButton btntargetspec = new JButton("...");
         JButton btnLibspec = new JButton("...");
-        JButton btnApplyPreprocess = new JButton("Apply preprocess");
+        JButton btnApplyPreprocess = new JButton("Apply preprocessing");
         JButton btnSave = new JButton("Save My Settings");
         JButton btnClear = new JButton("Clear Inputs");
-        JButton btnLoad = new JButton("Loadd from Fiile");
-        btnApplyPreprocess.setEnabled(false);
+        JButton btnLoad = new JButton("Load from Fiile");
+        //btnApplyPreprocess.setEnabled(false);
 
         //Labels
         JLabel lbldblib = new JLabel("Spectral Library");
@@ -85,38 +84,38 @@ public class SettingPanel extends JPanel {
         cmbFragTolUnit.addItem("Dalton");
         cmbFragTolUnit.addItem("PPM");
 
+        cmbPrcTolUnit.setSelectedIndex(1);
         cmbFragTolUnit.setSelectedIndex(1);
         //Text field
         //txtdbspec = new JTextField();
         txttargetspec = new JTextField();
         txtMassWindow=new JTextField();
-        txtMassWindow.setEnabled(false);
+        //txtMassWindow.setEnabled(false);
         txtCutOff = new JTextField();
-        txtCutOff.setEnabled(false);
+        //txtCutOff.setEnabled(false);
         txtFragmentTolerance = new JTextField();
         txtPrecursorCharge = new JTextField();
         txtPrecursorTolerance = new JTextField();
 
         //Check Boxes
         chkFilter = new JCheckBox("Filter");
-        chkFilter.setSelected(true);
-        chkFilter.setEnabled(false);
+        //chkFilter.setSelected(true);
+       // chkFilter.setEnabled(false);
         chkRemovePrecursor = new JCheckBox("Remove Precursor");
-        chkRemovePrecursor.setSelected(false);
-        chkRemovePrecursor.setEnabled(false);
+        //chkRemovePrecursor.setEnabled(false);
         chkTransform = new JCheckBox("Transformation Type");
         chkTransform.setSelected(false);
-        chkTransform.setEnabled(false);
+        //chkTransform.setEnabled(false);
         //Combo Boxes
 
         //cboSpectraLibrary = new JComboBox();
         txtLibrary = new JTextField();
         //txtLibrary.setEnabled(false);
         cmbScoringFun = new JComboBox(scoringFun);
-        cmbScoringFun.setEditable(false);
+        //cmbScoringFun.setEditable(false);
 
         cmbTransformType = new JComboBox(transform);
-        cmbTransformType.setEnabled(false);
+        //cmbTransformType.setEnabled(false);
         
         cmbFilterType = new JComboBox(filter);
         cmbFilterType.setEnabled(false);
@@ -355,13 +354,13 @@ public class SettingPanel extends JPanel {
         add(scrollPane, BorderLayout.EAST);
 
         cmbScoringFun.addActionListener((ActionEvent e) -> {
-            JComboBox src = (JComboBox) e.getSource();
-            if (src.getSelectedIndex() != 0) {
-                JOptionPane.showMessageDialog(null,
-                        "Not applicable at the moment", "ERROR",
-                        JOptionPane.ERROR_MESSAGE);
-                cmbScoringFun.setSelectedIndex(0);
-            }
+//            JComboBox src = (JComboBox) e.getSource();
+//            if (src.getSelectedIndex() != 0) {
+//                JOptionPane.showMessageDialog(null,
+//                        "Not applicable at the moment", "ERROR",
+//                        JOptionPane.ERROR_MESSAGE);
+//                cmbScoringFun.setSelectedIndex(0);
+//            }
 
         });
 

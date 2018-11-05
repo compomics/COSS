@@ -71,7 +71,7 @@ public class MainFrameController implements UpdateListener {
     public boolean cencelled = false;
     public boolean isBussy = false;
     String fileTobeConfigure;
-    boolean settingSimilar;
+    boolean isSettingSame;
 
     public DefaultTableModel tblModelResult;
     public DefaultTableModel tblModelTarget;
@@ -90,7 +90,7 @@ public class MainFrameController implements UpdateListener {
 
         configData = new ConfigData();
         fileTobeConfigure = "both";
-        settingSimilar = false;
+        isSettingSame = false;
         isReaderReady = false;
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
@@ -111,7 +111,7 @@ public class MainFrameController implements UpdateListener {
         logTextAreaAppender.setLayout(layout);
 
         final String[] colNamesRes = {"Title", "Scan Num.", "Sequence", "Protein", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
-        final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Validation", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
+        final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Validation(FDR)", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
 
         tblModelResult = new DefaultTableModel(colNamesRes, 0) {
             @Override
@@ -223,14 +223,17 @@ public class MainFrameController implements UpdateListener {
         }
 
     }
+    
+    List<ComparisonResult> validatedResult;
 
     /**
      * start search against decoy database
      */
     public void validateResult() {
         Validation validate = new Validation();
-        cutoff_index_1percent = validate.validate(result, 0.01);
-        cutoff_index_5percent = validate.validate(result, 0.05);
+        result = validate.validate(result, 0.01);
+        //cutoff_index_1percent = validate.validate(result, 0.01);
+        //cutoff_index_5percent = validate.validate(result, 0.05);
 
     }
 
@@ -253,25 +256,25 @@ public class MainFrameController implements UpdateListener {
         int cutOff= Integer.parseInt(settingsPnl.txtCutOff.getText());
         boolean removePCM=settingsPnl.chkRemovePrecursor.isSelected();
 
-        if (settingsPnl.cmbFragTolUnit.getSelectedIndex() != 0) {
-            fragTolerance /= (double) 1000;
+        if (settingsPnl.cmbFragTolUnit.getSelectedIndex() != 0) {//if in PPM 
+            fragTolerance /= (double) 1000000;
         }
-//        if(settingsPnl.cmbPrcTolUnit.getSelectedIndex() !=0){
-//            precTolerance /=(double)1000;
-//        }
+        if(settingsPnl.cmbPrcTolUnit.getSelectedIndex() !=0){ //if in PPM
+            precTolerance /=(double)1000000;
+        }
 
-        settingSimilar = false;
+        isSettingSame = false;
 
         if (configData.getScoringFunction() == scoringFun
                 && configData.getMaxPrecursorCharg() == maxPrecCharg
                 && configData.getPrecTol() == precTolerance
                 && configData.getfragTol() == fragTolerance) {
-            settingSimilar = true;
+            isSettingSame = true;
 
         }
 
         //no need to reload settings if they are similar and flag up for not repeating same search
-        if (!settingSimilar) {            
+        if (!isSettingSame) {            
             configData.setScoringFunction(scoringFun);
             configData.setIntensityOption(0);
             configData.setMsRobinOption(0);
@@ -562,14 +565,16 @@ public class MainFrameController implements UpdateListener {
                 row[5] = Double.toString(score);
 
                 if (configData.isDecoyAvailable()) {
-                    if (p <= cutoff_index_1percent) {
-                        //conf= score * 100;
-                        row[6] = "< 1%FDR";// Double.toString(Math.round(conf));
-                    } else if (p < cutoff_index_5percent) {
-                        row[6] = "<5% FDR ";
-                    } else {
-                        row[6] = ">5% FDR";
-                    }
+                    row[6] = Double.toString(res.getFDR());
+                    
+//                    if (p <= cutoff_index_1percent) {
+//                        //conf= score * 100;
+//                        row[6] = "< 1%";// Double.toString(Math.round(conf));
+//                    } else if (p < cutoff_index_5percent) {
+//                        row[6] = "<5%";
+//                    } else {
+//                        row[6] = ">5%";
+//                    }
                 } else {
                     row[6] = "NA";
                 }
@@ -791,7 +796,7 @@ public class MainFrameController implements UpdateListener {
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+            String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation(FDR)", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
@@ -832,21 +837,22 @@ public class MainFrameController implements UpdateListener {
                 Row row = sheet.createRow(rowNum);
                 spec = res.getEspSpectrum();
                 row.createCell(0).setCellValue(spec.getTitle());
-                row.createCell(1).setCellValue(mSpec.get(s).getSource());
+                row.createCell(1).setCellValue(Integer.toString(mSpec.get(s).getSource()));
                 row.createCell(2).setCellValue(spec.getScanNumber());
                 row.createCell(3).setCellValue(mSpec.get(s).getSequence());
                 row.createCell(4).setCellValue(spec.getPCMass());
                 row.createCell(5).setCellValue(spec.getCharge());
                 row.createCell(6).setCellValue(Double.toString(res.getTopScore()));
                 if (configData.isDecoyAvailable()) {
-                    if (rowNum - 1 <= cutoff_index_1percent) {
-                        //conf= score * 100;
-                        row.createCell(7).setCellValue("<1% FDR");
-                    } else if (rowNum - 1 <= cutoff_index_5percent) {
-                        row.createCell(7).setCellValue("<5% FDR");
-                    } else {
-                        row.createCell(7).setCellValue(">5% FDR");
-                    }
+                    row.createCell(7).setCellValue(Double.toString(res.getFDR()));
+//                    if (rowNum - 1 <= cutoff_index_1percent) {
+//                        //conf= score * 100;
+//                        row.createCell(7).setCellValue("<1%");
+//                    } else if (rowNum - 1 <= cutoff_index_5percent) {
+//                        row.createCell(7).setCellValue("<5%");
+//                    } else {
+//                        row.createCell(7).setCellValue(">5%");
+//                    }
                 } else {
                     row.createCell(7).setCellValue("NA");
                 }
@@ -871,7 +877,7 @@ public class MainFrameController implements UpdateListener {
 
             fileOut = new FileOutputStream(filename + ".xlsx");
             workbook.write(fileOut);
-            fileOut.close();
+            //fileOut.close();
             // Closing the workbook
             workbook.close();
         } catch (FileNotFoundException ex) {

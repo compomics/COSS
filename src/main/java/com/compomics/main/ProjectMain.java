@@ -96,8 +96,8 @@ public class ProjectMain {
             textArea.setLineWrap(true);
             textArea.setWrapStyleWord(true);
 
-            JOptionPane.showMessageDialog(null, scrollPane, "Score pipeline startup error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
+            JOptionPane.showMessageDialog(null, scrollPane, "COSS startup error", JOptionPane.ERROR_MESSAGE);
+          
         }
     }
 

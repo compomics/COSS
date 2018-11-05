@@ -19,6 +19,7 @@ public class LogTextAreaAppender extends WriterAppender {
 
     public void setLogArea(MainGUI frame) {
         this.frm = frame;
+        this.frm.txtlog.setText("");
     }
 
     @Override
