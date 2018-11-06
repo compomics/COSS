@@ -53,32 +53,32 @@ public class CosineSimilarity extends Score {
         }
 
         matchedNumPeaks = mPeaksExp.size();
-      
+
         return (cosineScore(mPeaksExp, mPeaksLib));
     }
 
     private double cosineScore(List<Peak> v1, List<Peak> v2) {
-
-        double productSum = 0;
-        double v1SquareSum = 0;
-        double v2SquareSum = 0;
         double score = 0;
+        if (matchedNumPeaks != 0) {
+            double productSum = 0;
+            double v1SquareSum = 0;
+            double v2SquareSum = 0;
 
-        for (int a = 0; a < matchedNumPeaks; a++) {
-            productSum += v1.get(a).getIntensity() * v2.get(a).getIntensity();
-            v1SquareSum += v1.get(a).getIntensity() * v1.get(a).getIntensity();
-            v2SquareSum += v2.get(a).getIntensity() * v2.get(a).getIntensity();
+            for (int a = 0; a < matchedNumPeaks; a++) {
+                productSum += v1.get(a).getIntensity() * v2.get(a).getIntensity();
+                v1SquareSum += v1.get(a).getIntensity() * v1.get(a).getIntensity();
+                v2SquareSum += v2.get(a).getIntensity() * v2.get(a).getIntensity();
 
-            sumMatchedIntExp += v1.get(a).getIntensity();
-            sumMatchedIntLib += v2.get(a).getIntensity();
-        }
+                sumMatchedIntExp += v1.get(a).getIntensity();
+                sumMatchedIntLib += v2.get(a).getIntensity();
+            }
 
-        double sqrtV1 = Math.sqrt(v1SquareSum);
-        double sqrtV2 = Math.sqrt(v2SquareSum);
-        if (sqrtV1 != 0 && sqrtV2 != 0) {
+            double sqrtV1 = Math.sqrt(v1SquareSum);
+            double sqrtV2 = Math.sqrt(v2SquareSum);
             score = productSum / (sqrtV1 * sqrtV2);
-        }
+            score*= (matchedNumPeaks*matchedNumPeaks);
 
+        }
         return score;
     }
 

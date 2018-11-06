@@ -59,9 +59,12 @@ public class ComparisonResult implements Comparable<ComparisonResult>, Serializa
     public int compareTo(ComparisonResult t) {
         
          BigDecimal bd1=BigDecimal.valueOf(this.topScore);
-        BigDecimal bd2=BigDecimal.valueOf(t.topScore);       
+        BigDecimal bd2=BigDecimal.valueOf(t.topScore);   
         
-        return bd1.compareTo(bd2);
+        int isEqual=bd1.compareTo(bd2);
+        
+        
+        return isEqual;
     }
 
 }

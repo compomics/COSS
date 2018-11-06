@@ -42,17 +42,32 @@ public class Validation {
 
             fdr_calculated = numDecoy / (double) (numTarget);
             r.setFDR(fdr_calculated);
-            if(isDecoy==0 && fdr_calculated < fdr_given){
-                validatedResult.add(r);
-            }
-            
+//            if(isDecoy==0 && fdr_calculated < fdr_given){
+//                validatedResult.add(r);
+//            }
+//            
         }
+         Collections.reverse(result);
+         
+          double fdrLocalMin = result.get(0).getFDR();
+      
+        for(ComparisonResult r: result){
+            double fdrCurrent=r.getFDR();       
+            if(fdrCurrent > fdrLocalMin){
+                r.setFDR(fdrLocalMin);
+            }else{
+                fdrLocalMin=fdrCurrent;
+            }
+                   
+        }  
+        Collections.reverse(result);
+         
 //        if(numDecoy==0){
 //            validatedResult=result;
 //        }
             
        
-        return validatedResult;
+        return null;
     }
     
     private int testvalidated(List<ComparisonResult> result, double fdr_given){
@@ -84,14 +99,15 @@ public class Validation {
         }
         
         Collections.reverse(result);
-        int localMinIndex=localMinima(result, 0, len-1, len);
-        double fdrLocalMin=result.get(localMinIndex).getFDR();
-        Collections.reverse(result);
+        
+        double fdrLocalMin = result.get(0).getFDR();
       
         for(ComparisonResult r: result){
             double fdrCurrent=r.getFDR();       
             if(fdrCurrent > fdrLocalMin){
-                return cutoff_index;
+                r.setFDR(fdrLocalMin);
+            }else{
+                fdrLocalMin=fdrCurrent;
             }
             cutoff_index++;            
         }  

@@ -231,7 +231,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void validateResult() {
         Validation validate = new Validation();
-        result = validate.validate(result, 0.01);
+        validate.validate(result, 0.01);
         //cutoff_index_1percent = validate.validate(result, 0.01);
         //cutoff_index_5percent = validate.validate(result, 0.05);
 
@@ -276,7 +276,7 @@ public class MainFrameController implements UpdateListener {
         //no need to reload settings if they are similar and flag up for not repeating same search
         if (!isSettingSame) {            
             configData.setScoringFunction(scoringFun);
-            configData.setIntensityOption(0);
+            configData.setIntensityOption(3);
             configData.setMsRobinOption(0);
             
             //instrument settings

@@ -125,10 +125,12 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     
      @Override
     public int compareTo(MatchedLibSpectra t) {
+        
         BigDecimal bd1=BigDecimal.valueOf(this.score);
         BigDecimal bd2=BigDecimal.valueOf(t.score);       
+        int isEqual=bd1.compareTo(bd2);
+        return isEqual;
         
-        return bd1.compareTo(bd2);
     }
 
    

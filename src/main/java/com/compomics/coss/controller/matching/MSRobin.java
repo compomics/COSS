@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
- 
+ *
  *
  * @author Genet
  */
@@ -19,11 +20,9 @@ public class MSRobin extends Score {
      * @param log
      */
     public MSRobin(ConfigData confData, org.apache.log4j.Logger log) {
-        super(confData,log);
+        super(confData, log);
 
     }
-
-    
 
     /**
      * To calculate CumulativeBinominalProbability with given n,N and p values.
@@ -43,9 +42,8 @@ public class MSRobin extends Score {
         return probability;
     }
 
-    
     /**
-     * 
+     *
      * @param lenA number of peaks in experimental spectrum
      * @param lenB number of peaks in library spectrum
      * @param topN Top intense peaks selected from each spectrum
@@ -69,19 +67,19 @@ public class MSRobin extends Score {
             totalN = lenA;
 
         } else {
-            
+
             double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
             sumTotalIntExp = sumTotalIntLib;
-            sumTotalIntLib = temp;            
-            
+            sumTotalIntLib = temp;
+
             map = prepareData(libSpec, expSpec);
             totalN = lenB;
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
-            
+
         }
-        
-        matchedNumPeaks = mPeaksExp.size();        
+
+        matchedNumPeaks = mPeaksExp.size();
         intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
         double finalScore = getfinalScore(totalN, probability, intensity_part);
         return finalScore;
@@ -121,7 +119,7 @@ public class MSRobin extends Score {
             score += 0; // just making sure the value would not be negative zero           
 
         } catch (Exception ex) {
-            
+
             Logger.getLogger(MSRobin.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -134,46 +132,26 @@ public class MSRobin extends Score {
         double alpha_alpha = 0,
                 beta_beta = 0,
                 alpha_beta = 0;
-        double expSpecMatchedInt=0;
-        double libSpecMatchedInt=0;
-        
+        double expSpecMatchedInt = 0;
+        double libSpecMatchedInt = 0;
+
         for (int k = 0; k < matchedNumPeaks; k++) {
             alpha_alpha += mPeaksExp.get(k).getIntensity() * mPeaksExp.get(k).getIntensity();
             beta_beta += mPeaksLib.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
             alpha_beta += mPeaksExp.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
 
-            expSpecMatchedInt+=mPeaksExp.get(k).getIntensity();
-            libSpecMatchedInt+=mPeaksLib.get(k).getIntensity();
-            
-        }
-        
-            sumMatchedIntExp = expSpecMatchedInt;
-            sumMatchedIntLib = libSpecMatchedInt;
+            expSpecMatchedInt += mPeaksExp.get(k).getIntensity();
+            libSpecMatchedInt += mPeaksLib.get(k).getIntensity();
 
-        if (sumTotalIntExp == 0 || sumTotalIntLib == 0) {
-            return 0;
         }
-        double tmp_part_1 = sumMatchedIntExp / sumTotalIntExp,
-                tmp_part_2 = sumMatchedIntLib / sumTotalIntLib;
-       
 
-        switch (confData.getIntensityOption()) {
-            case 0:
-                int_part = (0.5 * tmp_part_1) + (0.5 * tmp_part_2);
-                break;
-            case 1:
-                int_part = tmp_part_1 * tmp_part_2;
-                break;
-            case 2:
-                int_part = Math.pow(10, (1 - (tmp_part_1 * tmp_part_2)));
-                break;
-            case 3:if(matchedNumPeaks!=0){
-                int_part = alpha_beta / (Math.sqrt(alpha_alpha * beta_beta));
-            }
-            break;
-            default:
-                break;
+        sumMatchedIntExp = expSpecMatchedInt;
+        sumMatchedIntLib = libSpecMatchedInt;
+
+        if (matchedNumPeaks != 0) {
+            int_part = alpha_beta / (Math.sqrt(alpha_alpha * beta_beta));
         }
+
         return int_part;
     }
 

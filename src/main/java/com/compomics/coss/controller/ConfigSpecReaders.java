@@ -62,7 +62,7 @@ public class ConfigSpecReaders {
     }
 
     public void startConfig() {
-        if (this.fileExperimnt.getName().endsWith("mgf") || this.fileExperimnt.getName().endsWith("msp")) {
+        if ((this.fileExperimnt.getName().endsWith("mgf") || this.fileExperimnt.getName().endsWith("msp")) &&  (this.fileLibrary.getName().endsWith("mgf") || this.fileLibrary.getName().endsWith("msp")) ) {
             
             switch (configFiles) {
                 case "both":
@@ -134,9 +134,9 @@ public class ConfigSpecReaders {
             String fName=this.fileLibrary.getName().substring(0, this.fileLibrary.getName().indexOf("."));            
             String path=this.fileLibrary.getParent();
             File tempFile=new File(path + "\\" +fName +".idx");
-            int indxFile=0;
+            int indxFile=0; // index file is not found and going to be created
             if(tempFile.exists()){
-                indxFile=1;
+                indxFile=1;//index file already found and used for reading only
             }
             
             //Generate index list of spectrum library file

@@ -43,16 +43,6 @@ public abstract class GenerateDecoyLib{
     public abstract File generate();
 
     protected String shuffle(String aaSequence) {
-        
-//        List<Character> characters = new ArrayList<>();
-//        for (char c : aaSequence.toCharArray()) {
-//            characters.add(c);
-//        }
-//        StringBuilder shuffledSequence = new StringBuilder(aaSequence.length());
-//        while (!characters.isEmpty()) {
-//            int randPicker = (int) (Math.random() * characters.size());
-//            shuffledSequence.append(characters.remove(randPicker));
-//        }
 
         char[] shuffledSequence = aaSequence.toCharArray();        
         ArrayUtils.shuffle(shuffledSequence);

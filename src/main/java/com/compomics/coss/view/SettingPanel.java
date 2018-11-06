@@ -85,7 +85,7 @@ public class SettingPanel extends JPanel {
         cmbFragTolUnit.addItem("PPM");
 
         cmbPrcTolUnit.setSelectedIndex(1);
-        cmbFragTolUnit.setSelectedIndex(1);
+        cmbFragTolUnit.setSelectedIndex(0);
         //Text field
         //txtdbspec = new JTextField();
         txttargetspec = new JTextField();

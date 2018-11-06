@@ -68,7 +68,7 @@ public class FixedMzShift extends GenerateDecoyLib {
 
                 } else if ((line.startsWith("Name") && fileExtension.equals("msp")) || (line.startsWith("TITLE") && fileExtension.equals("mgf"))) {
                     line += "_decoy";
-                    System.out.println("Current spectrum index :  " + Integer.toString(count));
+                    System.out.println("Current decoy spectrum index generated :  " + Integer.toString(count));
                     count++;
                 }
 
