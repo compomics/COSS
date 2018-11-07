@@ -69,7 +69,17 @@ You can run COSS as CLI or our user-friendly GUI.
 ----
 
 ## Usage
-- Running COSS(GUI): download COSS from the link provided and unzip, and double click on COSS-X.Y.jar file to run the system. where X.Y   stands for the version number(eg. COSS-1.1.jar).
+- Running COSS(GUI): download COSS from the link provided and unzip it.
+  On windows: your can run COSS by double clicking on COSS-X.Y.jar file or it can be started on command line using the following command  
+                $java -jar COSS-X.Y.jar
+  * X.Y   stands for the version number(eg. COSS-1.1.jar).
+  
+  On Ubuntu machine: COSS can be run using the command 
+             $java -jar COSS-X.Y.jar
+			 
+
+	*Make sure java is installed on your machine.
+	
 - Parameter Setting: Select and fill all the parameters needed.
 
 *It is recommonded that your spectral library has a decoy spectra for result validation. If your library file doens contain a decoy spectra, you can start by generating decoy using COSS. COSS has two algorithms to generate decoy spectra for the given library. Click  GenerateDecoy menue and select the algorithm to generate the decoy spectra equeal to the size of your spectra library and concatenate to your library.

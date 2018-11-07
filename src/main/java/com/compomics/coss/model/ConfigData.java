@@ -16,6 +16,7 @@ public class ConfigData {
     //User input experimental and library spectra file   
     private File experimentalSpecFile = null;
     private File specLibraryFile = null;
+    private File experimentalSpecDirectry=null;
     
     //scoring function
     private int scoringFun;//index
@@ -188,6 +189,13 @@ public class ConfigData {
         this.scoringFun = matchAlgorithm;
     }
 
+    public File getExperimentalSpecFolder(){
+        return this.experimentalSpecDirectry;
+    }
+    
+    public void setExperimentalSpecFolder(File directory){
+        this.experimentalSpecDirectry=directory;
+    }
     public File getExperimentalSpecFile() {
         return this.experimentalSpecFile;
     }
