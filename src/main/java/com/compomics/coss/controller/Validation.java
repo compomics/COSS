@@ -41,6 +41,7 @@ public class Validation {
             }
 
             fdr_calculated = numDecoy / (double) (numTarget);
+            fdr_calculated = (double)Math.round(fdr_calculated * 100000d) / 100000d;
             r.setFDR(fdr_calculated);
 //            if(isDecoy==0 && fdr_calculated < fdr_given){
 //                validatedResult.add(r);

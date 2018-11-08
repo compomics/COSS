@@ -138,11 +138,14 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                                 tempLenB = lenB;
                                 mNumPeaks = algorithm.getNumMatchedPeaks();
                             }
+                            
+                            
                             scores.add(score);
                             //double intensity_part = object.getIntensity_part();
                             //double probability_part = object.getProbability_part();
                         }
                         double finalScore = Collections.max(scores);
+                        finalScore = (double)Math.round(finalScore * 100000d) / 100000d;
                         //scores.clear();
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
