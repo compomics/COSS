@@ -837,14 +837,14 @@ public class MainFrameController implements UpdateListener {
                 Row row = sheet.createRow(rowNum);
                 spec = res.getEspSpectrum();
                 row.createCell(0).setCellValue(spec.getTitle());
-                row.createCell(1).setCellValue(Integer.toString(mSpec.get(s).getSource()));
+                row.createCell(1).setCellValue(mSpec.get(s).getSource());
                 row.createCell(2).setCellValue(spec.getScanNumber());
                 row.createCell(3).setCellValue(mSpec.get(s).getSequence());
                 row.createCell(4).setCellValue(spec.getPCMass());
                 row.createCell(5).setCellValue(spec.getCharge());
-                row.createCell(6).setCellValue(Double.toString(res.getTopScore()));
+                row.createCell(6).setCellValue(res.getTopScore());
                 if (configData.isDecoyAvailable()) {
-                    row.createCell(7).setCellValue(Double.toString(res.getFDR()));
+                    row.createCell(7).setCellValue(res.getFDR());
 //                    if (rowNum - 1 <= cutoff_index_1percent) {
 //                        //conf= score * 100;
 //                        row.createCell(7).setCellValue("<1%");
@@ -856,13 +856,13 @@ public class MainFrameController implements UpdateListener {
                 } else {
                     row.createCell(7).setCellValue("NA");
                 }
-                row.createCell(8).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()));
-                row.createCell(9).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()));
-                row.createCell(10).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()));
-                row.createCell(11).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()));
-                row.createCell(12).setCellValue(Integer.toString(mSpec.get(s).getNumMatchedPeaks()));
-                row.createCell(13).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()));
-                row.createCell(14).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()));
+                row.createCell(8).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Exp());
+                row.createCell(9).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Lib());
+                row.createCell(10).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
+                row.createCell(11).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
+                row.createCell(12).setCellValue(mSpec.get(s).getNumMatchedPeaks());
+                row.createCell(13).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
+                row.createCell(14).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
                 rowNum++;
 
                 //}
@@ -871,9 +871,9 @@ public class MainFrameController implements UpdateListener {
                 sheet.autoSizeColumn(i);
             }   // Write the output to a file
 
-            int total_len = result.size();
-            sheet.shiftRows(cutoff_index_1percent, total_len, 1);
-            sheet.shiftRows(cutoff_index_5percent, total_len, 1);
+            //int total_len = result.size();
+           // sheet.shiftRows(cutoff_index_1percent, total_len, 1);
+           // sheet.shiftRows(cutoff_index_5percent, total_len, 1);
 
             fileOut = new FileOutputStream(filename + ".xlsx");
             workbook.write(fileOut);

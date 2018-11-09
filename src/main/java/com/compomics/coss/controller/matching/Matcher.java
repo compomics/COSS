@@ -145,7 +145,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             //double probability_part = object.getProbability_part();
                         }
                         double finalScore = Collections.max(scores);
-                        finalScore = (double)Math.round(finalScore * 100000d) / 100000d;
+                        finalScore = (double)Math.round(finalScore * 1000d) / 1000d;
                         //scores.clear();
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
