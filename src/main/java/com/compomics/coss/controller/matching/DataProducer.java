@@ -94,7 +94,9 @@ public class DataProducer implements Runnable { //procucer thread
                         Map.Entry mapping = (Map.Entry) entriesIterator.next();
                         mz = (double) mapping.getKey();
                         intensity = (double) mapping.getValue();
-                        peakList.add(new Peak(mz, intensity));
+                        if(intensity > 0.9){
+                            peakList.add(new Peak(mz, intensity));
+                        }
                     }
 
                     if (jmzSpec.getPrecursorMZ() != 0) {

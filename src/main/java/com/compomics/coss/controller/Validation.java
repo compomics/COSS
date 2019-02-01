@@ -25,19 +25,19 @@ public class Validation {
         double fdr_calculated = 0;
        // Spectrum spec;
 
-        List<ComparisonResult>  validatedResult=new ArrayList<>();
+        //List<ComparisonResult>  validatedResult=new ArrayList<>();
         
         for (ComparisonResult r : result) {
             
-            int isDecoy=0;
+           // int isDecoy=0;
             if (r.getMatchedLibSpec().get(0).getSource() == 1) {
 
                 numDecoy++;
-                isDecoy=1;
+               // isDecoy=1;
 
             } else {
                 numTarget++;
-                isDecoy=0;
+               //isDecoy=0;
             }
 
             fdr_calculated = numDecoy / (double) (numTarget);
