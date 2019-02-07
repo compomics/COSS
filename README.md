@@ -62,7 +62,7 @@ It is also possible to save result in .cos format so that users can import it to
 ----
 ## Downloads
 
-Download the latest version of COSS  <a href="http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/.zip" onclick="trackOutboundLink('usage','download','coss','http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/.zip'); return false;">here</a>.  
+Download the latest version of COSS  <a href="http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/COSS-1.0.zip" onclick="trackOutboundLink('usage','download','coss','http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/.zip'); return false;">here</a>.  
 
 You can run COSS as CLI or our user-friendly GUI. 
 
