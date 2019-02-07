@@ -39,6 +39,9 @@ public class Dispartcher {
 
     }
 
+    /**
+     * stops matching process upon cancel event
+     */
     public void stopMatching() {
 
         match.cancel();
@@ -49,6 +52,11 @@ public class Dispartcher {
 
     }
 
+    /**
+     * dispatch the work of matching to the algorithm selected  
+     * 
+     * @return:returns the comparison result computed
+     */
     public List<ComparisonResult> dispatch() {
 
         List<ComparisonResult> simResult = new ArrayList<>();

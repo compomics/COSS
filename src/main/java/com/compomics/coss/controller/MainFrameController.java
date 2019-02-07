@@ -64,9 +64,6 @@ public class MainFrameController implements UpdateListener {
     Dispartcher dispatcher;
     private static List<ComparisonResult> result = null;
 
-    private int cutoff_index_1percent;
-    private int cutoff_index_5percent;
-
     ConfigData configData;
     public boolean cencelled = false;
     public boolean isBussy = false;
@@ -89,8 +86,8 @@ public class MainFrameController implements UpdateListener {
     public void init() {
 
         configData = new ConfigData();
-        fileTobeConfigure = "both";
-        isSettingSame = false;
+        fileTobeConfigure = "both"; //asume both query and library files to be read
+        isSettingSame = false; 
         isReaderReady = false;
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
@@ -110,6 +107,7 @@ public class MainFrameController implements UpdateListener {
         layout.setConversionPattern("%d{yyyy-MM-dd HH:mm:ss} - %m%n");
         logTextAreaAppender.setLayout(layout);
 
+        //Initializing result tables
         final String[] colNamesRes = {"Title", "Scan Num.", "Sequence", "Protein", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
         final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Validation(FDR)", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
 
@@ -132,19 +130,18 @@ public class MainFrameController implements UpdateListener {
         resultPnl.tblTargetSpectra.setModel(tblModelTarget);
         resultPnl.tblBestMatch.setModel(tblModelResult);
 
-        //cmbModel = new DefaultComboBoxModel();
-        //settingsPnl.cboSpectraLibrary.setModel(cmbModel);
+        //cleaning display area
         spectrumDisplay(0);
         rasterDisplay();
 
         LOG.addAppender(logTextAreaAppender);
         LOG.setLevel((Level) Level.INFO);
-        LoadData();//loading data from propery file to user interface
+        LoadData();//Read input configData from file and put on GUI
 
     }//</editor-fold>
 
     /**
-     * Show the view of this controller.
+     * Show the main window of .
      */
     public void showMainFrame() {
 
@@ -203,10 +200,17 @@ public class MainFrameController implements UpdateListener {
         }
 
     }
+    
+    /**
+     * This function is responsible to index and
+     * read both experimental and spectral library file
+     * 
+     */
 
     public void configReader() {
 
         List<String> validationMessages = validateInpFiles();
+        //if input files are empty and  are in incorrect format
         if (!validationMessages.isEmpty()) {
             StringBuilder message = new StringBuilder();
             validationMessages.stream().forEach((validationMessage) -> {
@@ -232,8 +236,6 @@ public class MainFrameController implements UpdateListener {
     public void validateResult() {
         Validation validate = new Validation();
         validate.validate(result, 0.01);
-        //cutoff_index_1percent = validate.validate(result, 0.01);
-        //cutoff_index_5percent = validate.validate(result, 0.05);
 
     }
 
@@ -567,14 +569,7 @@ public class MainFrameController implements UpdateListener {
                 if (configData.isDecoyAvailable()) {
                     row[6] = Double.toString(res.getFDR());
                     
-//                    if (p <= cutoff_index_1percent) {
-//                        //conf= score * 100;
-//                        row[6] = "< 1%";// Double.toString(Math.round(conf));
-//                    } else if (p < cutoff_index_5percent) {
-//                        row[6] = "<5%";
-//                    } else {
-//                        row[6] = ">5%";
-//                    }
+
                 } else {
                     row[6] = "NA";
                 }
@@ -609,7 +604,6 @@ public class MainFrameController implements UpdateListener {
             double score;
 
             for (MatchedLibSpectra mSpec : specs) {
-// final String[] colNamesRes = {"Title", "Scan Num." , "Sequence", "Protein", "M/Z", "Charge", "Score","#Peaks","#FiltedPeaks", "TotalInt","MatchedInt"};
                 spec = mSpec.getSpectrum();
                 score = mSpec.getScore();
                 row[0] = spec.getTitle();
@@ -716,6 +710,7 @@ public class MainFrameController implements UpdateListener {
      * @param type refers how result be saved, as excel import or coss object
      * that can be displayed later type=0 for coss object type=1 to save result
      * in excel format
+     * @throws java.io.IOException
      */
     public void saveResult(int type) throws IOException {
 
@@ -845,14 +840,7 @@ public class MainFrameController implements UpdateListener {
                 row.createCell(6).setCellValue(res.getTopScore());
                 if (configData.isDecoyAvailable()) {
                     row.createCell(7).setCellValue(res.getFDR());
-//                    if (rowNum - 1 <= cutoff_index_1percent) {
-//                        //conf= score * 100;
-//                        row.createCell(7).setCellValue("<1%");
-//                    } else if (rowNum - 1 <= cutoff_index_5percent) {
-//                        row.createCell(7).setCellValue("<5%");
-//                    } else {
-//                        row.createCell(7).setCellValue(">5%");
-//                    }
+
                 } else {
                     row.createCell(7).setCellValue("NA");
                 }
@@ -871,9 +859,7 @@ public class MainFrameController implements UpdateListener {
                 sheet.autoSizeColumn(i);
             }   // Write the output to a file
 
-            //int total_len = result.size();
-           // sheet.shiftRows(cutoff_index_1percent, total_len, 1);
-           // sheet.shiftRows(cutoff_index_5percent, total_len, 1);
+         
 
             fileOut = new FileOutputStream(filename + ".xlsx");
             workbook.write(fileOut);
@@ -1040,6 +1026,10 @@ public class MainFrameController implements UpdateListener {
         targetView.pnlVizSpectrum.revalidate();
 
     }
+    
+    /**
+     * clears the graphical area
+     */
 
     private void clearGraphicArea() {
         resultPnl.pnlVisualSpectrum.removeAll();
@@ -1051,6 +1041,11 @@ public class MainFrameController implements UpdateListener {
     Generate gn = null;
     File libFile = null;
 
+    /**
+     * generate decoy library and append on the given spectral library file
+     * @param i : type of decoy generation technique; 0 if fixed mz value shift
+     * 1 is random mz and intensity change of each peak in the spectrum
+     */
     public void generateDeoy(int i) {
         String tempS2 = settingsPnl.txtLibrary.getText();
         if ("".equals(tempS2)) {

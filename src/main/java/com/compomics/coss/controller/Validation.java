@@ -2,8 +2,6 @@
 package com.compomics.coss.controller;
 
 import com.compomics.coss.model.ComparisonResult;
-import com.compomics.ms2io.Spectrum;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,30 +21,21 @@ public class Validation {
         int numDecoy = 0;
         int numTarget = 0;
         double fdr_calculated = 0;
-       // Spectrum spec;
-
-        //List<ComparisonResult>  validatedResult=new ArrayList<>();
         
         for (ComparisonResult r : result) {
             
-           // int isDecoy=0;
             if (r.getMatchedLibSpec().get(0).getSource() == 1) {
 
                 numDecoy++;
-               // isDecoy=1;
 
             } else {
                 numTarget++;
-               //isDecoy=0;
             }
 
             fdr_calculated = numDecoy / (double) (numTarget);
             fdr_calculated = (double)Math.round(fdr_calculated * 100000d) / 100000d;
             r.setFDR(fdr_calculated);
-//            if(isDecoy==0 && fdr_calculated < fdr_given){
-//                validatedResult.add(r);
-//            }
-//            
+            
         }
          Collections.reverse(result);
          
@@ -62,73 +51,11 @@ public class Validation {
                    
         }  
         Collections.reverse(result);
-         
-//        if(numDecoy==0){
-//            validatedResult=result;
-//        }
-            
+ 
        
         return null;
     }
     
-    private int testvalidated(List<ComparisonResult> result, double fdr_given){
-         int cutoff_index = 0;
-        int numDecoy = 0;
-        int numTarget = 0;
-        double fdr_calculated = 0;
-        Spectrum spec;
-        int len = result.size();
-
-        List<ComparisonResult>  validatedResult=new ArrayList<>();
-        for (ComparisonResult r : result) {
-            // ArrayList<ComparisonResult> rDecoy=decoyResult.get(c++);
-            spec = r.getMatchedLibSpec().get(0).getSpectrum();
-            if (spec.getTitle().contains("decoy")) {
-
-                numDecoy++;
-
-            } else {
-                numTarget++;
-            }
-
-            fdr_calculated = numDecoy / (double) (numTarget);
-            r.setFDR(fdr_calculated);
-            
-        }
-        if(numDecoy==0){
-            return len-1;
-        }
-        
-        Collections.reverse(result);
-        
-        double fdrLocalMin = result.get(0).getFDR();
-      
-        for(ComparisonResult r: result){
-            double fdrCurrent=r.getFDR();       
-            if(fdrCurrent > fdrLocalMin){
-                r.setFDR(fdrLocalMin);
-            }else{
-                fdrLocalMin=fdrCurrent;
-            }
-            cutoff_index++;            
-        }  
-        
-        return cutoff_index;
-    }
-    
-    // search and return index of the local minima
-    //based on binary searching algorithm
-    public int localMinima(List<ComparisonResult> resList, int low, int high, int n) 
-    {           
-        int mid = low + (high - low) / 2;        
-        if(mid == 0 || resList.get(mid - 1).getFDR() > resList.get(mid).getFDR() && mid == n - 1 ||  
-           resList.get(mid).getFDR() < resList.get(mid+1).getFDR()) 
-                return mid; 
-          
-        else if(mid > 0 && resList.get(mid-1).getFDR()< resList.get(mid).getFDR()) 
-                return localMinima(resList, low, mid - 1, n); 
-          
-        return localMinima(resList, mid + 1, high, n); 
-    } 
+   
 
 }

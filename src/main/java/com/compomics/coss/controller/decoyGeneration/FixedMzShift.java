@@ -49,7 +49,7 @@ public class FixedMzShift extends GenerateDecoyLib {
         try {
             int count = 1;
 
-             br = new BufferedReader(new FileReader(file));
+            br = new BufferedReader(new FileReader(file));
             bw = new BufferedWriter(new FileWriter(mzShift));
             
             String line = br.readLine();
@@ -77,9 +77,6 @@ public class FixedMzShift extends GenerateDecoyLib {
 
             }
 
-           
-
-           
 
         } catch (IOException ex) {
             Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);

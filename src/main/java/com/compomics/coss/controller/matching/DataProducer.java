@@ -28,7 +28,6 @@ public class DataProducer implements Runnable { //procucer thread
     private final double precTolerance;
     private boolean stillReading;
     private boolean cancelled;
-    
 
     public DataProducer(TheDataUnderComparison data, ConfigData confData) {
 
@@ -37,14 +36,12 @@ public class DataProducer implements Runnable { //procucer thread
         this.precTolerance = confData.getPrecTol();
         stillReading = true;
         cancelled = false;
-        
 
     }
 
     public void cancel() {
         this.cancelled = true;
     }
-
 
     public boolean isReading() {
         return this.stillReading;
@@ -55,8 +52,8 @@ public class DataProducer implements Runnable { //procucer thread
         try {
             Spectrum expSpec = new Spectrum();
             uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec;
-          
 
+            //if query spectrum is mzML, ms2, mzXML, dta and pkl
             if (confData.getExpSpectraIndex() == null && confData.getEbiReader() != null) {
 
                 /**
@@ -79,10 +76,10 @@ public class DataProducer implements Runnable { //procucer thread
                 while (ebiSpecIterator.hasNext()) {
 
                     jmzSpec = ebiSpecIterator.next();
-                    if (jmzSpec.getMsLevel() != 2) {
-                        System.out.println("Only MS level 2 data is supported ");
-                        break;
-                    }
+//                    if (jmzSpec.getMsLevel() != 2) {
+//                        System.out.println("Only MS level 2 data is supported ");
+//                        break;
+//                    }
 
                     map = jmzSpec.getPeakList();
                     Set entries = map.entrySet();
@@ -94,12 +91,11 @@ public class DataProducer implements Runnable { //procucer thread
                         Map.Entry mapping = (Map.Entry) entriesIterator.next();
                         mz = (double) mapping.getKey();
                         intensity = (double) mapping.getValue();
-                        if(intensity > 0.9){
-                            peakList.add(new Peak(mz, intensity));
-                        }
+                        peakList.add(new Peak(mz, intensity));
+
                     }
 
-                    if (jmzSpec.getPrecursorMZ() != 0) {
+                    if (jmzSpec.getPrecursorMZ() != null && jmzSpec.getPrecursorMZ() != 0) {
                         parentMass = jmzSpec.getPrecursorMZ();
                     } else {
                         parentMass = getPrecursorMass(jmzSpec);
@@ -120,7 +116,6 @@ public class DataProducer implements Runnable { //procucer thread
 
                 }
 
-               
                 System.out.print(Integer.toString(tempCount));
 
             } else {
@@ -140,7 +135,7 @@ public class DataProducer implements Runnable { //procucer thread
                     double mass = expSpec.getPCMass();
 
                     double da_error = mass * this.precTolerance;
-                  
+
                     libSpec = confData.getLibSpecReader().readPart(mass, da_error);
 
                     data.putExpSpec(expSpec);
@@ -179,6 +174,7 @@ public class DataProducer implements Runnable { //procucer thread
                         }
                     }
                 }
+                break;
 
             case "ms2":
                 if (jmzSpec.getAdditional().getParams().isEmpty()) {
@@ -194,6 +190,7 @@ public class DataProducer implements Runnable { //procucer thread
 
                     }
                 }
+                break;
 
             case "mzXML":
                 if (jmzSpec.getAdditional().getCvParams().isEmpty()) {
@@ -208,6 +205,7 @@ public class DataProducer implements Runnable { //procucer thread
                         }
                     }
                 }
+                break;
 
             case "mzdata":
                 precMass = 0;

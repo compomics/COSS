@@ -147,6 +147,9 @@ public class MainConsolControler implements UpdateListener {
 
     }
 
+    /**
+     * initiated by start button and it starts the search process
+     */
     private void startMatching() {
 
       //  List<ComparisonResult> result = null;
