@@ -16,7 +16,7 @@ public class NewMain {
      */
     public static void main(String[] args) {
         System.out.println("startRunning");
-        String[] ip = {"C:/pandyDS/SpecA.msp", "C:/pandyDS/SpecB.msp"};
+        String[] ip ={"23"};// {"C:/pandyDS/SpecA.msp", "C:/pandyDS/SpecB.msp"};
         MainConsolControler instance = new MainConsolControler();
         instance.startRunning(ip);
     }

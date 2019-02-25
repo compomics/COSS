@@ -73,10 +73,6 @@ You can run COSS as CLI or our user-friendly GUI.
   On windows: your can run COSS by double clicking on COSS-X.Y.jar file or it can be started on command line using the following command  
                 $java -jar COSS-X.Y.jar
   * X.Y   stands for the version number(eg. COSS-1.1.jar).
-  
-  On Ubuntu machine: COSS can be run using the command 
-             $java -jar COSS-X.Y.jar
-			 
 
 	*Make sure java is installed on your machine.
 	
@@ -96,6 +92,24 @@ You can run COSS as CLI or our user-friendly GUI.
   matched spectrum found. Results also displayed in visual form for a selected query spectrum and matched library spectrum. 
 
 
+- Running COSS(CLI):
+    Command line searching also possible in COSS with the following commands:
+
+     java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile    
+	 
+                              OR
+							  
+     java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile         
+               precursorMassTolerance(PPM) fragmentTolerance(Da.) 
+			   
+                              OR
+							  
+     java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile   precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+	 
+
+  * X.Y   stands for the version number(eg. COSS-1.1.jar).
+  
+  *Make sure java is installed on your machine.
 
 
 ----

@@ -47,8 +47,22 @@ public class MainConsolControler implements UpdateListener {
      */
     public void startRunning(String[] args) {
         try {
-            
+
+            int lenArgs = args.length;
+            if(lenArgs <= 1 || lenArgs > 5){                
+                System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
+                System.out.println("\n\nUsage: \n");
+                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile \n");
+                System.out.println("OR\n");
+                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
+                System.out.println("OR\n");
+                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxCharge \n");
           
+                
+                System.exit(1);
+            }
+          
+
             configData = new ConfigData();
 
             //Load user inputs from properties file
@@ -69,8 +83,8 @@ public class MainConsolControler implements UpdateListener {
                 if ((configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) && configData.getSpectraLibraryIndex() != null) {
 
                     startMatching();
-                   
-                    ImportExport exp=new ImportExport(result, configData);
+
+                    ImportExport exp = new ImportExport(result, configData);
                     exp.saveResult_CL(1);
                 }
 
@@ -87,18 +101,13 @@ public class MainConsolControler implements UpdateListener {
      */
     private void loadData(String[] ipArgs) {
         //Reading User inputs and set to config configData 
-        int lenArgs=ipArgs.length;
-        if(lenArgs<2 && lenArgs > 5){
-            System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
-            System.exit(1);
-        }
+        int lenArgs = ipArgs.length;
 
         //Scoring function
         configData.setScoringFunction(ConfigHolder.getInstance().getInt("matching.algorithm"));
         configData.setIntensityOption(3);
         configData.setMsRobinOption(0);
-        
-        
+
         File fileQuery = new File(ipArgs[0]);
         File fileLib = new File(ipArgs[1]);
         configData.setSpecLibraryFile(fileLib);
@@ -106,39 +115,38 @@ public class MainConsolControler implements UpdateListener {
         //
 
         //MS instrument based settings
-        
-        configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance")/1000000);
+        configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance") / 1000000);
         configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance"));
         configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
 
-        if(lenArgs>2){        
-            double pcTol=Double.parseDouble(ipArgs[2]);
-            if(pcTol<0){
+        if (lenArgs > 2) {
+            double pcTol = Double.parseDouble(ipArgs[2]);
+            if (pcTol < 0) {
                 System.out.print("Make sure the precursor tolerance value is correct. \n it should be given in ppm");
             }
             configData.setPrecTol(pcTol);
-        
+
         }
-        
-        if(lenArgs>3){        
-            double frTol=Double.parseDouble(ipArgs[3]);
-            if(frTol>0){
+
+        if (lenArgs > 3) {
+            double frTol = Double.parseDouble(ipArgs[3]);
+            if (frTol > 0) {
                 System.out.print("Make sure the fragment tolerance value is correct. \n it should be given in Da");
             }
             configData.setPrecTol(frTol);
-        
+
         }
-        
-        if(lenArgs>4){        
-            double charge=Double.parseDouble(ipArgs[4]);
-            if(charge<0){
+
+        if (lenArgs > 4) {
+            double charge = Double.parseDouble(ipArgs[4]);
+            if (charge < 0) {
                 System.out.print("invalid charge value");
                 System.exit(1);
             }
             configData.setPrecTol(charge);
-        
+
         }
-        
+
         //Preprocessing settings
         boolean applyFilter = false;
         boolean applyTransform = false;
@@ -180,7 +188,7 @@ public class MainConsolControler implements UpdateListener {
      */
     private void startMatching() {
 
-      //  List<ComparisonResult> result = null;
+        //  List<ComparisonResult> result = null;
         LOG.info("COSS version 1.0");
         LOG.info("Query spectra: " + configData.getExperimentalSpecFile().toString());
         LOG.info("Library: " + configData.getSpecLibraryFile().toString());
@@ -196,18 +204,18 @@ public class MainConsolControler implements UpdateListener {
         }
 
     }
-    
-      /**
+
+    /**
      * start search against decoy database
      */
     List<ComparisonResult> validatedRes;
+
     public void validateResult() {
         Validation validate = new Validation();
-        List<ComparisonResult> validatedRes=validate.validate(result, 0.01);
-        
+        List<ComparisonResult> validatedRes = validate.validate(result, 0.01);
+
         //cutoff_index_1percent = validate.validate(result, 0.01);
         //cutoff_index_5percent = validate.validate(result, 0.05);
-
     }
 
     /**
@@ -220,7 +228,7 @@ public class MainConsolControler implements UpdateListener {
 
         String fileExtnTar = configData.getExperimentalSpecFile().getName();
         String fileExtnDB = configData.getSpecLibraryFile().getName();
-                
+
         if (!configData.getSpecLibraryFile().exists()) {
             validationMessages.add("Database spectra file not found");
         } else if (!fileExtnDB.endsWith(".mgf") && !fileExtnDB.endsWith(".msp")) {
@@ -228,7 +236,7 @@ public class MainConsolControler implements UpdateListener {
         }
         if (!configData.getExperimentalSpecFile().exists()) {
             validationMessages.add("Target spectra file not found");
-        } else if (!fileExtnTar.endsWith(".mgf") && !fileExtnTar.endsWith(".msp")&& !fileExtnTar.endsWith(".mzML")
+        } else if (!fileExtnTar.endsWith(".mgf") && !fileExtnTar.endsWith(".msp") && !fileExtnTar.endsWith(".mzML")
                 && !fileExtnTar.endsWith(".mzXML") && !fileExtnTar.endsWith(".ms2")) {
             validationMessages.add(" Targer Spectra file type not valid");
         }
