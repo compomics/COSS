@@ -94,17 +94,17 @@ You can run COSS as CLI or our user-friendly GUI.
 
 - Running COSS(CLI):
     Command line searching also possible in COSS with the following commands:
+	
 
-     java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile    
+        java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile    
 	 
-                              OR
+                             
 							  
-     java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile         
-               precursorMassTolerance(PPM) fragmentTolerance(Da.) 
+        java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) 
 			   
-                              OR
+                             
 							  
-     java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile   precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+        java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
 	 
 
   * X.Y   stands for the version number(eg. COSS-1.1.jar).
