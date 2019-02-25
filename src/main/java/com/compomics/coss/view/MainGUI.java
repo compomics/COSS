@@ -75,7 +75,11 @@ public class MainGUI extends JFrame {
         JMenu settingMenu = new JMenu("Setting");
         JMenu decoyMenu = new JMenu("Generate Decoy DB");
         JMenu helpMenu = new JMenu("Help");
-
+        JMenuItem toCSV=new JMenuItem("CSV");
+        JMenuItem toText=new JMenuItem("Text");
+        JMenuItem toExcel=new JMenuItem("Excel");
+        
+       
         // Mnemonic
         fileMenu.setMnemonic(KeyEvent.VK_F);
         editMenu.setMnemonic(KeyEvent.VK_E);
@@ -90,7 +94,7 @@ public class MainGUI extends JFrame {
         // Items of the menue
         JMenuItem open = new JMenuItem("Open", KeyEvent.VK_N);
         JMenuItem save = new JMenuItem("Save", KeyEvent.VK_S);
-        JMenuItem export = new JMenuItem("Export to Excel", KeyEvent.VK_R);
+        JMenu export = new JMenu("Export to");
         JMenuItem importResult = new JMenuItem("Import Result", KeyEvent.VK_M);
         JMenuItem exit = new JMenuItem("Exit", KeyEvent.VK_X);
         JMenuItem copy = new JMenuItem("Copy", KeyEvent.VK_C);
@@ -102,6 +106,10 @@ public class MainGUI extends JFrame {
         JMenuItem randIntFixedMzShift = new JMenuItem("Fixed M/Z random Intensity");
         randIntFixedMzShift.setEnabled(false);
         JMenuItem randMzIntShift = new JMenuItem("Random M/Z and Intensity");
+        
+        export.add(toExcel);
+        export.add(toCSV);
+        
         
         decoyMenu.add(fixedMzShift);
         decoyMenu.add(randIntFixedMzShift);
@@ -116,6 +124,7 @@ public class MainGUI extends JFrame {
         editMenu.add(paste);
         helpMenu.add(about);
         settingMenu.add(configSystem);
+        
         
         pnlsetting = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlsetting.setLayout(new BorderLayout());
@@ -196,25 +205,23 @@ public class MainGUI extends JFrame {
         );
         
         save.addActionListener((ActionEvent ev) -> {
-            try {
-                control.saveResult(0);
-            } catch (IOException ex) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            control.exportResults(0);
         });
         
        
              
-        export.addActionListener((ActionEvent ev) -> {
-            try {
-                control.saveResult(1);
-            } catch (IOException ex) {
-                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        toExcel.addActionListener((ActionEvent ev) -> {
+            control.exportResults(1);
         });
         
+        toCSV.addActionListener((ActionEvent ev) -> {
+            control.exportResults(2);
+        });
+        
+     
+        
         importResult.addActionListener((ActionEvent ev) -> {
-            control.importResult();
+            control.importResults();
         });
         
         

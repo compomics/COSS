@@ -1,7 +1,9 @@
 package com.compomics.main;
 
+import com.compomics.coss.controller.MainConsolControler;
 import com.compomics.coss.controller.MainFrameController;
 import java.awt.Dimension;
+import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -25,9 +27,7 @@ public class ProjectMain {
     private static final String ERROR_MESSAGE = "An error occured during startup, please try again."
             + System.lineSeparator() + "If the problem persists, contact your administrator or post an issue on the google code page.";
 
-
     // private DrawRaster  visualize=new DrawRaster();
-
     /**
      * No-arg constructor.
      */
@@ -66,7 +66,7 @@ public class ProjectMain {
             @Override
             public void run() {
                 ProjectMain initiateProject = new ProjectMain();
-                initiateProject.launch();
+                initiateProject.launch(args);
             }
         });
 
@@ -75,15 +75,23 @@ public class ProjectMain {
     /**
      * Launch the GUI.
      */
-    private void launch() {
+    private void launch(String[] args) {
         try {
 
-                /**
-     * The GUI main controller.
-     */
-            MainFrameController controller = new MainFrameController();
-            controller.init();
-            controller.showMainFrame();
+            /**
+             * The GUI main controller.
+             */
+            if (args.length == 0) {
+                MainFrameController controller = new MainFrameController();
+                controller.init();
+                controller.showMainFrame();
+            } else if (args.length != 0) {
+
+                MainConsolControler controller = new MainConsolControler();
+                controller.startRunning(args);
+                
+
+            }
 
         } catch (Exception ex) {
             LOG.error(ex.getMessage(), ex);
@@ -97,7 +105,7 @@ public class ProjectMain {
             textArea.setWrapStyleWord(true);
 
             JOptionPane.showMessageDialog(null, scrollPane, "COSS startup error", JOptionPane.ERROR_MESSAGE);
-          
+
         }
     }
 

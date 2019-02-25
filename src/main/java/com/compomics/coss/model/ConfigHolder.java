@@ -58,9 +58,5 @@ public class ConfigHolder extends PropertiesConfiguration {
         ourInstance = new ConfigHolder(propertiesResource);
         return ourInstance;
     }
-    
-    
-    
-    
-
+        
 }

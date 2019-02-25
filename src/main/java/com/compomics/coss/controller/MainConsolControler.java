@@ -45,17 +45,16 @@ public class MainConsolControler implements UpdateListener {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public void startRunning(String[] args) {
         try {
-
+            
+          
             configData = new ConfigData();
 
-            MainConsolControler mc = new MainConsolControler();
-
             //Load user inputs from properties file
-            mc.loadData();
+            loadData(args);
             //validate user input configData
-            List<String> valdMsg = mc.validateSettings();
+            List<String> valdMsg = validateSettings();
 
             if (!valdMsg.isEmpty()) {
                 StringBuilder message = new StringBuilder();
@@ -65,20 +64,14 @@ public class MainConsolControler implements UpdateListener {
                 LOG.info("Validation errors" + message.toString());
             } else {
                 //Read spectral configData both target and db spectra
-                mc.configReader();
+                configReader();
 
                 if ((configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) && configData.getSpectraLibraryIndex() != null) {
 
-                    mc.startMatching();
-                    String fullName = configData.getExperimentalSpecFile().getName();
-                    String fname = "";
-                    if (fullName.contains(".")) {
-                        fname = fullName.substring(0, fullName.indexOf("."));
-                    } else {
-                        fname = fullName;
-                    }
-                     String path =  configData.getExperimentalSpecFile().getParent();
-                    mc.saveResultExcel(path + "\\" + fname);
+                    startMatching();
+                   
+                    ImportExport exp=new ImportExport(result, configData);
+                    exp.saveResult_CL(1);
                 }
 
             }
@@ -92,25 +85,60 @@ public class MainConsolControler implements UpdateListener {
     /**
      * Method to load setting configData from config.properties file
      */
-    private void loadData() {
+    private void loadData(String[] ipArgs) {
         //Reading User inputs and set to config configData 
-
-        File fileQuery = new File(ConfigHolder.getInstance().getString("target.spectra.path"));
-        File fileLib = new File(ConfigHolder.getInstance().getString("spectra.library.path"));
-        configData.setSpecLibraryFile(fileLib);
-        configData.setExperimentalSpecFile(fileQuery);
+        int lenArgs=ipArgs.length;
+        if(lenArgs<2 && lenArgs > 5){
+            System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
+            System.exit(1);
+        }
 
         //Scoring function
         configData.setScoringFunction(ConfigHolder.getInstance().getInt("matching.algorithm"));
-        configData.setIntensityOption(ConfigHolder.getInstance().getInt("intensity.option"));
-        configData.setMsRobinOption(ConfigHolder.getInstance().getInt("msRobin.option"));
+        configData.setIntensityOption(3);
+        configData.setMsRobinOption(0);
+        
+        
+        File fileQuery = new File(ipArgs[0]);
+        File fileLib = new File(ipArgs[1]);
+        configData.setSpecLibraryFile(fileLib);
+        configData.setExperimentalSpecFile(fileQuery);
+        //
 
         //MS instrument based settings
+        
+        configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance")/1000000);
+        configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance"));
         configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
 
-        configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance"));
-        configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance") / (double) 1000);
-
+        if(lenArgs>2){        
+            double pcTol=Double.parseDouble(ipArgs[2]);
+            if(pcTol<0){
+                System.out.print("Make sure the precursor tolerance value is correct. \n it should be given in ppm");
+            }
+            configData.setPrecTol(pcTol);
+        
+        }
+        
+        if(lenArgs>3){        
+            double frTol=Double.parseDouble(ipArgs[3]);
+            if(frTol>0){
+                System.out.print("Make sure the fragment tolerance value is correct. \n it should be given in Da");
+            }
+            configData.setPrecTol(frTol);
+        
+        }
+        
+        if(lenArgs>4){        
+            double charge=Double.parseDouble(ipArgs[4]);
+            if(charge<0){
+                System.out.print("invalid charge value");
+                System.exit(1);
+            }
+            configData.setPrecTol(charge);
+        
+        }
+        
         //Preprocessing settings
         boolean applyFilter = false;
         boolean applyTransform = false;
@@ -192,6 +220,7 @@ public class MainConsolControler implements UpdateListener {
 
         String fileExtnTar = configData.getExperimentalSpecFile().getName();
         String fileExtnDB = configData.getSpecLibraryFile().getName();
+                
         if (!configData.getSpecLibraryFile().exists()) {
             validationMessages.add("Database spectra file not found");
         } else if (!fileExtnDB.endsWith(".mgf") && !fileExtnDB.endsWith(".msp")) {
@@ -199,7 +228,8 @@ public class MainConsolControler implements UpdateListener {
         }
         if (!configData.getExperimentalSpecFile().exists()) {
             validationMessages.add("Target spectra file not found");
-        } else if (!fileExtnTar.endsWith(".mgf") && !fileExtnTar.endsWith(".msp")) {
+        } else if (!fileExtnTar.endsWith(".mgf") && !fileExtnTar.endsWith(".msp")&& !fileExtnTar.endsWith(".mzML")
+                && !fileExtnTar.endsWith(".mzXML") && !fileExtnTar.endsWith(".ms2")) {
             validationMessages.add(" Targer Spectra file type not valid");
         }
 
@@ -219,117 +249,13 @@ public class MainConsolControler implements UpdateListener {
 
     }
 
-    /**
-     * Save results as excel file
-     */
-    private void saveResultExcel(String filename) {
-
-        FileOutputStream fileOut = null;
-        try {
-
-            String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
-            //List<Employee> employees =  new ArrayList<>();
-
-            // Create a Workbook
-            Workbook workbook = new XSSFWorkbook(); // new HSSFWorkbook() for generating `.xls` file
-            /* CreationHelper helps us create instances of various things like DataFormat,
-            Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
-            CreationHelper createHelper = workbook.getCreationHelper();
-            // Create a Sheet
-            Sheet sheet = workbook.createSheet("Coss_Result");
-            // Create a Font for styling header cells
-            Font headerFont = workbook.createFont();
-            headerFont.setBold(false);
-            headerFont.setFontHeightInPoints((short) 12);
-            headerFont.setColor(IndexedColors.BLACK.getIndex());
-            // Create a CellStyle with the font
-            CellStyle headerCellStyle = workbook.createCellStyle();
-            headerCellStyle.setFont(headerFont);
-            // Create a Row
-            Row headerRow = sheet.createRow(0);
-            // Create cells
-            int len = columns.length;
-            for (int i = 0; i < len; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(columns[i]);
-                cell.setCellStyle(headerCellStyle);
-            }   // Create Cell Style for formatting Date
-            CellStyle dateCellStyle = workbook.createCellStyle();
-            dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("dd-MM-yyyy"));
-            // Create Other rows and cells with employees data
-            int rowNum = 1;
-            Spectrum spec;
-
-            for (ComparisonResult res : result) {
-                List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
-                // int lenMspec = mSpec.size();
-                //for (int s = 0; s < lenMspec; s++) {
-                int s = 0;
-                Row row = sheet.createRow(rowNum);
-                spec = res.getEspSpectrum();
-                row.createCell(0).setCellValue(spec.getTitle());
-                row.createCell(1).setCellValue(mSpec.get(s).getSource());
-                row.createCell(2).setCellValue(spec.getScanNumber());
-                row.createCell(3).setCellValue(mSpec.get(s).getSequence());
-                row.createCell(4).setCellValue(spec.getPCMass());
-                row.createCell(5).setCellValue(spec.getCharge());
-                row.createCell(6).setCellValue(Double.toString(res.getTopScore()));
-                if (configData.isDecoyAvailable()) {
-                    if (rowNum - 1 <= cutoff_index_1percent) {
-                        //conf= score * 100;
-                        row.createCell(7).setCellValue("<1% FDR");
-                    } else if (rowNum - 1 <= cutoff_index_5percent) {
-                        row.createCell(7).setCellValue("<5% FDR");
-                    } else {
-                        row.createCell(7).setCellValue(">5% FDR");
-                    }
-                } else {
-                    row.createCell(7).setCellValue("NA");
-                }
-                row.createCell(8).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()));
-                row.createCell(9).setCellValue(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()));
-                row.createCell(10).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()));
-                row.createCell(11).setCellValue(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()));
-                row.createCell(12).setCellValue(Integer.toString(mSpec.get(s).getNumMatchedPeaks()));
-                row.createCell(13).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()));
-                row.createCell(14).setCellValue(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()));
-                rowNum++;
-
-                //}
-            }   // Resize all columns to fit the content size
-            for (int i = 0; i < columns.length; i++) {
-                sheet.autoSizeColumn(i);
-            }   // Write the output to a file
-
-            int total_len = result.size();
-            sheet.shiftRows(cutoff_index_1percent, total_len, 1);
-            sheet.shiftRows(cutoff_index_5percent, total_len, 1);
-
-            fileOut = new FileOutputStream(filename + ".xlsx");
-            workbook.write(fileOut);
-            fileOut.close();
-            // Closing the workbook
-            workbook.close();
-        } catch (FileNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } finally {
-            try {
-                fileOut.close();
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-        }
-    }
-
     @Override
     public void updateprogress(int taskCompleted) {
 
         final double PERCENT = 100.0 / (double) configData.getExpSpectraIndex().size();
 
         int v = (int) (taskCompleted * PERCENT);
-        System.out.println(Integer.toString(v) + "%");
+        System.out.print(Integer.toString(v) + "%" + "  ");
 
     }
 }
