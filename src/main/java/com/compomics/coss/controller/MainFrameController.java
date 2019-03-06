@@ -32,19 +32,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 import com.compomics.ms2io.*;
 import java.awt.BorderLayout;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
-import java.io.FileWriter;
-import uk.ac.ebi.JmzIdentMLParser;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Controller class for GUI
@@ -419,8 +408,8 @@ public class MainFrameController implements UpdateListener {
         String tempS2 = settingsPnl.txtLibrary.getText();
         if ("".equals(tempS2)) {
             validationMessages.add("Please select library file");
-        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")) {
-            validationMessages.add(" Data Base Spectra file type is invalid." + " \n " + "Only .mgf and .msp file format supported");
+        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")  && !tempS2.endsWith(".sptxt") ) {
+            validationMessages.add(" Spectral library file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
         }
 
         boolean file1Existed = false;
@@ -739,7 +728,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void chooseTargetFile(String file) {
 
-        JFileChooser fileChooser = new JFileChooser("C:/pandyDS/");
+        JFileChooser fileChooser = new JFileChooser("C:/1_pandy_datasets/");
         fileChooser.setDialogTitle("Target Spectra File");
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -841,17 +830,18 @@ public class MainFrameController implements UpdateListener {
      *
      * @param i : type of decoy generation technique; 0 if fixed mz value shift
      * 1 is random mz and intensity change of each peak in the spectrum
+     * @param library path to library file
      */
-    public void generateDeoy(int i) {
-        String tempS2 = settingsPnl.txtLibrary.getText();
-        if ("".equals(tempS2)) {
+    public void generateDeoy(int i, String library) {
+        
+        if ("".equals(library)) {
             showMessageDialog("Validation errors", "No spectra library given", JOptionPane.WARNING_MESSAGE);
 
-        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")) {
-            showMessageDialog("Validation errors", "File format not supported", JOptionPane.WARNING_MESSAGE);
+        } else if (!library.endsWith(".mgf") && !library.endsWith(".msp")) {
+            showMessageDialog("Validation errors", "Spectral library file format not supported", JOptionPane.WARNING_MESSAGE);
         } else {
 
-            libFile = new File(tempS2);
+            libFile = new File(library);
             gn = new Generate(LOG, this);
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();

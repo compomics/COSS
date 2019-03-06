@@ -107,6 +107,10 @@ You can run COSS as CLI or our user-friendly GUI.
         or                     
 							  
         java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+
+Decoy spectra can be generated and appended with the following command
+
+        java -jar COSS-X.Y.jar -d librarySpectraFile
 	 
 
   * X.Y   stands for the version number(eg. COSS-1.1.jar).

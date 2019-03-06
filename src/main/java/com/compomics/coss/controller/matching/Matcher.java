@@ -73,6 +73,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
         int numTarget = 0;
         int massWindow = confData.getMassWindow();
 
+        ArrayList<MatchedLibSpectra> specResult = new ArrayList<>(0);
         while (this.procucer.isReading() || (!data.getExpSpec().isEmpty() && !data.getLibSelectedSpec().isEmpty())) {
             try {
 
@@ -81,10 +82,10 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                     continue;
                 }
                 Spectrum sp1 = data.pollExpSpec();
-                ArrayList sb = data.pollLibSpec();
-                int numSelectedLibSpec=sb.size();
-                List<MatchedLibSpectra> specResult = new ArrayList<>(numSelectedLibSpec);
+                ArrayList sb = data.pollLibSpec();                
                 InnerIteratorSync<Spectrum> iteratorSpectra = new InnerIteratorSync(sb.iterator());
+                int listSize=sb.size();
+               specResult.ensureCapacity(listSize);
 
                 
                 while (iteratorSpectra.iter.hasNext()) {
@@ -93,7 +94,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                     try {
                         Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
-                        if (sp2.getTitle().contains("decoy")) {
+                        if (sp2.getTitle().contains("decoy") || sp2.getProtein().contains("DECOY")) {
                             numDecoy++;
                         }
                         
@@ -154,7 +155,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             MatchedLibSpectra mSpec = new MatchedLibSpectra();
                             mSpec.setScore(finalScore);//(Collections.max(scores));
                             mSpec.setSequence(sp2.getSequence());
-                            if (sp2.getTitle().contains("decoy")) {
+                            if (sp2.getTitle().contains("decoy") || sp2.getProtein().contains("DECOY")) {
                                 mSpec.setSource(1);
                             } else {
                                 mSpec.setSource(0);
@@ -167,7 +168,8 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             mSpec.setSumMatchedInt_Lib(mIntB);
                             mSpec.settotalFilteredNumPeaks_Exp(tempLenA);
                             mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
-                            specResult.add(mSpec);
+                            specResult.add(mSpec);                       
+                        
                         }
 
                     } catch (Exception ex) {
@@ -190,7 +192,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                     //int len = specResult.size();
 
                    //int num_top10Res= numSelectedLibSpec > 10? 10 : numSelectedLibSpec;
-                    List<MatchedLibSpectra> tempMatch = new ArrayList<>();
+                    List<MatchedLibSpectra> tempMatch = new ArrayList<>(10);
                     int tempResSize=specResult.size();
                     int tempLen = 0;
                     int c = 0;
@@ -207,8 +209,11 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         //simResult.add(compResult);  
                         oos.writeObject(compResult);
                         oos.flush();
-                        tempMatch.clear();
+                     
+                       specResult.clear();
                     }
+                    
+                
                 }
 
             } catch (InterruptedException | IOException ex) {

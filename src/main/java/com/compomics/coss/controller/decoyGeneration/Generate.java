@@ -40,7 +40,7 @@ public class Generate {
             MergeFiles m = new MergeFiles(file, decoyFile);
             m.Merge();
             decoyFile.delete();
-            log.info("Decoy generation completed");
+            log.info("Decoy generation completed and appended to file " + file.getName());
         }
 
     }

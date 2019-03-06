@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -119,8 +118,11 @@ public class ImportExport {
             case 1:
                 saveResultExcel(path + "\\" + fname);
                 break;
-            case 2:
-                saveAsCSV(path + "\\" + fname);
+            case 2: // save as csv text file
+                saveAsText(path + "\\" + fname, ",", ".csv");
+                break;
+            case 3:// save as tab delimited text file
+                saveAsText(path + "\\" + fname, "\t", ".txt");
                 break;
             default:
                 saveResultExcel(path + "\\" + fname);
@@ -249,57 +251,60 @@ public class ImportExport {
         }
     }
 
-    private void saveAsCSV(String filename) throws IOException {
+    private void saveAsText(String filename, String delimiter, String extsn) throws IOException {
         Spectrum spec;
 
         String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation(FDR)", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
-        FileWriter fileOut = new FileWriter(filename + ".txt");
+        FileWriter fileOut = new FileWriter(filename + extsn);
 
+        String delm=delimiter;
         //writing the column name
-        fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(",")));
+        fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(delm)));
         fileOut.write("\n");
 
+        
         for (ComparisonResult res : result) {
             List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
             // int lenMspec = mSpec.size();
             //for (int s = 0; s < lenMspec; s++) {
             int s = 0;
+            
             spec = res.getEspSpectrum();
-            fileOut.write(spec.getTitle());
-            fileOut.write(",");
-            fileOut.write(Integer.toString(mSpec.get(s).getSource()));
-            fileOut.write(",");
-            fileOut.write(spec.getScanNumber());
-            fileOut.write(",");
+            fileOut.write(spec.getTitle() + delm);
+        
+            fileOut.write(Integer.toString(mSpec.get(s).getSource()) + delm);
+         
+            fileOut.write(spec.getScanNumber() + delm);
+          
             fileOut.write(mSpec.get(s).getSequence());
-            fileOut.write(",");
-            fileOut.write(Double.toString(spec.getPCMass()));
-            fileOut.write(",");
-            fileOut.write(spec.getCharge());
-            fileOut.write(",");
-            fileOut.write(Double.toString(res.getTopScore()));
-            fileOut.write(",");
+         
+            fileOut.write(Double.toString(spec.getPCMass()) + delm);
+           
+            fileOut.write(spec.getCharge()+ delm);
+           
+            fileOut.write(Double.toString(res.getTopScore()) + delm);
+          
             if (configData.isDecoyAvailable()) {
-                fileOut.write(Double.toString(res.getFDR()));
-                fileOut.write(",");
+                fileOut.write(Double.toString(res.getFDR()) + delm);
+              
 
             } else {
-                fileOut.write("NA");
-                fileOut.write(",");
+                fileOut.write("NA" + delm);
+             
             }
-            fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()));
-            fileOut.write(",");
-            fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()));
-            fileOut.write(",");
-            fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()));
-            fileOut.write(",");
-            fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()));
-            fileOut.write(",");
-            fileOut.write(Integer.toString(mSpec.get(s).getNumMatchedPeaks()));
-            fileOut.write(",");
-            fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()));
-            fileOut.write(",");
-            fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()));
+            fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()) + delm);
+           
+            fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()) + delm);
+           
+            fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()) + delm);
+            
+            fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()) + delm);
+           
+            fileOut.write(Integer.toString(mSpec.get(s).getNumMatchedPeaks()) + delm);
+           
+            fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()) +delm);
+           
+            fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()) + delm);
             fileOut.write("\n");
 
         }
@@ -307,6 +312,8 @@ public class ImportExport {
         fileOut.close();
 
     }
+
+ 
 
     /**
      * Import previously generated COSS result
@@ -347,7 +354,11 @@ public class ImportExport {
             }
 
         }
-
     }
+
+    
+  
+
+ 
 
 }

@@ -76,7 +76,7 @@ public class MainGUI extends JFrame {
         JMenu decoyMenu = new JMenu("Generate Decoy DB");
         JMenu helpMenu = new JMenu("Help");
         JMenuItem toCSV=new JMenuItem("CSV");
-        JMenuItem toText=new JMenuItem("Text");
+        JMenuItem toTabText=new JMenuItem("Text");
         JMenuItem toExcel=new JMenuItem("Excel");
         
        
@@ -109,6 +109,7 @@ public class MainGUI extends JFrame {
         
         export.add(toExcel);
         export.add(toCSV);
+        export.add(toTabText);
         
         
         decoyMenu.add(fixedMzShift);
@@ -218,6 +219,9 @@ public class MainGUI extends JFrame {
             control.exportResults(2);
         });
         
+        toTabText.addActionListener((ActionEvent ev) -> {
+            control.exportResults(3);
+        });
      
         
         importResult.addActionListener((ActionEvent ev) -> {
@@ -246,15 +250,18 @@ public class MainGUI extends JFrame {
         
         
          fixedMzShift.addActionListener((ActionEvent ev) -> {
-             control.generateDeoy(0);
+             String library=settings.txtLibrary.getText();
+             control.generateDeoy(0, library);
         });
          
          randIntFixedMzShift.addActionListener((ActionEvent ev) -> {
-             control.generateDeoy(1);
+             String library=settings.txtLibrary.getText();
+             control.generateDeoy(1, library);
         });
          
          randMzIntShift.addActionListener((ActionEvent ev) -> {
-             control.generateDeoy(2);
+             String library=settings.txtLibrary.getText();
+             control.generateDeoy(2, library);
         });
         
 //        tab.addChangeListener((ChangeEvent e) -> {

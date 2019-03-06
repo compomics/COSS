@@ -1,26 +1,13 @@
 package com.compomics.coss.controller;
 
+import com.compomics.coss.controller.decoyGeneration.Generate;
 import com.compomics.coss.model.ComparisonResult;
 import com.compomics.coss.model.ConfigHolder;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.compomics.coss.model.ConfigData;
-import com.compomics.coss.model.MatchedLibSpectra;
-import com.compomics.ms2io.Spectrum;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * Controller class to run the project from command line
@@ -49,6 +36,7 @@ public class MainConsolControler implements UpdateListener {
         try {
 
             int lenArgs = args.length;
+            String arg1=args[0];
             if(lenArgs <= 1 || lenArgs > 5){                
                 System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
                 System.out.println("\n\nUsage: \n");
@@ -56,10 +44,28 @@ public class MainConsolControler implements UpdateListener {
                 System.out.println("OR\n");
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
                 System.out.println("OR\n");
-                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxCharge \n");
-          
+                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge \n");
+                System.out.println("OR decoy spectra can be generated and appended to the given library file usint the command below\n");
+                System.out.println("java -jar COSS-X.Y.jar -d librarySpectraFile \n");
+                    
+                Runtime.getRuntime().exit(0);
+               
+            }
+            
+            if( lenArgs == 2){
+                //Generate decoy library and exit
+               
+                if(arg1.equals("-dF")){// fixed mz shift of peaks
+                    System.out.println("Generating decoy library with fixed mz value shift");
+                    generateDeoy(0, args[1]);
+                    Runtime.getRuntime().exit(0);
+                    
+                }else if(arg1.equals("-dR")){ //shuffle mz and random intensity 
+                    System.out.println("Generating decoy library with shuffle mz value and random intensity");
+                    generateDeoy(1, args[1]);
+                    Runtime.getRuntime().exit(0);
+                }
                 
-                System.exit(1);
             }
           
 
@@ -85,7 +91,7 @@ public class MainConsolControler implements UpdateListener {
                     startMatching();
 
                     ImportExport exp = new ImportExport(result, configData);
-                    exp.saveResult_CL(1);
+                    exp.saveResult_CL(3);
                 }
 
             }
@@ -141,7 +147,7 @@ public class MainConsolControler implements UpdateListener {
             double charge = Double.parseDouble(ipArgs[4]);
             if (charge < 0) {
                 System.out.print("invalid charge value");
-                System.exit(1);
+                Runtime.getRuntime().exit(0);
             }
             configData.setPrecTol(charge);
 
@@ -231,7 +237,7 @@ public class MainConsolControler implements UpdateListener {
 
         if (!configData.getSpecLibraryFile().exists()) {
             validationMessages.add("Database spectra file not found");
-        } else if (!fileExtnDB.endsWith(".mgf") && !fileExtnDB.endsWith(".msp")) {
+        } else if (!fileExtnDB.endsWith(".mgf") && !fileExtnDB.endsWith(".msp") && !fileExtnDB.endsWith(".sptxt")) {
             validationMessages.add(" Database Spectra file typenot valid");
         }
         if (!configData.getExperimentalSpecFile().exists()) {
@@ -264,6 +270,30 @@ public class MainConsolControler implements UpdateListener {
 
         int v = (int) (taskCompleted * PERCENT);
         System.out.print(Integer.toString(v) + "%" + "  ");
+
+    }
+    
+     /**
+     * generate decoy library and append on the given spectral library file
+     *
+     * @param i : type of decoy generation technique; 0 if fixed mz value shift
+     * 1 is random mz and intensity change of each peak in the spectrum
+     * @param library path to library file
+     */
+    public void generateDeoy(int i, String library) {
+        
+        if ("".equals(library)) {
+            System.out.println("Validation errors: No spectra library has given");
+
+        } else if (!library.endsWith(".mgf") && !library.endsWith(".msp")) {
+            System.out.println("Validation errors: given spectral library file format is not supported");
+        } else {
+
+            File libFile = new File(library);
+            Generate gn = new Generate(LOG, this);   
+            gn.start(libFile, i);
+
+        }
 
     }
 }

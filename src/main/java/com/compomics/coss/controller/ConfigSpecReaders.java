@@ -75,7 +75,7 @@ public class ConfigSpecReaders {
      * start indexing and create reader object to read the spectra
      */
     public void startConfig() {
-        if ((this.fileExperimnt.getName().endsWith("mgf") || this.fileExperimnt.getName().endsWith("msp")) && (this.fileLibrary.getName().endsWith("mgf") || this.fileLibrary.getName().endsWith("msp"))) {
+        if ((this.fileExperimnt.getName().endsWith("mgf") || this.fileExperimnt.getName().endsWith("msp")) && (this.fileLibrary.getName().endsWith("mgf") || this.fileLibrary.getName().endsWith("msp") || this.fileLibrary.getName().endsWith("sptxt"))) {
 
             switch (configFiles) {
                 case "both":
@@ -85,7 +85,7 @@ public class ConfigSpecReaders {
                         SpectraReader rd = new MgfReader(this.fileExperimnt, cfData.getExpSpectraIndex());
                         cfData.setExpSpecReader(rd);
 
-                    } else if (this.fileExperimnt.getName().endsWith("msp")) {
+                    } else if (this.fileExperimnt.getName().endsWith("msp") || this.fileExperimnt.getName().endsWith("sptxt")) {
                         SpectraReader rd = new MspReader(this.fileExperimnt, cfData.getExpSpectraIndex());
                         cfData.setExpSpecReader(rd);
 
@@ -95,7 +95,7 @@ public class ConfigSpecReaders {
                         SpectraReader rd = new MgfReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
                         cfData.setLibSpecReader(rd);
 
-                    } else if (this.fileLibrary.getName().endsWith("msp")) {
+                    } else if (this.fileLibrary.getName().endsWith("msp") || this.fileLibrary.getName().endsWith("sptxt")) {
                         SpectraReader rd = new MspReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
                         cfData.setLibSpecReader(rd);
                     }
@@ -107,7 +107,7 @@ public class ConfigSpecReaders {
                         SpectraReader rd = new MgfReader(this.fileExperimnt, cfData.getExpSpectraIndex());
                         cfData.setExpSpecReader(rd);
 
-                    } else if (this.fileExperimnt.getName().endsWith("msp")) {
+                    } else if (this.fileExperimnt.getName().endsWith("msp") || this.fileExperimnt.getName().endsWith("sptxt")) {
                         SpectraReader rd = new MspReader(this.fileExperimnt, cfData.getExpSpectraIndex());
                         cfData.setExpSpecReader(rd);
 
@@ -120,7 +120,7 @@ public class ConfigSpecReaders {
                         SpectraReader rd = new MgfReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
                         cfData.setLibSpecReader(rd);
 
-                    } else if (this.fileLibrary.getName().endsWith("msp")) {
+                    } else if (this.fileLibrary.getName().endsWith("msp") || this.fileExperimnt.getName().endsWith("sptxt")) {
                         SpectraReader rd = new MspReader(this.fileLibrary, cfData.getSpectraLibraryIndex());
                         cfData.setLibSpecReader(rd);
                     }
