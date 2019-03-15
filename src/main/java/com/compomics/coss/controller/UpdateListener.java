@@ -10,5 +10,5 @@ package com.compomics.coss.controller;
  * @author Genet
  */
 public interface UpdateListener {
-    void updateprogress(int percent);
+    void updateprogress(int value, double percent);
 }

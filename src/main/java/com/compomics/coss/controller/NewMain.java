@@ -20,7 +20,7 @@ public class NewMain {
         //Example generateing decoy spectra and appending on the given library
         String libraryFile = "C:/Users/Genet/OneDrive - UGent/Related files/SpecB.msp";
         String[] ip = {"-dF", libraryFile};
-        MainConsolControler instance = new MainConsolControler();
+        MainConsoleController instance = new MainConsoleController();
         instance.startRunning(ip);
 
         //batch processing 
@@ -48,7 +48,7 @@ public class NewMain {
 //
 //                    System.out.println("startRunning");
 //                    String[] ip = {datasetsFolder + file, libraryFile};
-//                    MainConsolControler instance = new MainConsolControler();
+//                    MainConsoleController instance = new MainConsoleController();
 //                    instance.startRunning(ip);
 //
 //                }

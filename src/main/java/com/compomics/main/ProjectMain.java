@@ -1,6 +1,6 @@
 package com.compomics.main;
 
-import com.compomics.coss.controller.MainConsolControler;
+import com.compomics.coss.controller.MainConsoleController;
 import com.compomics.coss.controller.MainFrameController;
 import java.awt.Dimension;
 import java.io.File;
@@ -87,7 +87,7 @@ public class ProjectMain {
                 controller.showMainFrame();
             } else if (args.length != 0) {
 
-                MainConsolControler controller = new MainConsolControler();
+                MainConsoleController controller = new MainConsoleController();
                 controller.startRunning(args);
                 
 

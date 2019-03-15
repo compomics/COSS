@@ -16,18 +16,18 @@ public class ConfigData {
     //User input experimental and library spectra file   
     private File experimentalSpecFile = null;
     private File specLibraryFile = null;
-    private File experimentalSpecDirectry=null;
-    
+    private File experimentalSpecDirectry = null;
+
     //scoring function
     private int scoringFun;//index
-    
+
     //instrument settings
     private double precTol;
     private double fragTol;
     private int MSRobinOption;
     private int intensityOption;
     private int maxPrecursorCharge;
-    
+
     //preprocessing settings
     private boolean isTransform;
     private int tranformType;
@@ -36,8 +36,6 @@ public class ConfigData {
     private boolean isPCMremoved;
     private int massWindow;
     private int cutOff;
-    
-    
 
     //parameters to be assigned based on the imput
     private List<IndexKey> expIndex = null;
@@ -45,14 +43,17 @@ public class ConfigData {
     private SpectraReader rdExperimental = null;
     private SpectraReader rdLibrary = null;
     private JMzReader ebiReader = null;
+    
+    String expSpecFormat="";
+    int totalExpSpectraCount=0;
     private boolean isDecoySpecAvailable;
 
     //Decoy database index and reader
     private List<IndexKey> decoyDBIndex;
     private SpectraReader rdDecoyDB;
-    
+
     //initial log text
-     String logText = "";
+    String logText = "";
 
     //User input Search Settings
     /**
@@ -62,6 +63,14 @@ public class ConfigData {
 
     }
 
+      public int getExpSpecCount() {
+        return this.totalExpSpectraCount;
+    }
+
+    public void setExpSpecCount(int size) {
+        this.totalExpSpectraCount = size;
+    }
+    
     public int getMassWindow() {
         return this.massWindow;
     }
@@ -77,7 +86,7 @@ public class ConfigData {
     public void applyTransform(boolean t) {
         this.isTransform = t;
     }
-    
+
     public boolean applyFilter() {
         return this.isFilter;
     }
@@ -93,25 +102,24 @@ public class ConfigData {
     public void setTransformType(int t) {
         this.tranformType = t;
     }
-    
-     public int getFilterType() {
+
+    public int getFilterType() {
         return this.filterType;
     }
 
     public void setFilterType(int t) {
         this.filterType = t;
     }
-    
-    
+
     public boolean getIsPCMRemove() {
         return this.isPCMremoved;
     }
 
-    public void setIsPCMRemoved(boolean  t) {
+    public void setIsPCMRemoved(boolean t) {
         this.isPCMremoved = t;
     }
-    
-     public int getCutOff() {
+
+    public int getCutOff() {
         return this.cutOff;
     }
 
@@ -189,13 +197,14 @@ public class ConfigData {
         this.scoringFun = matchAlgorithm;
     }
 
-    public File getExperimentalSpecFolder(){
+    public File getExperimentalSpecFolder() {
         return this.experimentalSpecDirectry;
     }
-    
-    public void setExperimentalSpecFolder(File directory){
-        this.experimentalSpecDirectry=directory;
+
+    public void setExperimentalSpecFolder(File directory) {
+        this.experimentalSpecDirectry = directory;
     }
+
     public File getExperimentalSpecFile() {
         return this.experimentalSpecFile;
     }
@@ -276,6 +285,14 @@ public class ConfigData {
         return this.logText;
     }
 
+    
+    public void setExpFileformat(String format) {
+        this.expSpecFormat = format;
+    }
+
+    public String getExpFileformat() {
+        return this.expSpecFormat;
+    }
     public boolean isDecoyAvailable() {
         return this.isDecoySpecAvailable;
     }
@@ -283,5 +300,7 @@ public class ConfigData {
     public void setDecoyAvailability(boolean decoySpec) {
         this.isDecoySpecAvailable = decoySpec;
     }
+
+  
 
 }

@@ -77,6 +77,7 @@ public class ConfigSpecReaders {
     public void startConfig() {
         if ((this.fileExperimnt.getName().endsWith("mgf") || this.fileExperimnt.getName().endsWith("msp")) && (this.fileLibrary.getName().endsWith("mgf") || this.fileLibrary.getName().endsWith("msp") || this.fileLibrary.getName().endsWith("sptxt"))) {
 
+            cfData.setExpFileformat("ms2io");
             switch (configFiles) {
                 case "both":
                     dispatcher();//read and configure both experimental and libray spectrum file
@@ -279,6 +280,8 @@ public class ConfigSpecReaders {
                         break;
                 }
 
+                cfData.setExpFileformat("ebi");
+                cfData.setExpSpecCount(reader.getSpectraCount());
                 cfData.setEbiReader(reader);
                 cfData.setSpectralLibraryIndex((List<IndexKey>) fut.get());
                 //sort library spectrum

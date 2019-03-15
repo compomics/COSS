@@ -1,7 +1,7 @@
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.TheDataUnderComparison;
-import com.compomics.coss.controller.Dispartcher;
+import com.compomics.coss.controller.Dispatcher;
 import com.compomics.coss.controller.UpdateListener;
 import com.compomics.coss.controller.featureExtraction.DivideAndTopNPeaks;
 import com.compomics.coss.model.ComparisonResult;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 
 /**
  *
@@ -63,15 +64,18 @@ public class Matcher implements Callable<List<ComparisonResult>> {
             fos = new FileOutputStream("temp.txt");
             oos = new ObjectOutputStream(fos);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         int taskCompleted = 0;
         int numDecoy = 0;
         int numTarget = 0;
         int massWindow = confData.getMassWindow();
+        double percent = 100.0 / (double) confData.getExpSpecCount();
+       
+        
 
         ArrayList<MatchedLibSpectra> specResult = new ArrayList<>(0);
         while (this.procucer.isReading() || (!data.getExpSpec().isEmpty() && !data.getLibSelectedSpec().isEmpty())) {
@@ -82,27 +86,23 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                     continue;
                 }
                 Spectrum sp1 = data.pollExpSpec();
-                ArrayList sb = data.pollLibSpec();                
+                ArrayList sb = data.pollLibSpec();
                 InnerIteratorSync<Spectrum> iteratorSpectra = new InnerIteratorSync(sb.iterator());
-                int listSize=sb.size();
-               specResult.ensureCapacity(listSize);
+                int listSize = sb.size();
+                specResult.ensureCapacity(listSize);
 
-                
                 while (iteratorSpectra.iter.hasNext()) {
                     //10 score results out which the maximum is going to be taken
-                     List<Double> scores = new ArrayList<>(10);
+                    List<Double> scores = new ArrayList<>(10);
 
                     try {
                         Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
                         if (sp2.getTitle().contains("decoy") || sp2.getProtein().contains("DECOY")) {
                             numDecoy++;
-                        }
-                        
-                        else{
+                        } else {
                             numTarget++;
                         }
-                        
-                        
+
                         double mIntA = 0;
                         double mIntB = 0;
                         double tIntA = 0;
@@ -122,7 +122,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             int lenB = selectedPeaks_lib.size();
                             algorithm.setSumTotalIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
                             algorithm.setSumTotalIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
-                            
 
                             double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
 
@@ -139,14 +138,13 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                                 tempLenB = lenB;
                                 mNumPeaks = algorithm.getNumMatchedPeaks();
                             }
-                            
-                            
+
                             scores.add(score);
                             //double intensity_part = object.getIntensity_part();
                             //double probability_part = object.getProbability_part();
                         }
                         double finalScore = Collections.max(scores);
-                        finalScore = (double)Math.round(finalScore * 1000d) / 1000d;
+                        finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
                         //scores.clear();
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
@@ -168,19 +166,22 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             mSpec.setSumMatchedInt_Lib(mIntB);
                             mSpec.settotalFilteredNumPeaks_Exp(tempLenA);
                             mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
-                            specResult.add(mSpec);                       
-                        
+                            specResult.add(mSpec);
+
                         }
 
                     } catch (Exception ex) {
 
-                        Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, "\n Description: " + ex);
+                        Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, "\n Description : " + ex);
                     }
 
                 }
 
-                taskCompleted++;
-                listener.updateprogress(taskCompleted);
+                ++taskCompleted;
+                listener.updateprogress(taskCompleted, percent);
+                if(taskCompleted%100==0){
+                    System.out.print(Integer.toString(taskCompleted) + " ... ");
+                }
 
                 if (!specResult.isEmpty()) {
                     ComparisonResult compResult = new ComparisonResult();
@@ -188,12 +189,9 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                     Collections.sort(specResult);
                     Collections.reverse(specResult);
 
-                    //only top 10 scores returned if exists
-                    //int len = specResult.size();
-
-                   //int num_top10Res= numSelectedLibSpec > 10? 10 : numSelectedLibSpec;
+                    //only top ten results are recorded, if existed
                     List<MatchedLibSpectra> tempMatch = new ArrayList<>(10);
-                    int tempResSize=specResult.size();
+                    int tempResSize = specResult.size();
                     int tempLen = 0;
                     int c = 0;
                     while (tempLen < tempResSize && tempLen < 10) {
@@ -209,15 +207,14 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         //simResult.add(compResult);  
                         oos.writeObject(compResult);
                         oos.flush();
-                     
-                       specResult.clear();
+
+                        specResult.clear();
                     }
-                    
-                
+
                 }
 
             } catch (InterruptedException | IOException ex) {
-                Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (cancelled) {
                 break;
@@ -226,21 +223,26 @@ public class Matcher implements Callable<List<ComparisonResult>> {
             // specCount++;
         }
 
-        if (numDecoy == 0) {
-            log.info("No decoy spectra found to validate result");
-            confData.setDecoyAvailability(false);
-        }
-        if (numDecoy < numTarget) {
-            log.info("Number of decoy spectra is too small to validate result");
-            confData.setDecoyAvailability(false);
-        } else {
-            confData.setDecoyAvailability(true);
-        }
-        
-        
-        List<ComparisonResult> simResult = new ArrayList<>(confData.getExpSpectraIndex().size());
+        List<ComparisonResult> simResult=null;
+        if (!cancelled && !this.procucer.isCancelled()) {
+            System.out.print(Integer.toString(taskCompleted) + "\n");
+            
+            if (numDecoy == 0) {
+                log.info("No decoy spectra found to validate result");
+                confData.setDecoyAvailability(false);
+            }
+            if (numDecoy < numTarget) {
+                log.info("Number of decoy spectra is too small to validate result");
+                confData.setDecoyAvailability(false);
+            } else {
+                confData.setDecoyAvailability(true);
+            }
 
-        if (!cancelled) {
+             if (confData.getExpSpectraIndex() != null){
+                 simResult = new ArrayList<>(confData.getExpSpectraIndex().size());
+             }else if(confData.getEbiReader() != null) {
+                 simResult = new ArrayList<>(confData.getEbiReader().getSpectraCount());
+             }
             //listener.updateprogress(confData.getExpSpectraIndex().size());
             try {
                 if (oos != null) {
@@ -251,7 +253,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 }
                 log.info("Search completed succesfully.");
             } catch (IOException ex) {
-                Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "closing file writing" + ex);
             }
 
             log.info(
@@ -266,18 +268,10 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 ComparisonResult r = (ComparisonResult) ois.readObject();
                 while (r != null) {
                     r = (ComparisonResult) ois.readObject();
-//                        List<MatchedLibSpectra> mspec=r.getMatchedLibSpec();
-//                        for(MatchedLibSpectra ms: mspec){
-//                            double d= ms.getScore();
-//                            d/=maxScore;
-//                            d*=(double)100;
-//                            ms.setScore(d);
-//                        }
-//                        r.setTopScore(r.getMatchedLibSpec().get(0).getScore());
                     simResult.add(r);
                 }
             } catch (FileNotFoundException | ClassNotFoundException ex) {
-                Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "opening file for reading result" + ex);
             } catch (IOException ex) {
                 // 
             } finally {
@@ -294,7 +288,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         file.delete();
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "is this the place closing the read result file" + ex);
                 }
             }
         } else {
@@ -303,7 +297,9 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 fis.delete();
 
             }
+            return null;
         }
+   
 
         return simResult;
     }

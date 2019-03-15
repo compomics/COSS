@@ -5,6 +5,8 @@ import com.compomics.coss.controller.MainFrameController;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,6 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
 
 /**
  *
@@ -167,7 +170,11 @@ public class TargetDB_View extends JPanel {
             @Override
             public void stateChanged(ChangeEvent ce) {
                 
-                contrl.updateInputInfo();
+                try {
+                    contrl.updateInputInfo();
+                } catch (JMzReaderException ex) {
+                    Logger.getLogger(TargetDB_View.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 
             }
         });

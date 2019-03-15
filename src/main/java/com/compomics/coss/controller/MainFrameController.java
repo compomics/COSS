@@ -34,6 +34,9 @@ import com.compomics.ms2io.*;
 import java.awt.BorderLayout;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
 import java.util.ArrayList;
+import org.apache.commons.io.FilenameUtils;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
+import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
 
 /**
  * Controller class for GUI
@@ -53,7 +56,7 @@ public class MainFrameController implements UpdateListener {
     private TargetDB_View targetView;
 
     // private ConfigHolder config = new ConfigHolder();
-    Dispartcher dispatcher;
+    Dispatcher dispatcher;
     private static List<ComparisonResult> result = null;
 
     ConfigData configData;
@@ -75,7 +78,7 @@ public class MainFrameController implements UpdateListener {
      * Initialize objects, variables and components.
      */
     //<editor-fold  defaultstate="Colapsed" desc="Initialize Components">
-    public void init() {
+    public void init() throws JMzReaderException {
 
         configData = new ConfigData();
         fileTobeConfigure = "both"; //asume both query and library files to be read
@@ -181,7 +184,7 @@ public class MainFrameController implements UpdateListener {
             setSearchSettings();
             this.cencelled = false;
             mainView.setProgressValue(0);
-            dispatcher = new Dispartcher(this.configData, this, LOG);
+            dispatcher = new Dispatcher(this.configData, this, LOG);
             SwingWorkerThread workerThread = new SwingWorkerThread();
             workerThread.execute();
 
@@ -408,7 +411,7 @@ public class MainFrameController implements UpdateListener {
         String tempS2 = settingsPnl.txtLibrary.getText();
         if ("".equals(tempS2)) {
             validationMessages.add("Please select library file");
-        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp")  && !tempS2.endsWith(".sptxt") ) {
+        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt")) {
             validationMessages.add(" Spectral library file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
         }
 
@@ -622,9 +625,7 @@ public class MainFrameController implements UpdateListener {
      * @param taskCompleted
      */
     @Override
-    public void updateprogress(int taskCompleted) {
-
-        final double PERCENT = 100.0 / (double) configData.getExpSpectraIndex().size();
+    public void updateprogress(int taskCompleted, double PERCENT) {        
         SwingUtilities.invokeLater(() -> {
 
             int v = (int) (taskCompleted * PERCENT);
@@ -637,10 +638,9 @@ public class MainFrameController implements UpdateListener {
      * update the input information area for target spectrum on GUI based on
      * user selected spectrum
      */
-    public void updateInputInfo() {
-        if (configData.getExpSpecReader() != null && configData.getExpSpectraIndex() != null) {
-
-            int specNumber = spnModel.getNumber().intValue() - 1;
+    public void updateInputInfo() throws JMzReaderException {
+        int specNumber = spnModel.getNumber().intValue() - 1;
+        if (configData.getExpSpecReader() != null) {
             Spectrum tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specNumber).getPos());
 
             targetView.txtRtTime.setText(Double.toString(tSpec.getRtTime()));
@@ -648,7 +648,37 @@ public class MainFrameController implements UpdateListener {
             targetView.txtmaxmz.setText(Double.toString(tSpec.getMaxMZ()));
             targetView.txtminmz.setText(Double.toString(tSpec.getMinMZ()));
             targetView.txtnumpeaks.setText(Integer.toString(tSpec.getNumPeaks()));
+            try {
+                spectrumDisplay(specNumber);
+            } catch (JMzReaderException ex) {
+                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+
+        } else if (configData.getEbiReader() != null) {
+            JMzReader redr = configData.getEbiReader();
+            uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec = redr.getSpectrumByIndex(specNumber + 1);
+            String fileType = FilenameUtils.getExtension(configData.getExperimentalSpecFile().getName());
+            MappingJmzSpectrum jmzMap = new MappingJmzSpectrum(fileType);
+
+            Spectrum tSpec = jmzMap.getMappedSpectrum(jmzSpec);
+
+            targetView.txtRtTime.setText(Double.toString(tSpec.getRtTime()));
+            targetView.txtScanno.setText(tSpec.getScanNumber());
+            targetView.txtmaxmz.setText(Double.toString(tSpec.getMaxMZ()));
+            targetView.txtminmz.setText(Double.toString(tSpec.getMinMZ()));
+            targetView.txtnumpeaks.setText(Integer.toString(tSpec.getNumPeaks()));
+            try {
+                spectrumDisplay(specNumber);
+            } catch (JMzReaderException ex) {
+                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+
+        }
+
+        try {
             spectrumDisplay(specNumber);
+        } catch (JMzReaderException ex) {
+            java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -667,19 +697,18 @@ public class MainFrameController implements UpdateListener {
 
     public void exportResults(int type) {
         try {
-            ImportExport export=new ImportExport(result, configData);
+            ImportExport export = new ImportExport(result, configData);
             export.saveResult(type);
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
 
     }
 
     public void importResults() {
-        ImportExport importR=new ImportExport(result, configData);
+        ImportExport importR = new ImportExport(result, configData);
         importR.importResult();
-        
+
         if (result != null) {
             fillExpSpectraTable();
             fillBestmatchTable(0);
@@ -772,7 +801,7 @@ public class MainFrameController implements UpdateListener {
      *
      * @param specIndex position of the spectrum to be visualized
      */
-    public void spectrumDisplay(int specIndex) {
+    public void spectrumDisplay(int specIndex) throws JMzReaderException {
 
         targetView.pnlVizSpectrum.removeAll();
         //SpecPanel spec = new SpecPanel(null);
@@ -784,8 +813,20 @@ public class MainFrameController implements UpdateListener {
         String name = "";
         SpectrumPanel spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
 
-        if (configData.getExpSpectraIndex() != null) {
-            Spectrum tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specIndex).getPos());
+        Spectrum tSpec = new Spectrum();
+
+        if (configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) {
+            if (configData.getExpSpectraIndex() != null) {
+                tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specIndex).getPos());
+            } else if (configData.getEbiReader() != null) {
+                JMzReader redr = configData.getEbiReader();
+                uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec = redr.getSpectrumByIndex(specIndex + 1);
+
+                String fileType = FilenameUtils.getExtension(configData.getExperimentalSpecFile().getName());
+                MappingJmzSpectrum jmzMap = new MappingJmzSpectrum(fileType);
+                tSpec = jmzMap.getMappedSpectrum(jmzSpec);
+            }
+
             ArrayList<Peak> peaks = tSpec.getPeakList();
             int lenPeaks = peaks.size();
             mz = new double[lenPeaks];
@@ -801,10 +842,46 @@ public class MainFrameController implements UpdateListener {
                 c++;
             }
             spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
-            //spanel.addMirroredSpectrum(d.getSpectra2().get(bestResultIndex).getMzValuesAsArray(), d.getSpectra2().get(bestResultIndex).getIntensityValuesAsArray(), 500, "+2", cf_data.getDBSpecFile().getName(), false, Color.blue, Color.blue);
-            // resultView.getSpltPanel().add(specPanel);
         }
+//        if (configData.getExpSpectraIndex() != null) {
+        // tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specIndex).getPos());
 
+        //spanel.addMirroredSpectrum(d.getSpectra2().get(bestResultIndex).getMzValuesAsArray(), d.getSpectra2().get(bestResultIndex).getIntensityValuesAsArray(), 500, "+2", cf_data.getDBSpecFile().getName(), false, Color.blue, Color.blue);
+        // resultView.getSpltPanel().add(specPanel);
+//        } else if (configData.getEbiReader() != null) {
+//            JMzReader redr = configData.getEbiReader();
+//
+//            uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec = redr.getSpectrumByIndex(specIndex + 1);
+//            int lenPeaks = jmzSpec.getPeakList().size();
+//            mz = new double[lenPeaks];
+//            intensity = new double[lenPeaks];
+//            precCharge = Integer.toString(jmzSpec.getPrecursorCharge());
+//
+//            Spectrum spec = new Spectrum();
+//            configData.getSpectrumHeader(jmzSpec, spec);
+//            name = spec.getTitle();
+//            precMass = spec.getPCMass();
+//
+//            Map map;
+//
+//            map = jmzSpec.getPeakList();
+//            Set entries = map.entrySet();
+//            Iterator entriesIterator = entries.iterator();
+//
+//            int c = 0;
+//            while (entriesIterator.hasNext()) {
+//
+//                Map.Entry mapping = (Map.Entry) entriesIterator.next();
+//                mz[c] = (double) mapping.getKey();
+//                intensity[c] = (double) mapping.getValue();
+//                c++;
+//
+//            }
+//
+//            spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
+//            //spanel.addMirroredSpectrum(d.getSpectra2().get(bestResultIndex).getMzValuesAsArray(), d.getSpectra2().get(bestResultIndex).getIntensityValuesAsArray(), 500, "+2", cf_data.getDBSpecFile().getName(), false, Color.blue, Color.blue);
+//            // resultView.getSpltPanel().add(specPanel);
+//        }
         //spec.setPreferredSize(new Dimension(700, 300));
         targetView.pnlVizSpectrum.add(spanel);
         targetView.pnlVizSpectrum.repaint();
@@ -833,7 +910,7 @@ public class MainFrameController implements UpdateListener {
      * @param library path to library file
      */
     public void generateDeoy(int i, String library) {
-        
+
         if ("".equals(library)) {
             showMessageDialog("Validation errors", "No spectra library given", JOptionPane.WARNING_MESSAGE);
 
@@ -884,35 +961,31 @@ public class MainFrameController implements UpdateListener {
                     mainView.setProgressValue(0);
                     mainView.setProgressValue(Integer.toString(0) + "%");
 
-                } else {
+                } else if (result != null) {
                     LOG.info("Search Completed");
                     mainView.setProgressValue(100);
                     mainView.setProgressValue(Integer.toString(100) + "%");
 
-                    if (result != null) {
+                    LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
 
-                        LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
-
-                        if (configData.isDecoyAvailable()) {
-                            validateResult();
-                            LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
-                        } else {
-                            LOG.info("No decoy spectra found in library");
-                        }
-                        fillExpSpectraTable();
-                        fillBestmatchTable(0);
-                        displayResult();
-
+                    if (configData.isDecoyAvailable()) {
+                        validateResult();
+                        LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
                     } else {
-                        LOG.info("No comparison result.");
-                        clearGraphicArea();
+                        LOG.info("No decoy spectra found in library");
                     }
+                    fillExpSpectraTable();
+                    fillBestmatchTable(0);
+                    displayResult();
+                    get();
 
+                } else {
+                    LOG.info("No comparison result.");
+                    clearGraphicArea();
                 }
 
                 isBussy = false;
                 mainView.searchBtnActive(true);
-                get();
 
             } catch (InterruptedException | ExecutionException ex) {
                 LOG.error(ex.getMessage(), ex);
@@ -961,10 +1034,15 @@ public class MainFrameController implements UpdateListener {
 
                     spnModel.setMaximum(expSpecSize);
                     targetView.txtTotalSpec.setText("/" + Integer.toString(expSpecSize));
-                    updateInputInfo();
-                    spectrumDisplay(0);
 
-                    // rasterDisplay();
+                    try {
+                        updateInputInfo();
+                        spectrumDisplay(0);
+
+                        // rasterDisplay();
+                    } catch (JMzReaderException ex) {
+                        java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    }
                 } else {
                     LOG.info("Null Spectrum Index");
                 }

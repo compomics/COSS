@@ -42,19 +42,25 @@ public class DivideAndTopNPeaks implements Features {
         double startMz = 0;
         double limitMz = 0;
         int temp = 0;
+       // String errorIndx="";
         try {
             startMz = expSpectrum.getMinMZ();
             limitMz = startMz + windowMassSize;
-            len = expSpectrum.getNumPeaks();
+            len = expSpectrum.getPeakList().size();
             Collections.sort(expSpectrum.getPeakList());
+            
             temp += 1;
-            for (int k = 0; k < len; k++) {
+            for (int k = 0; k < expSpectrum.getPeakList().size() ; k++) {
 
+              //  errorIndx="spectrum peakList index: " + Integer.toString(k)+ ", " + Integer.toString(expSpectrum.getPeakList().size())+ ", " + Integer.toString(len);
                 double tmpMZ = expSpectrum.getPeakList().get(k).getMz();
+                
                 temp += 1;
                 //Peak tmpPeak = expSpectrum.getPeakMap().get(tmpMZ);
                 if (tmpMZ < limitMz) {
+                   
                     cPeaks.add(expSpectrum.getPeakList().get(k));
+                    
                 } else {
                     //cPeaks already sort as expSpectrum.PeakList is sorted
                     //Collections.sort(cPeaks, Peak.DescendingIntensityComparator);
@@ -63,6 +69,7 @@ public class DivideAndTopNPeaks implements Features {
                         tmp_num = cPeaks.size();
                     }
                     for (int num = 0; num < tmp_num; num++) {
+                        //errorIndx="spectrum filtered peaks index: " + Integer.toString(num)+ ", " + Integer.toString(cPeaks.size());
                         Peak tmpCPeakToAdd = cPeaks.get(num);
                         filteredPeaks.add(tmpCPeakToAdd);
                     }
@@ -75,7 +82,7 @@ public class DivideAndTopNPeaks implements Features {
             String srtLen = Integer.toString(len);
             String srtMzMin = Double.toString(startMz);
             String srtTemp = Integer.toString(temp);
-            LOGGER.info("Len, minMz and Temp : " + srtLen + ", " + srtMzMin + ", " + srtTemp);           
+            LOGGER.info("Len, minMz and Temp : " + srtLen + ", " + srtMzMin + ", " + srtTemp);//  + ": Error Location " + errorIndx);           
             throw ex;
         }
 

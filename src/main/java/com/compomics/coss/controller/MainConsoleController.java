@@ -14,7 +14,7 @@ import com.compomics.coss.model.ConfigData;
  *
  * @author Genet
  */
-public class MainConsolControler implements UpdateListener {
+public class MainConsoleController implements UpdateListener {
 
     /**
      * @param args the command line arguments
@@ -22,7 +22,7 @@ public class MainConsolControler implements UpdateListener {
     // static ConfigHolder config = new ConfigHolder();
     private static final Logger LOG = Logger.getLogger(MainFrameController.class);
     static ConfigData configData;
-    static Dispartcher dispatcher;
+    static Dispatcher dispatcher;
     List<ComparisonResult> result = new ArrayList<>();
     int cutoff_index_1percent;
     int cutoff_index_5percent;
@@ -200,7 +200,7 @@ public class MainConsolControler implements UpdateListener {
         LOG.info("Library: " + configData.getSpecLibraryFile().toString());
         LOG.info("Search started ");
 
-        dispatcher = new Dispartcher(this.configData, this, LOG);
+        dispatcher = new Dispatcher(this.configData, this, LOG);
         result = dispatcher.dispatch();
         if (configData.isDecoyAvailable() && result != null) {
             validateResult();
@@ -264,11 +264,8 @@ public class MainConsolControler implements UpdateListener {
     }
 
     @Override
-    public void updateprogress(int taskCompleted) {
-
-        final double PERCENT = 100.0 / (double) configData.getExpSpectraIndex().size();
-
-        int v = (int) (taskCompleted * PERCENT);
+    public void updateprogress(int taskCompleted, double percent) {
+        int v = (int) (taskCompleted * percent);
         System.out.print(Integer.toString(v) + "%" + "  ");
 
     }

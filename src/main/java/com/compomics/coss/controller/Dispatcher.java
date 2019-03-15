@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  *
  * @author Genet
  */
-public class Dispartcher {
+public class Dispatcher {
 
     private final ConfigData confData;
     private final UpdateListener listener;
@@ -32,7 +32,7 @@ public class Dispartcher {
     private DataProducer producer;
     private Matcher match;
 
-    public Dispartcher(ConfigData cnfData, UpdateListener lstner, org.apache.log4j.Logger log) {
+    public Dispatcher(ConfigData cnfData, UpdateListener lstner, org.apache.log4j.Logger log) {
         this.listener = lstner;
         this.confData = cnfData;
         this.log = log;
@@ -47,14 +47,14 @@ public class Dispartcher {
         match.cancel();
         producer.cancel();
         if (this.listener != null) {
-            this.listener.updateprogress(0);
+            this.listener.updateprogress(0, 0);
         }
 
     }
 
     /**
-     * dispatch the work of matching to the algorithm selected  
-     * 
+     * dispatch the work of reading and matching to the algorithm selected
+     *
      * @return:returns the comparison result computed
      */
     public List<ComparisonResult> dispatch() {
@@ -73,14 +73,15 @@ public class Dispartcher {
                 case 2:
                     scoreObj = new MeanSquareError(this.confData, this.log);
                     break;
-                default: scoreObj = new MSRobin(this.confData, this.log);
+                default:
+                    scoreObj = new MSRobin(this.confData, this.log);
                     break;
 
             }
 
             if (scoreObj != null) {
-                ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(20, true);
-                ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(20, true);
+                ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(40, true);
+                ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(40, true);
                 TheDataUnderComparison data = new TheDataUnderComparison(expspec, libSelected);
 
                 producer = new DataProducer(data, confData);
@@ -94,14 +95,16 @@ public class Dispartcher {
                 future1.get();
                 simResult = future.get();
                 executor.shutdown();
+                
+                if (simResult != null) {
+                    Collections.sort(simResult);
+                    Collections.reverse(simResult);
+                }
             }
 
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(Dispartcher.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        Collections.sort(simResult);
-        Collections.reverse(simResult);
 
         return simResult;
     }

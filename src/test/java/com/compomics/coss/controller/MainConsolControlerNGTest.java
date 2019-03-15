@@ -28,41 +28,30 @@ public class MainConsolControlerNGTest {
     }
 
     /**
-     * Test of startRunning method, of class MainConsolControler.
+     * Test of startRunning method, of class MainConsoleController.
      */
     @Test
     public void testStartRunning() {
         System.out.println("startRunning");
         String[] args = {"C:/pandyDS/SpecA.msp", "C:/pandyDS/SpecB.msp"};
-        MainConsolControler instance = new MainConsolControler();
+        MainConsoleController instance = new MainConsoleController();
         instance.startRunning(args);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
     }
 
     /**
-     * Test of validateResult method, of class MainConsolControler.
+     * Test of validateResult method, of class MainConsoleController.
      */
     @Test
     public void testValidateResult() {
         System.out.println("validateResult");
-        MainConsolControler instance = new MainConsolControler();
+        MainConsoleController instance = new MainConsoleController();
         instance.validateResult();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
-    /**
-     * Test of updateprogress method, of class MainConsolControler.
-     */
-    @Test
-    public void testUpdateprogress() {
-        System.out.println("updateprogress");
-        int taskCompleted = 0;
-        MainConsolControler instance = new MainConsolControler();
-        instance.updateprogress(taskCompleted);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
+   
     
 }
