@@ -130,6 +130,9 @@ public class ConfigSpecReaders {
                 default:
                     break;
             }
+            if(cfData.getExpSpectraIndex()!=null){
+                cfData.setExpSpecCount(cfData.getExpSpectraIndex().size());
+            }
 
         } else {
 

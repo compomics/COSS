@@ -52,10 +52,11 @@ public class MappingJmzSpectrum {
 
         }
 
-        expSpec.setPeakList(peakList);
-        expSpec.setNumPeaks(peakList.size());
-        
-        getHeader(jmzSpec);
+        if (peakList != null && !peakList.isEmpty()) {
+            expSpec.setPeakList(peakList);
+            expSpec.setNumPeaks(peakList.size());
+            getHeader(jmzSpec);
+        }
         return expSpec;
     }
 
@@ -91,19 +92,11 @@ public class MappingJmzSpectrum {
 
                         } else if (p.getName().equals("lowest observed m/z")) {
                             Double minMz = Double.parseDouble(p.getValue());
-                            expSpec.setMinIntensity(minMz);
+                            expSpec.setMinMz(minMz);
 
                         }
                     }
-                    double[][] peakList = expSpec.getPeakListDouble();
-                    double[] intArray=peakList[1];
-                    Arrays.sort(intArray);
-                    double minInt = intArray[0];
-                    double maxInt = intArray[intArray.length-1];
-                    
-                    
-                    expSpec.setMaxIntensity(maxInt);
-                    expSpec.setMinIntensity(minInt);
+
                 }
                 break;
 
@@ -129,19 +122,20 @@ public class MappingJmzSpectrum {
 
                     }
                     double[][] peakList = expSpec.getPeakListDouble();
-                    double[] arr=peakList[1];
-                    Arrays.sort(arr);
-                    double min = arr[0];
-                    double max = arr[arr.length-1];
-                    expSpec.setMaxIntensity(max);
-                    expSpec.setMinIntensity(min);
-                    
-                    arr=peakList[0];
-                    Arrays.sort(arr);
+                    double[] arr = peakList[1];
+                    double min, max;
+                    if (arr.length > 1) {
+                        Arrays.sort(arr);
+                        max = arr[arr.length - 1];
+                    } else {
+                        max = arr[0];
+                    }
                     min = arr[0];
-                    max = arr[arr.length-1];
+
                     expSpec.setMaxIntensity(max);
                     expSpec.setMinIntensity(min);
+
+                   
 
                 }
                 break;

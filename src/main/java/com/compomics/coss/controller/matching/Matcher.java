@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 
 /**
  *
@@ -179,8 +178,9 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                 ++taskCompleted;
                 listener.updateprogress(taskCompleted, percent);
+                
                 if(taskCompleted%100==0){
-                    System.out.print(Integer.toString(taskCompleted) + " ... ");
+                    System.out.print("\b\b\b\b\b\b" + Integer.toString(taskCompleted)+"/" + Integer.toString(confData.getExpSpecCount()));
                 }
 
                 if (!specResult.isEmpty()) {
@@ -225,7 +225,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
         List<ComparisonResult> simResult=null;
         if (!cancelled && !this.procucer.isCancelled()) {
-            System.out.print(Integer.toString(taskCompleted) + "\n");
+            System.out.print("\b\b\b\b\b\b search completed \n");
             
             if (numDecoy == 0) {
                 log.info("No decoy spectra found to validate result");

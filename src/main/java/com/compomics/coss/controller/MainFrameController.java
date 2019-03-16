@@ -625,7 +625,7 @@ public class MainFrameController implements UpdateListener {
      * @param taskCompleted
      */
     @Override
-    public void updateprogress(int taskCompleted, double PERCENT) {        
+    public void updateprogress(int taskCompleted, double PERCENT) {
         SwingUtilities.invokeLater(() -> {
 
             int v = (int) (taskCompleted * PERCENT);
@@ -816,9 +816,9 @@ public class MainFrameController implements UpdateListener {
         Spectrum tSpec = new Spectrum();
 
         if (configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) {
-            if (configData.getExpSpectraIndex() != null) {
+            if (configData.getExpFileformat().equals("ms2io")) {
                 tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specIndex).getPos());
-            } else if (configData.getEbiReader() != null) {
+            } else if (configData.getExpFileformat().equals("ebi")) {
                 JMzReader redr = configData.getEbiReader();
                 uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec = redr.getSpectrumByIndex(specIndex + 1);
 
@@ -828,61 +828,29 @@ public class MainFrameController implements UpdateListener {
             }
 
             ArrayList<Peak> peaks = tSpec.getPeakList();
-            int lenPeaks = peaks.size();
-            mz = new double[lenPeaks];
-            intensity = new double[lenPeaks];
-            precMass = tSpec.getPCMass();
-            precCharge = tSpec.getCharge();
-            name = tSpec.getTitle();
+            try {
+                int lenPeaks = peaks.size();
+                mz = new double[lenPeaks];
+                intensity = new double[lenPeaks];
+                precMass = tSpec.getPCMass();
+                precCharge = tSpec.getCharge();
+                name = tSpec.getTitle();
 
-            int c = 0;
-            for (Peak p : peaks) {
-                mz[c] = p.getMz();
-                intensity[c] = p.getIntensity();
-                c++;
+                int c = 0;
+                for (Peak p : peaks) {
+                    mz[c] = p.getMz();
+                    intensity[c] = p.getIntensity();
+                    c++;
+                }
+                spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
+
+            } catch (Exception ex) {
+
+                System.out.println(ex);
             }
-            spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
-        }
-//        if (configData.getExpSpectraIndex() != null) {
-        // tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specIndex).getPos());
 
-        //spanel.addMirroredSpectrum(d.getSpectra2().get(bestResultIndex).getMzValuesAsArray(), d.getSpectra2().get(bestResultIndex).getIntensityValuesAsArray(), 500, "+2", cf_data.getDBSpecFile().getName(), false, Color.blue, Color.blue);
-        // resultView.getSpltPanel().add(specPanel);
-//        } else if (configData.getEbiReader() != null) {
-//            JMzReader redr = configData.getEbiReader();
-//
-//            uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec = redr.getSpectrumByIndex(specIndex + 1);
-//            int lenPeaks = jmzSpec.getPeakList().size();
-//            mz = new double[lenPeaks];
-//            intensity = new double[lenPeaks];
-//            precCharge = Integer.toString(jmzSpec.getPrecursorCharge());
-//
-//            Spectrum spec = new Spectrum();
-//            configData.getSpectrumHeader(jmzSpec, spec);
-//            name = spec.getTitle();
-//            precMass = spec.getPCMass();
-//
-//            Map map;
-//
-//            map = jmzSpec.getPeakList();
-//            Set entries = map.entrySet();
-//            Iterator entriesIterator = entries.iterator();
-//
-//            int c = 0;
-//            while (entriesIterator.hasNext()) {
-//
-//                Map.Entry mapping = (Map.Entry) entriesIterator.next();
-//                mz[c] = (double) mapping.getKey();
-//                intensity[c] = (double) mapping.getValue();
-//                c++;
-//
-//            }
-//
-//            spanel = new SpectrumPanel(mz, intensity, precMass, precCharge, name);
-//            //spanel.addMirroredSpectrum(d.getSpectra2().get(bestResultIndex).getMzValuesAsArray(), d.getSpectra2().get(bestResultIndex).getIntensityValuesAsArray(), 500, "+2", cf_data.getDBSpecFile().getName(), false, Color.blue, Color.blue);
-//            // resultView.getSpltPanel().add(specPanel);
-//        }
-        //spec.setPreferredSize(new Dimension(700, 300));
+        }
+
         targetView.pnlVizSpectrum.add(spanel);
         targetView.pnlVizSpectrum.repaint();
         targetView.pnlVizSpectrum.revalidate();
@@ -968,10 +936,11 @@ public class MainFrameController implements UpdateListener {
 
                     LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
 
-                    if (configData.isDecoyAvailable()) {
+                    
+                    if (!result.isEmpty() && configData.isDecoyAvailable()) {
                         validateResult();
                         LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
-                    } else {
+                    } else if(configData.isDecoyAvailable()){
                         LOG.info("No decoy spectra found in library");
                     }
                     fillExpSpectraTable();
