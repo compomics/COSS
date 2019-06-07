@@ -1,4 +1,4 @@
-# coss
+# COSS
 
  * [Project Description](#project-description)
  * [Input Data](#input-data)
@@ -6,126 +6,106 @@
  * [Downloads](#downloads)
  * [Usage](#usage)
  
- ---
+---
 ## Project Description
 
-COSS is user-friendly spectral library search tool capable of processing large databases and supporting different spectral file formats. COSS is developed in java and hence it is platform independent. COSS uses external sub-system for file reading and writing and in addition to file input-output subsystem there are three main processes: preprocessing, feature extraction and matching. All the processes are organized and implemented in a modular fation so that future upgrade can be made easy. 
-
-
+COSS is a user-friendly spectral library search tool capable of processing large spectral libraries and supporting multiple file formats. COSS is developed in Java and hence it is platform independent. COSS uses external subsystems for file reading and writing. Next to file io subsystems there are three main processes: preprocessing, feature extraction and matching. All processes are organized and implemented in a modular fashion to facilitate future upgrades. 
 
 [Go to top of page](#coss)
 
-----
+---
 ## Input Data
-COSS supports the following spectral file format  for query(experimental) spectra.
+COSS supports the following spectral file format for query (experimental) spectra.
  - Mascot Generic Format: mgf
  - NIST spectral library format: msp
- - Format from institute of system biology(ISB): mzXML
- - HUPO Proteomics Standards Initiative file format(PSI): mzData
+ - Institute of System Biology (ISB): mzXML
+ - HUPO Proteomics Standards Initiative file format (PSI): mzData
  - ISB and PSI joint format: mzML
- - Sequest: dta
+ - SEQUEST: dta
  - pkl
  - ms2
  
- Library spectra file formats should either be mgf or msp file formats. 
- 
+Accepted spectral library file formats are mgf and msp.
 
+[Go to top of page](#coss)
 
+---
 ## Output Data
 Users can export the result in excel. The output table contains 15 columns.
 
 | Parameter  | Description        |
 |------------|--------------------|
-| Title |Title of the spectrum (for msp file, Name is used as title)|
-| Library  | describes weather the library is true library or decoy |
-| Scan num.  | Scan number  |
-| Sequence    |Peptide sequence from the matched library spectrum.   |
-| Prec. Mass (M/Z)  | Precursor mass of query spectrum |
-| Charge | Charge of query specrum   |
-| Score | Search socre   |
-| Validation  | validation either <1% FDR or <%5 FDR  |
-| #filteredQuerypeaks   |query peaks after filtering the spectrum under 100Da mass window   |
-| #filteredLibraryPeaks  | library peaks after filtering spectrum under 100Da mass window  |
-| SumIntQuery  | sum of peak intensities in filtered query spectrum  |
-| SumIntLib  | sum of peak intensities in filtered library spectrum  |
-| #MatchedPeaks  | Number of matched peaks found in query and library spectrua being matched|
-| MatchedIntQuery | sum of peak intensities of query spectrum that have a match in library spectrum|
-| MatchedIntLib | sum of peak intensities of library spectrum that have a match in query spectrum |
+| Title | Title of the spectrum (for msp file, Name is used as title) |
+| Library | Describes weather the library is true library or decoy |
+| Scan num. | Scan number |
+| Sequence | Peptide sequence from the matched library spectrum |
+| Prec. Mass (M/Z) | Precursor mass of query spectrum |
+| Charge | Charge of query specrum |
+| Score | Search score |
+| Validation | Validation, either 1% FDR or %5 FDR |
+| #filteredQuerypeaks | Query peaks after filtering the spectrum under 100Da mass window |
+| #filteredLibraryPeaks | Library peaks after filtering spectrum under 100Da mass window |
+| SumIntQuery | Sum of peak intensities in filtered query spectrum |
+| SumIntLib | Sum of peak intensities in filtered library spectrum |
+| #MatchedPeaks | Number of matched peaks found in query and library spectrua being matched |
+| MatchedIntQuery | Sum of peak intensities of query spectrum that have a match in library spectrum |
+| MatchedIntLib | Sum of peak intensities of library spectrum that have a match in query spectrum |
 
-It is also possible to save result in .cos format so that users can import it to visualize.
-
-
+It is also possible to save results in .cos format. This allows users to re-import previous results for visualization.
 
 [Go to top of page](#coss)
 
-
-----
+---
 ## Downloads
 
 Download the latest version of COSS  <a href="http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/COSS-1.0.zip" onclick="trackOutboundLink('usage','download','coss','http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/.zip'); return false;">here</a>.  
 
-You can run COSS as CLI or our user-friendly GUI. 
-
-----
-
-## Usage
-- Running COSS(GUI): download COSS from the link provided and unzip it.
-  On windows: your can run COSS by double clicking on COSS-X.Y.jar file or it can be started on command line using the following command  
-  
-                $java -jar COSS-X.Y.jar
-				
-  * X.Y   stands for the version number(eg. COSS-1.1.jar).
-
-	*Make sure java is installed on your machine.
-	
-- Parameter Setting: Select and fill all the parameters needed.
-
-*It is recommonded that your spectral library has a decoy spectra for result validation. If your library file doens contain a decoy spectra, you can start by generating decoy using COSS. COSS has two algorithms to generate decoy spectra for the given library. Click  GenerateDecoy menue and select the algorithm to generate the decoy spectra equeal to the size of your spectra library and concatenate to your library.
-
-- Configuring File Reader: Click "Config Spec. Reader", at this time system disables "Configure Reader" and "Start Seach" buttons untill   it  is finish file configuration. 
-- Searching: click "Start Searching" when it is enabled, now search is started and you can see the status on the progress bar.
-
- Left window of the system gives information of the query file. It also visualize the spectra.It is automatically displayed after the   
- file is configured.
-
-- Result: To see the result click on the Result tab from the main window. There are tow tables in the result tab window: the upper      
-  tables lists query spectra that have got a match. They are sorted decending order based on the score value. The lower table lists 10  
-  best matches(if exist) for the selected query spectrum from the upper table. This also sorted based on the top score values of the  
-  matched spectrum found. Results also displayed in visual form for a selected query spectrum and matched library spectrum. 
-
-
-- Running COSS(CLI):
-    Command line searching also possible in COSS with the following commands:
-	
-
-        java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile    
-	 
-        or                    
-							  
-        java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) 
-			   
-        or                     
-							  
-        java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
-
-Decoy spectra can be generated and appended with the following command
-
-        java -jar COSS-X.Y.jar -d librarySpectraFile
-	 
-
-  * X.Y   stands for the version number(eg. COSS-1.1.jar).
-  
-  *Make sure java is installed on your machine.
-
-
-----
-
-| Java | Maven | Netbeans | 
-|:--:|:--:|:--:|
-|[![java](http://genesis.ugent.be/public_data/image/java.png)](http://java.com/en/) | [![maven](http://genesis.ugent.be/public_data/image/maven.png)](http://maven.apache.org/) | [![netbeans](https://netbeans.org/images_www/visual-guidelines/NB-logo-single.jpg)](https://netbeans.org/)
-
+COSS can be run with the user-friendly GUI or through the CLI. 
 
 [Go to top of page](#coss)
 
+---
+## Usage
+### GUI
+- Download COSS from the provided link and unzip it.
+- On Windows you can run COSS by double clicking the COSS-X.Y.jar file. COSS can also be started from the command line using the following command:
+```
+$java -jar COSS-X.Y.jar
+```
+*X.Y stands for the version number (eg. COSS-1.1.jar)  
+Make sure Java is installed on your machine.*
+	
+- Parameter Setting: Select and fill all required parameters.
+- Decoy generation: It is recommended to add decoy spectra to your spectral library for result validation. If your library does not contain decoy spectra, these can be added with COSS. COSS has two algorithms to generate decoy spectra. Click the GenerateDecoy menu and select the algorithm to generate the decoy spectra (which will be equal in size to your spectra library) and concatenate the decoys to your library.
+- Configuring File Reader: Click "Config Spec. Reader". At this time, the system disables the "Configure Reader" and "Start Seach" buttons until it is finished with the configuration. 
+- Searching: Click "Start Searching", COSS starts searching and displays the status on the progress bar. The left-hand side window shows information of the query file. It also visualizes the spectra.
+- Result: To see the results, click on the Result tab from the main window. The upper table lists the experimental spectra while the lower table lists the top 10 matched spectra for the selected experimental spectrum. An interactive spectrum comparison view is presented at the bottom with the selected experimental spectrum (red) mirrored with the selected matched library spectrum (blue).
 
+### CLI
+Command line searching is possible in COSS with the following commands:
+```
+java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile    
+```
+or                    
+```
+java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) 
+```
+or
+```
+java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+```
+Decoy spectra can be generated and appended with the following command:
+```
+java -jar COSS-X.Y.jar -d librarySpectraFile
+```
+*X.Y stands for the version number (eg. COSS-1.1.jar)  
+Make sure Java is installed on your machine.*
 
+[Go to top of page](#coss)
+
+---
+| Java | Maven | Netbeans | 
+|:--:|:--:|:--:|
+|[![java](http://genesis.ugent.be/uvpublicdata/image/java.png)](http://java.com/en/) | [![maven](http://genesis.ugent.be/uvpublicdata/image/maven.png)](http://maven.apache.org/) | [![netbeans](https://netbeans.org/images_www/visual-guidelines/NB-logo-single.jpg)](https://netbeans.org/)
+
+[Go to top of page](#coss)
