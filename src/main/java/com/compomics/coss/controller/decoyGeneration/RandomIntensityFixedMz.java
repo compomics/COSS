@@ -26,7 +26,7 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
     File randomIntShift;
 
     public RandomIntensityFixedMz(File f, org.apache.log4j.Logger log) {
-        super(f,log);
+        super(f, log);
     }
 
     @Override
@@ -123,8 +123,11 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
                 } else {
                     bw.write(line + "\n");
                     if ((line.startsWith("Name") && fileExtension.equals("msp")) || (line.startsWith("TITLE") && fileExtension.equals("mgf"))) {
-                        line+="_decoy";
-                        System.out.println("Current spectrum index :  " + Integer.toString(count));
+                        line += "_decoy";
+                        System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+                        Thread.sleep(1);
+                        System.out.print("Current decoy spectrum index generated :  " + Integer.toString(count));
+                        
                         count++;
                     }
                 }
@@ -133,12 +136,10 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
 
             }
 
-       
-
-           
-
         } catch (IOException ex) {
             Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RandomIntensityFixedMz.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 br.close();
@@ -147,8 +148,7 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
                 Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-           return randomIntShift; 
+        return randomIntShift;
     }
 
-  
 }

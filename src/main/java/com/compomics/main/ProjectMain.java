@@ -3,7 +3,6 @@ package com.compomics.main;
 import com.compomics.coss.controller.MainConsoleController;
 import com.compomics.coss.controller.MainFrameController;
 import java.awt.Dimension;
-import java.io.File;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -26,6 +25,7 @@ public class ProjectMain {
      */
     private static final String ERROR_MESSAGE = "An error occured during startup, please try again."
             + System.lineSeparator() + "If the problem persists, contact your administrator or post an issue on the google code page.";
+  
 
     // private DrawRaster  visualize=new DrawRaster();
     /**

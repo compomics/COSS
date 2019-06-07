@@ -256,8 +256,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "closing file writing" + ex);
             }
 
-            log.info(
-                    "Getting results.");
+            log.info("Getting results.");
 
             FileInputStream fis = null;
             ObjectInputStream ois = null;
@@ -273,7 +272,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
             } catch (FileNotFoundException | ClassNotFoundException ex) {
                 Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "opening file for reading result" + ex);
             } catch (IOException ex) {
-                // 
+                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex); 
             } finally {
                 try {
                     if (ois != null) {
@@ -288,7 +287,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         file.delete();
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "is this the place closing the read result file" + ex);
+                    Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         } else {
@@ -297,7 +296,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 fis.delete();
 
             }
-            return null;
         }
    
 

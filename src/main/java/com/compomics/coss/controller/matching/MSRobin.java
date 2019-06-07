@@ -149,7 +149,7 @@ public class MSRobin extends Score {
         sumMatchedIntLib = libSpecMatchedInt;
 
         if (matchedNumPeaks != 0) {
-            int_part = alpha_beta / (Math.sqrt(alpha_alpha * beta_beta));
+            int_part = Math.sqrt(alpha_beta) / (Math.sqrt(alpha_alpha * beta_beta));
         }
 
         return int_part;

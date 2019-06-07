@@ -29,7 +29,7 @@ public class MergeFiles {
        
     }
 
-    public void Merge() {
+    public void Merge() throws InterruptedException {
         BufferedWriter bw = null;
         BufferedReader br = null;
        // String filename1, filename2;
@@ -60,7 +60,9 @@ public class MergeFiles {
                 line = br.readLine();
 
                 if(line!=null && line.contains("Name")){
-                    System.out.println("Number of spectrum apended: " + Integer.toString(count));
+                    System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+                    Thread.sleep(1);
+                    System.out.print("Number of spectrum apended: " + Integer.toString(count));
                     count++;
                 }
             }

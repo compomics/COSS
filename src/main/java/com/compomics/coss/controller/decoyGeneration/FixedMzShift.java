@@ -68,7 +68,9 @@ public class FixedMzShift extends GenerateDecoyLib {
 
                 } else if ((line.startsWith("Name") && fileExtension.equals("msp")) || (line.startsWith("TITLE") && fileExtension.equals("mgf"))) {
                     line += "_decoy";
-                    System.out.println("Current decoy spectrum index generated :  " + Integer.toString(count));
+                    System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+                    Thread.sleep(1);
+                    System.out.print("Current decoy spectrum index generated :  " + Integer.toString(count));
                     count++;
                 }
 
@@ -80,6 +82,8 @@ public class FixedMzShift extends GenerateDecoyLib {
 
         } catch (IOException ex) {
             Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 br.close();
