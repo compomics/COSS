@@ -133,6 +133,12 @@ public class MainFrameController implements UpdateListener {
         LOG.setLevel((Level) Level.INFO);
         LoadData();//Read input configData from file and put on GUI
 
+        //delet temporary result file if exists... created in Matcher class for storing results temporarily
+        File file = new File("temp.txt");
+        if (file.exists()) {
+            file.delete();
+        }
+
     }//</editor-fold>
 
     /**
@@ -936,11 +942,10 @@ public class MainFrameController implements UpdateListener {
 
                     LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
 
-                    
                     if (!result.isEmpty() && configData.isDecoyAvailable()) {
                         validateResult();
                         LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
-                    } else if(configData.isDecoyAvailable()){
+                    } else if (configData.isDecoyAvailable()) {
                         LOG.info("No decoy spectra found in library");
                     }
                     fillExpSpectraTable();
