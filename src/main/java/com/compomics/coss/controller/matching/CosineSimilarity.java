@@ -77,7 +77,6 @@ public class CosineSimilarity extends Score {
             double sqrtV2 = Math.sqrt(v2SquareSum);
             score = productSum / (sqrtV1 * sqrtV2);
             score*= (matchedNumPeaks*matchedNumPeaks);
-
         }
         return score;
     }
