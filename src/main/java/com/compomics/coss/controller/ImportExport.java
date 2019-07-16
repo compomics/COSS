@@ -94,6 +94,11 @@ public class ImportExport {
 
     }
 
+    /**
+     * save result of command line search
+     * @param type
+     * @throws IOException 
+     */
     public void saveResult_CL(int type) throws IOException {
 
         if (result != null) {

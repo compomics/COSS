@@ -9,6 +9,7 @@ import com.compomics.coss.model.ConfigData;
 import com.compomics.coss.model.MatchedLibSpectra;
 import com.compomics.ms2io.Peak;
 import com.compomics.ms2io.Spectrum;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -73,8 +74,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
         int numTarget = 0;
         int massWindow = confData.getMassWindow();
         double percent = 100.0 / (double) confData.getExpSpecCount();
-       
-        
 
         ArrayList<MatchedLibSpectra> specResult = new ArrayList<>(0);
         while (this.procucer.isReading() || (!data.getExpSpec().isEmpty() && !data.getLibSelectedSpec().isEmpty())) {
@@ -109,9 +108,10 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         int mNumPeaks = 0;
                         int tempLenA = 0;
                         int tempLenB = 0;
-                        double tempScore = 0;
+                        double tempScore =  -1;
 
-                        for (int topN = 1; topN < 11; topN++) {
+                        for (int topN = 1; topN < 11; topN++) { // highest score from 1 - 10 peaks selection
+                            //int topN=10;    //only for the top 10 peaks
                             DivideAndTopNPeaks obj = new DivideAndTopNPeaks(sp1, topN, massWindow, log);
                             ArrayList<Peak> selectedPeaks_exp = obj.getFeatures();
                             obj = new DivideAndTopNPeaks(sp2, topN, massWindow, log);
@@ -121,13 +121,13 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             int lenB = selectedPeaks_lib.size();
                             algorithm.setSumTotalIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
                             algorithm.setSumTotalIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
-
                             double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
 
+                           // score*=algorithm.getNumMatchedPeaks();
                             selectedPeaks_exp.clear();
                             selectedPeaks_lib.clear();
 
-                            if (tempScore < score) {
+                            if (score > tempScore) { //tempScore<score for MSRobin and cosine similarity
                                 tempScore = score;
                                 mIntA = algorithm.getSumMatchedIntExp();
                                 mIntB = algorithm.getSumMatchedIntLib();
@@ -142,13 +142,13 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             //double intensity_part = object.getIntensity_part();
                             //double probability_part = object.getProbability_part();
                         }
-                        double finalScore = Collections.max(scores);
+                        double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
                         finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
                         //scores.clear();
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
 //                            }
-                        if (finalScore > 1) {
+                        if (finalScore > 0) {
                             MatchedLibSpectra mSpec = new MatchedLibSpectra();
                             mSpec.setScore(finalScore);//(Collections.max(scores));
                             mSpec.setSequence(sp2.getSequence());
@@ -178,16 +178,16 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                 ++taskCompleted;
                 listener.updateprogress(taskCompleted, percent);
-                
-                if(taskCompleted%100==0){
-                    System.out.print("\b\b\b\b\b\b" + Integer.toString(taskCompleted)+"/" + Integer.toString(confData.getExpSpecCount()));
+
+                if (taskCompleted % 100 == 0) {
+                    System.out.print("\b\b\b\b\b\b" + Integer.toString(taskCompleted) + "/" + Integer.toString(confData.getExpSpecCount()));
                 }
 
                 if (!specResult.isEmpty()) {
                     ComparisonResult compResult = new ComparisonResult();
                     compResult.setExpSpectrum(sp1);
                     Collections.sort(specResult);
-                    Collections.reverse(specResult);
+                    Collections.reverse(specResult);//decending order for MSRobin and Cosine similarity, it should be in accending for MSE
 
                     //only top ten results are recorded, if existed
                     List<MatchedLibSpectra> tempMatch = new ArrayList<>(10);
@@ -223,10 +223,22 @@ public class Matcher implements Callable<List<ComparisonResult>> {
             // specCount++;
         }
 
-        List<ComparisonResult> simResult=null;
+        try {
+            if (oos != null) {
+                oos.close();
+            }
+            if (fos != null) {
+                fos.close();
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "closing file writing" + ex);
+        }
+
+        List<ComparisonResult> simResult = null;
         if (!cancelled && !this.procucer.isCancelled()) {
             System.out.print("\b\b\b\b\b\b search completed \n");
-            
+
             if (numDecoy == 0) {
                 log.info("No decoy spectra found to validate result");
                 confData.setDecoyAvailability(false);
@@ -238,23 +250,12 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 confData.setDecoyAvailability(true);
             }
 
-             if (confData.getExpSpectraIndex() != null){
-                 simResult = new ArrayList<>(confData.getExpSpectraIndex().size());
-             }else if(confData.getEbiReader() != null) {
-                 simResult = new ArrayList<>(confData.getEbiReader().getSpectraCount());
-             }
-            //listener.updateprogress(confData.getExpSpectraIndex().size());
-            try {
-                if (oos != null) {
-                    oos.close();
-                }
-                if (fos != null) {
-                    fos.close();
-                }
-                log.info("Search completed succesfully.");
-            } catch (IOException ex) {
-                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "closing file writing" + ex);
+            if (confData.getExpSpectraIndex() != null) {
+                simResult = new ArrayList<>(confData.getExpSpectraIndex().size());
+            } else if (confData.getEbiReader() != null) {
+                simResult = new ArrayList<>(confData.getEbiReader().getSpectraCount());
             }
+            //listener.updateprogress(confData.getExpSpectraIndex().size());
 
             log.info("Getting results.");
 
@@ -271,8 +272,11 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 }
             } catch (FileNotFoundException | ClassNotFoundException ex) {
                 Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "opening file for reading result" + ex);
+            } catch (EOFException ex) {
+                // System.out.println("End of file reached");
+
             } catch (IOException ex) {
-                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex); 
+                Logger.getLogger(Matcher.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 try {
                     if (ois != null) {
@@ -290,14 +294,15 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                     Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        } else {
-            File fis = new File("temp.txt");
-            if (fis.exists()) {
-                fis.delete();
+        } else if (cancelled || this.procucer.isCancelled()) {
 
-            }
+            log.info("Process cancelled.");
         }
-   
+        File fis = new File("temp.txt");
+        if (fis.exists()) {
+            fis.delete();
+
+        }
 
         return simResult;
     }

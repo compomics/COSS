@@ -52,7 +52,7 @@ public class MainConsoleController implements UpdateListener {
                
             }
             
-            if( lenArgs == 2){
+            if( lenArgs == 2 && (arg1.equals("-dF") || arg1.equals("-dR"))){
                 //Generate decoy library and exit
                
                 if(arg1.equals("-dF")){// fixed mz shift of peaks
@@ -91,7 +91,7 @@ public class MainConsoleController implements UpdateListener {
                     startMatching();
 
                     ImportExport exp = new ImportExport(result, configData);
-                    exp.saveResult_CL(3);
+                    exp.saveResult_CL(1);
                 }
 
             }
@@ -129,8 +129,10 @@ public class MainConsoleController implements UpdateListener {
             double pcTol = Double.parseDouble(ipArgs[2]);
             if (pcTol < 0) {
                 System.out.print("Make sure the precursor tolerance value is correct. \n it should be given in ppm");
+            }else{
+                configData.setPrecTol(pcTol);
             }
-            configData.setPrecTol(pcTol);
+            
 
         }
 
@@ -138,18 +140,22 @@ public class MainConsoleController implements UpdateListener {
             double frTol = Double.parseDouble(ipArgs[3]);
             if (frTol > 0) {
                 System.out.print("Make sure the fragment tolerance value is correct. \n it should be given in Da");
+            }else{
+               configData.setPrecTol(frTol); 
             }
-            configData.setPrecTol(frTol);
+            
 
         }
 
         if (lenArgs > 4) {
             double charge = Double.parseDouble(ipArgs[4]);
             if (charge < 0) {
-                System.out.print("invalid charge value");
+                System.out.print("invalid charge value, default charge value is set instead");
                 Runtime.getRuntime().exit(0);
+            }else{
+                configData.setPrecTol(charge);
             }
-            configData.setPrecTol(charge);
+            
 
         }
 
@@ -171,7 +177,7 @@ public class MainConsoleController implements UpdateListener {
         if (removePrecursor == 1) {
             removePCM = true;
         }
-
+      
         configData.applyFilter(applyFilter);
         configData.setFilterType(useFilter);
         configData.setCutOff(ConfigHolder.getInstance().getInt("cut.off"));
@@ -218,7 +224,7 @@ public class MainConsoleController implements UpdateListener {
 
     public void validateResult() {
         Validation validate = new Validation();
-        List<ComparisonResult> validatedRes = validate.validate(result, 0.01);
+        validate.validate(result, 0.01);
 
         //cutoff_index_1percent = validate.validate(result, 0.01);
         //cutoff_index_5percent = validate.validate(result, 0.05);

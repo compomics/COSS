@@ -10,6 +10,7 @@ import com.compomics.coss.controller.matching.MSRobin;
 import com.compomics.coss.controller.matching.Matcher;
 import com.compomics.coss.controller.matching.MeanSquareError;
 import com.compomics.coss.controller.matching.Score;
+import com.compomics.coss.controller.matching.TestScore;
 import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.ms2io.Spectrum;
 import com.compomics.coss.model.ComparisonResult;
@@ -66,6 +67,7 @@ public class Dispatcher {
             switch (confData.getScoringFunction()) {
                 case 0:
                     scoreObj = new MSRobin(this.confData, this.log);
+                    //scoreObj = new TestScore(confData, log);
                     break;
                 case 1:
                     scoreObj = new CosineSimilarity(this.confData, this.log);

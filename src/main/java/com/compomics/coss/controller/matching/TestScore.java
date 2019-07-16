@@ -8,7 +8,6 @@ package com.compomics.coss.controller.matching;
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.Peak;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -18,17 +17,17 @@ import java.util.logging.Logger;
  *
  * @author Genet
  */
-public class MeanSquareError extends Score {
-
+public class TestScore extends Score{
+    
+    
     /**
      * @param confData
      * @param log
      */
-    public MeanSquareError(ConfigData confData, org.apache.log4j.Logger log) {
+    public TestScore(ConfigData confData, org.apache.log4j.Logger log) {
         super(confData, log);
 
     }
-
     /**
      *
      * @param lenA number of peaks in experimental spectrum
@@ -39,64 +38,50 @@ public class MeanSquareError extends Score {
     @Override
     public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenA, int lenB, int topN) {
 
-        double probability = (double) topN / (double) confData.getMassWindow();
-        int totalN = 0;
-        
+        double intensity_part = 0;
         Map<String, ArrayList<Peak>> map = new TreeMap<>();
+      
         ArrayList<Peak> mPeaksExp;
         ArrayList<Peak> mPeaksLib;
         if (lenB < lenA) {
             map = prepareData(expSpec, libSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
-            totalN=lenA;
+         
 
         } else {
 
             double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
             sumTotalIntExp = sumTotalIntLib;
             sumTotalIntLib = temp;
-
-            map = prepareData(libSpec, expSpec);
+            map = prepareData(libSpec, expSpec);        
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
-            totalN=lenB;
 
         }
 
         matchedNumPeaks = mPeaksExp.size();
-        double intScore=meanSquareError(mPeaksExp, mPeaksLib);
+        calculateSumIntensity(mPeaksExp, mPeaksLib);
+        intensity_part = (sumMatchedIntExp*sumMatchedIntLib)/(sumTotalIntExp*sumTotalIntLib);
+        double mzPart = matchedNumPeaks / lenA;
         
-//        double probability_part=0;
-//        try {
-//            probability_part = calculateCumulativeBinominalProbability(totalN, probability);
-//        } catch (Exception ex) {
-//            Logger.getLogger(MeanSquareError.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        double log_probability = -10 * (Math.log10(probability_part));
-//                     
-//        double finalScore = log_probability * intScore;
-        
-        return (intScore);
+        double finalScore=mzPart*intensity_part;
+        return finalScore;
     }
+    private void calculateSumIntensity(ArrayList<Peak> mPeaksExp, ArrayList<Peak> mPeaksLib) {   
+        double expSpecMatchedInt = 0;
+        double libSpecMatchedInt = 0;
 
-    private double meanSquareError(List<Peak> v1, List<Peak> v2) {
+        for (int k = 0; k < matchedNumPeaks; k++) {
+            expSpecMatchedInt += mPeaksExp.get(k).getIntensity();
+            libSpecMatchedInt += mPeaksLib.get(k).getIntensity();
 
-        double sumSqrError = 0;
-        for (int a = 0; a < matchedNumPeaks; a++) {
-
-            double err = v1.get(a).getIntensity() - v2.get(a).getIntensity();
-            sumSqrError += err * err;
-
-            sumMatchedIntExp += v1.get(a).getIntensity();
-            sumMatchedIntLib += v2.get(a).getIntensity();
         }
 
-        double mse = Double.MAX_VALUE;
-        if (matchedNumPeaks != 0) {
-            mse = Math.sqrt(sumSqrError) / (double) matchedNumPeaks;
-        }
-        return mse;
-    }
-
+        sumMatchedIntExp = expSpecMatchedInt;
+        sumMatchedIntLib = libSpecMatchedInt;
+   
+       
+    }   
+    
 }

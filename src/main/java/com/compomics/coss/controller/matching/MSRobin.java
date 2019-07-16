@@ -25,24 +25,6 @@ public class MSRobin extends Score {
     }
 
     /**
-     * To calculate CumulativeBinominalProbability with given n,N and p values.
-     * n is inclusive during cumulative binominal probability function
-     *
-     * @return
-     * @throws Exception
-     */
-    // @Override
-    private double calculateCumulativeBinominalProbability(int N, double p) throws Exception {
-        double probability = 0;
-        for (int k = matchedNumPeaks; k < N + 1; k++) {
-            double factorial_part = calculateCombination(N, k);// Num.combination(N, k);
-            double tmp_probability = factorial_part * (Math.pow(p, k)) * (Math.pow((1 - p), (N - k)));
-            probability += tmp_probability;
-        }
-        return probability;
-    }
-
-    /**
      *
      * @param lenA number of peaks in experimental spectrum
      * @param lenB number of peaks in library spectrum
@@ -109,7 +91,7 @@ public class MSRobin extends Score {
                     score = -10 * (Math.log10(probability_part));
                     break;
                 case 4:
-                    // only probability
+                    //
                     score = (1 - probability_part) * intensity_part;
                     break;
                 default:
@@ -149,32 +131,12 @@ public class MSRobin extends Score {
         sumMatchedIntLib = libSpecMatchedInt;
 
         if (matchedNumPeaks != 0) {
-            int_part = Math.sqrt(alpha_beta) / (Math.sqrt(alpha_alpha * beta_beta));
+            int_part = alpha_beta / (Math.sqrt(alpha_alpha * beta_beta));
         }
 
         return int_part;
     }
 
-    public static long calculateCombination(int n, int r) throws Exception {
-        long score = 0;
-        if (r == 0) {
-            score = 1;
-        }
-        if (n >= r) {
-            double upper = 1,
-                    lower = 1;
-            for (int i = n; i > n - r; i--) {
-                upper = upper * i;
-            }
-            for (int i = r; i > 1; i--) {
-                lower = lower * i;
-            }
-            score = (long) (upper / lower);
-        } else {
-            throw new Exception("Error! n >= r");
-        }
-        return score;
-
-    }
+  
 
 }

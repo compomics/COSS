@@ -11,8 +11,8 @@ import java.util.TreeMap;
  * @author Genet
  */
 public class MatchedPeaks {
-    
-        // ar1[0..m-1] and ar2[0..n-1] are two given sorted
+
+    // ar1[0..m-1] and ar2[0..n-1] are two given sorted
     // arrays/ and x is given number. This function prints
     // the pair from both arrays such that the sum of the
     // pair is closest to x.
@@ -34,7 +34,7 @@ public class MatchedPeaks {
                 res_l = l;
                 res_r = r;
                 diff = Math.abs(ar1.get(l) - ar2.get(r));
-                
+
             }
 
             // If sum of this pair is more than x, move to smaller
@@ -45,21 +45,21 @@ public class MatchedPeaks {
             {
                 l++;
             }
-            
+
             if(diff==0){
-                    break;
-                }
+                break;
+            }
         }
 
         d[0] = res_l;
         d[1] = res_r;
         return d;
     }
-    
-    public Map getMatchedPeaks(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2, double fragTolerance){
+
+    public Map getMatchedPeaks(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2, double fragTolerance) {
         List<Peak> mPeaks_2 = new ArrayList<>(); //matched peaks from filteredExpMS2_2
         List<Peak> mPeaks_1 = new ArrayList<>(); //matched peaks from filteredExpMS2_1
-        Map<String, List<Peak>> map=new TreeMap<>();
+        Map<String, List<Peak>> map = new TreeMap<>();
 
         for (int i = 0; i < filteredExpMS2_1.size(); i++) {
             Peak p1 = filteredExpMS2_1.get(i);
@@ -70,15 +70,29 @@ public class MatchedPeaks {
             for (Peak peak_expMS2_2 : filteredExpMS2_2) {
                 double tmp_mz_p2 = peak_expMS2_2.getMz(),
                         tmp_diff = (tmp_mz_p2 - mz_p1);
-             
+
                 if (Math.abs(tmp_diff) < diff) {
                     matchedPeak_2 = peak_expMS2_2;
                     diff = Math.abs(tmp_diff);
                     found = true;
-                } else if (diff == tmp_diff) {
+                }
+                else if(diff==tmp_diff){
                     // so this peak is indeed in between of two peaks
                     // So, just the one on the left side is being chosen..
                 }
+//                else if (diff == tmp_diff) {// if the peak is in between two peaks check the intensity difference 
+//                    //and assigne the one with small diff otherwise leave as it is(left peak is assigned
+//                    if (peak_expMS2_2 != null) {
+//                        double prevInt_diff = Math.abs(p1.getIntensity() - matchedPeak_2.getIntensity());
+//                        double currentInt_diff = Math.abs(p1.getIntensity() - peak_expMS2_2.getIntensity());
+//
+//                        if (prevInt_diff > currentInt_diff) {
+//                            matchedPeak_2 = peak_expMS2_2;
+//                            diff = Math.abs(tmp_diff);
+//                            found = true;
+//                        }
+//                    }                    
+//                }
             }
             if (found && !mPeaks_2.contains(matchedPeak_2)) {
                 mPeaks_2.add(matchedPeak_2);
@@ -87,9 +101,9 @@ public class MatchedPeaks {
 
         }
 
-      map.put("Matched Peaks1", mPeaks_1);
-      map.put("Matched Peaks2", mPeaks_2);
-      
-      return map;
+        map.put("Matched Peaks1", mPeaks_1);
+        map.put("Matched Peaks2", mPeaks_2);
+
+        return map;
     }
 }

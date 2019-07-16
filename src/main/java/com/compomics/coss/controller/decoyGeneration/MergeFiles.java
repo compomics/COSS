@@ -62,8 +62,8 @@ public class MergeFiles {
                 if(line!=null && line.contains("Name")){
                     System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
                     Thread.sleep(1);
-                    System.out.print("Number of spectrum apended: " + Integer.toString(count));
                     count++;
+                    System.out.print("Number of spectrum apended: " + Integer.toString(count));                    
                 }
             }
 

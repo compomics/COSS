@@ -1,6 +1,8 @@
 package com.compomics.coss.controller.decoyGeneration;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -28,12 +30,16 @@ public class MergeFilesNGTest {
      */
     @Test
     public void testMerge() {
-        System.out.println("Merge");
-        File file1=new File("testData/testfile.mgf");
-        File file2=new File("testData/testfile.msp");
-        
-        MergeFiles instance = new MergeFiles(file1, file2);
-        instance.Merge();
+        try {
+            System.out.println("Merge");
+            File file1=new File("testData/testfile.mgf");
+            File file2=new File("testData/testfile.msp");
+            
+            MergeFiles instance = new MergeFiles(file1, file2);
+            instance.Merge();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MergeFilesNGTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
     

@@ -14,18 +14,20 @@ public class DivideAndTopNPeaks implements Features {
 
     private final int topN;
     private double windowMassSize = 100;    
-    private final Spectrum expSpectrum;
+    private final Spectrum spectrum;
     private final Logger LOGGER;
 
     /**
      * This constructs an object to filter out spectra based on 100Da window and
      * it selects X peaks with highest intensities for each window.
      *
-     * @param expSpectrum is an experimental spectrum
+     * @param spec is an experimental spectrum
      * @param topN is picked peak numbers with highest intensities
+     * @param windowmassSize moving window size to filter spectrum
+     * @param log
      */
-    public DivideAndTopNPeaks(Spectrum expSpec, int topN, double windowmassSize, Logger log) {
-        this.expSpectrum = expSpec;
+    public DivideAndTopNPeaks(Spectrum spec, int topN, double windowmassSize, Logger log) {
+        this.spectrum = spec;
         this.topN = topN;
         this.windowMassSize=windowmassSize;        
         this.LOGGER=log;
@@ -41,33 +43,50 @@ public class DivideAndTopNPeaks implements Features {
         int len = 0;
         double startMz = 0;
         double limitMz = 0;
-        int temp = 0;
-       // String errorIndx="";
+     
         try {
-            startMz = expSpectrum.getMinMZ();
+            startMz = spectrum.getMinMZ();
             limitMz = startMz + windowMassSize;
-            len = expSpectrum.getPeakList().size();
-            Collections.sort(expSpectrum.getPeakList());
-            
-            temp += 1;
-            for (int k = 0; k < expSpectrum.getPeakList().size() ; k++) {
+            len = spectrum.getPeakList().size();
+            Collections.sort(spectrum.getPeakList());
+          
+            for (int k = 0; k < spectrum.getPeakList().size() ; k++) {
 
-              //  errorIndx="spectrum peakList index: " + Integer.toString(k)+ ", " + Integer.toString(expSpectrum.getPeakList().size())+ ", " + Integer.toString(len);
-                double tmpMZ = expSpectrum.getPeakList().get(k).getMz();
+              //  errorIndx="spectrum peakList index: " + Integer.toString(k)+ ", " + Integer.toString(spectrum.getPeakList().size())+ ", " + Integer.toString(len);
+                double tmpMZ = spectrum.getPeakList().get(k).getMz();
                 
-                temp += 1;
-                //Peak tmpPeak = expSpectrum.getPeakMap().get(tmpMZ);
+                //Peak tmpPeak = spectrum.getPeakMap().get(tmpMZ);
                 if (tmpMZ < limitMz) {
                    
-                    cPeaks.add(expSpectrum.getPeakList().get(k));
+                    cPeaks.add(spectrum.getPeakList().get(k));
                     
-                } else {
-                    //cPeaks already sort as expSpectrum.PeakList is sorted
+                } else if(cPeaks!=null && !cPeaks.isEmpty()) {
+                    //cPeaks already sort as spectrum.PeakList is sorted
                     //Collections.sort(cPeaks, Peak.DescendingIntensityComparator);
                     int tmp_num = topN;
                     if (topN > cPeaks.size()) {
                         tmp_num = cPeaks.size();
                     }
+                    
+//                    //new else ... selecting most intense peaks
+//                    else{
+//                        while(len_c>topN){                            
+//                            double min=cPeaks.get(0).getIntensity();
+//                            int pos=0;
+//                            for(int i=1;i<len_c;i++){
+//                                if(min>cPeaks.get(i).getIntensity()){
+//                                    min=cPeaks.get(i).getIntensity();
+//                                    pos=i;
+//                                }
+//                            }
+//                            cPeaks.remove(pos);    
+//                            len_c=cPeaks.size();                            
+//                        }
+//                        filteredPeaks.addAll(cPeaks);
+//                        
+//                    }
+                    
+                    //old for loop to add to filtered peaks
                     for (int num = 0; num < tmp_num; num++) {
                         //errorIndx="spectrum filtered peaks index: " + Integer.toString(num)+ ", " + Integer.toString(cPeaks.size());
                         Peak tmpCPeakToAdd = cPeaks.get(num);
@@ -81,8 +100,7 @@ public class DivideAndTopNPeaks implements Features {
         } catch (IndexOutOfBoundsException ex) {
             String srtLen = Integer.toString(len);
             String srtMzMin = Double.toString(startMz);
-            String srtTemp = Integer.toString(temp);
-            LOGGER.info("Len, minMz and Temp : " + srtLen + ", " + srtMzMin + ", " + srtTemp);//  + ": Error Location " + errorIndx);           
+            LOGGER.info("Len, minMz and Temp : " + srtLen + ", " + srtMzMin );//  + ": Error Location " + errorIndx);           
             throw ex;
         }
 
