@@ -272,7 +272,7 @@ public class MainConsoleController implements UpdateListener {
     @Override
     public void updateprogress(int taskCompleted, double percent) {
         int v = (int) (taskCompleted * percent);
-        System.out.print(Integer.toString(v) + "%" + "  ");
+        System.out.print("\b\b\b\b\b\b\b\b" + Integer.toString(v) + "%" + "  ");
 
     }
     

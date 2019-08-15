@@ -68,6 +68,7 @@ public class MainGUI extends JFrame {
         JMenuBar menuBar = new JMenuBar();        
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
+        //JMenu BatchProcess = new JMenu("Batch");
         JMenu settingMenu = new JMenu("Setting");
         JMenu decoyMenu = new JMenu("Generate Decoy DB");
         JMenu helpMenu = new JMenu("Help");
@@ -86,9 +87,11 @@ public class MainGUI extends JFrame {
         menuBar.add(settingMenu);
         menuBar.add(decoyMenu);
         menuBar.add(helpMenu);
+       // menuBar.add(BatchProcess);
 
         // Items of the menue
         JMenuItem open = new JMenuItem("Open", KeyEvent.VK_N);
+        //JMenuItem run_batch = new JMenuItem("Run_Batch", KeyEvent.VK_B);
         JMenuItem save = new JMenuItem("Save", KeyEvent.VK_S);
         JMenu export = new JMenu("Export to");
         JMenuItem importResult = new JMenuItem("Import Result", KeyEvent.VK_M);
@@ -103,6 +106,9 @@ public class MainGUI extends JFrame {
         randIntFixedMzShift.setEnabled(false);
         JMenuItem randMzIntShift = new JMenuItem("Random M/Z and Intensity");
         
+        JMenuItem mergeDecoy=new JMenuItem("Merge Dcoy");
+        
+        
         export.add(toExcel);
         export.add(toCSV);
         export.add(toTabText);
@@ -111,8 +117,10 @@ public class MainGUI extends JFrame {
         decoyMenu.add(fixedMzShift);
         decoyMenu.add(randIntFixedMzShift);
         decoyMenu.add(randMzIntShift);
+        decoyMenu.add(mergeDecoy);
         
         fileMenu.add(open);
+       // BatchProcess.add(run_batch);
         fileMenu.add(save);
         fileMenu.add(importResult);
         fileMenu.add(export);
@@ -208,8 +216,14 @@ public class MainGUI extends JFrame {
        
              
         toExcel.addActionListener((ActionEvent ev) -> {
+            String[] nullString={"null string"};
             control.exportResults(1);
+            
         });
+        
+//        run_batch.addActionListener((ActionEvent ev) -> {
+//            BatchExecution.main(nullString);
+//        });
         
         toCSV.addActionListener((ActionEvent ev) -> {
             control.exportResults(2);
@@ -258,6 +272,13 @@ public class MainGUI extends JFrame {
          randMzIntShift.addActionListener((ActionEvent ev) -> {
              String library=settings.txtLibrary.getText();
              control.generateDeoy(2, library);
+        });
+         
+         mergeDecoy.addActionListener((ActionEvent ev) -> {
+             MergeDecoy frmMerge=new MergeDecoy(this.control);
+             setDefaultCloseOperation(frmMerge.DISPOSE_ON_CLOSE);
+             frmMerge.setVisible(true);
+             
         });
         
 //        tab.addChangeListener((ChangeEvent e) -> {

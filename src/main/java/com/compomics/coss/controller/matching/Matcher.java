@@ -101,13 +101,13 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             numTarget++;
                         }
 
-                        double mIntA = 0;
-                        double mIntB = 0;
-                        double tIntA = 0;
-                        double tIntB = 0;
-                        int mNumPeaks = 0;
-                        int tempLenA = 0;
-                        int tempLenB = 0;
+                        double mInt_exp = 0;
+                        double mInt_lib = 0;
+                        double fInt_exp = 0;
+                        double fInt_lib = 0;
+                        int mNumPeaks = 0;                       
+                        int filteredNumPeaks_exp = 0;
+                        int filteredNumPeaks_lib = 0;
                         double tempScore =  -1;
 
                         for (int topN = 1; topN < 11; topN++) { // highest score from 1 - 10 peaks selection
@@ -119,36 +119,39 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                             int lenA = selectedPeaks_exp.size();
                             int lenB = selectedPeaks_lib.size();
-                            algorithm.setSumTotalIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
-                            algorithm.setSumTotalIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
+                            algorithm.setSumFilteredIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
+                            algorithm.setSumFilteredIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
+                            
+                            algorithm.setNumFilteredPeaksExp(lenA);
+                            algorithm.setNumFilteredPeaksLib(lenB);
+                            
                             double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
 
-                           // score*=algorithm.getNumMatchedPeaks();
+                            
                             selectedPeaks_exp.clear();
                             selectedPeaks_lib.clear();
 
                             if (score > tempScore) { //tempScore<score for MSRobin and cosine similarity
                                 tempScore = score;
-                                mIntA = algorithm.getSumMatchedIntExp();
-                                mIntB = algorithm.getSumMatchedIntLib();
-                                tIntA = algorithm.getSumTotalIntExp();
-                                tIntB = algorithm.getSumTotalIntLib();
-                                tempLenA = lenA;
-                                tempLenB = lenB;
+                                mInt_exp = algorithm.getSumMatchedIntExp(); //matched intensity sum of experimental spectrum
+                                mInt_lib = algorithm.getSumMatchedIntLib(); //matched intensity  sum of library spectrum
+                                fInt_exp = algorithm.getSumFilteredIntExp(); // filtered intensity sum of experimental spectrum
+                                fInt_lib = algorithm.getSumFilteredIntLib();  //filtered intensity sum of experimental spectrum
+                                filteredNumPeaks_exp = lenA;
+                                filteredNumPeaks_lib = lenB;
                                 mNumPeaks = algorithm.getNumMatchedPeaks();
+                                
                             }
 
                             scores.add(score);
-                            //double intensity_part = object.getIntensity_part();
-                            //double probability_part = object.getProbability_part();
                         }
                         double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
                         finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
-                        //scores.clear();
+                      
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
 //                            }
-                        if (finalScore > 0) {
+                       // if (finalScore > 0) {
                             MatchedLibSpectra mSpec = new MatchedLibSpectra();
                             mSpec.setScore(finalScore);//(Collections.max(scores));
                             mSpec.setSequence(sp2.getSequence());
@@ -159,15 +162,15 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             }
                             mSpec.setNumMathcedPeaks(mNumPeaks);
                             mSpec.setSpectrum(sp2);
-                            mSpec.setSumFilteredIntensity_Exp(tIntA);
-                            mSpec.setSumFilteredIntensity_Lib(tIntB);
-                            mSpec.setSumMatchedInt_Exp(mIntA);
-                            mSpec.setSumMatchedInt_Lib(mIntB);
-                            mSpec.settotalFilteredNumPeaks_Exp(tempLenA);
-                            mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
+                            mSpec.setSumFilteredIntensity_Exp(fInt_exp);
+                            mSpec.setSumFilteredIntensity_Lib(fInt_lib);
+                            mSpec.setSumMatchedInt_Exp(mInt_exp);
+                            mSpec.setSumMatchedInt_Lib(mInt_lib);
+                            mSpec.settotalFilteredNumPeaks_Exp(filteredNumPeaks_exp);
+                            mSpec.settotalFilteredNumPeaks_Lib(filteredNumPeaks_lib);
                             specResult.add(mSpec);
 
-                        }
+                       // }
 
                     } catch (Exception ex) {
 
@@ -178,10 +181,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                 ++taskCompleted;
                 listener.updateprogress(taskCompleted, percent);
-
-                if (taskCompleted % 100 == 0) {
-                    System.out.print("\b\b\b\b\b\b" + Integer.toString(taskCompleted) + "/" + Integer.toString(confData.getExpSpecCount()));
-                }
 
                 if (!specResult.isEmpty()) {
                     ComparisonResult compResult = new ComparisonResult();
@@ -237,16 +236,17 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
         List<ComparisonResult> simResult = null;
         if (!cancelled && !this.procucer.isCancelled()) {
-            System.out.print("\b\b\b\b\b\b search completed \n");
+            System.out.print("\n search completed \n");
 
             if (numDecoy == 0) {
                 log.info("No decoy spectra found to validate result");
                 confData.setDecoyAvailability(false);
             }
-            if (numDecoy < numTarget) {
-                log.info("Number of decoy spectra is too small to validate result");
-                confData.setDecoyAvailability(false);
-            } else {
+//            if (numDecoy < numTarget) {
+//                log.info("Number of decoy spectra is too small to validate result");
+//                confData.setDecoyAvailability(false);
+//            }
+            else {
                 confData.setDecoyAvailability(true);
             }
 

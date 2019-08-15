@@ -50,9 +50,9 @@ public class MSRobin extends Score {
 
         } else {
 
-            double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
-            sumTotalIntExp = sumTotalIntLib;
-            sumTotalIntLib = temp;
+            double temp = sumFilteredIntExp;//swap value if order if spetrua given is reversed
+            sumFilteredIntExp = sumFilteredIntLib;
+            sumFilteredIntLib = temp;
 
             map = prepareData(libSpec, expSpec);
             totalN = lenB;

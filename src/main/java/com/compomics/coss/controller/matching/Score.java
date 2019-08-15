@@ -13,9 +13,11 @@ public abstract class Score {
 
     protected double sumMatchedIntExp;
     protected double sumMatchedIntLib;
-    protected double sumTotalIntExp;
-    protected double sumTotalIntLib;
+    protected double sumFilteredIntExp;
+    protected double sumFilteredIntLib;
     protected int matchedNumPeaks;
+    protected int filteredNumPeaksExp;
+    protected int filteredNumPeaksLib;
 
     protected final ConfigData confData;
     protected final org.apache.log4j.Logger log;
@@ -112,20 +114,20 @@ public abstract class Score {
         return this.sumMatchedIntLib;
     }
 
-    public void setSumTotalIntExp(double sumTotalInt) {
-        this.sumTotalIntExp = sumTotalInt;
+    public void setSumFilteredIntExp(double sumTotalInt) {
+        this.sumFilteredIntExp = sumTotalInt;
     }
 
-    public void setSumTotalIntLib(double sumTotalInt) {
-        this.sumTotalIntLib = sumTotalInt;
+    public void setSumFilteredIntLib(double sumTotalInt) {
+        this.sumFilteredIntLib = sumTotalInt;
     }
 
-    public double getSumTotalIntExp() {
-        return this.sumTotalIntExp;
+    public double getSumFilteredIntExp() {
+        return this.sumFilteredIntExp;
     }
 
-    public double getSumTotalIntLib() {
-        return this.sumTotalIntLib;
+    public double getSumFilteredIntLib() {
+        return this.sumFilteredIntLib;
     }
 
     public int getNumMatchedPeaks() {
@@ -134,6 +136,22 @@ public abstract class Score {
 
     public void setNumMatchedPeaks(int numMatchedPeaks) {
         this.matchedNumPeaks = numMatchedPeaks;
+    }
+    
+    public int getNumFilteredPeaksExp() {
+        return this.filteredNumPeaksExp;
+    }
+
+    public void setNumFilteredPeaksExp(int numFilteredPeaks) {
+        this.filteredNumPeaksExp = numFilteredPeaks;
+    }
+    
+    public int getNumFilteredPeaksLib() {
+        return this.filteredNumPeaksLib;
+    }
+
+    public void setNumFilteredPeaksLib(int numFilteredPeaks) {
+        this.filteredNumPeaksLib = numFilteredPeaks;
     }
 
 }

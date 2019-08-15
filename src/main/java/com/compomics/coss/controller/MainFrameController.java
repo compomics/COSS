@@ -1,6 +1,7 @@
 package com.compomics.coss.controller;
 
 import com.compomics.coss.controller.decoyGeneration.Generate;
+import com.compomics.coss.controller.decoyGeneration.MergeFiles;
 import com.compomics.coss.view.ResultPanel;
 import com.compomics.coss.view.RasterPanel;
 import com.compomics.coss.view.TargetDB_View;
@@ -897,6 +898,23 @@ public class MainFrameController implements UpdateListener {
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();
 
+        }
+
+    }
+
+    public void mergeFile(String libFile, String decoyFile) {
+
+        File file1 = new File(libFile);
+        File file2 = new File(decoyFile);
+        if (file1.exists() && file2.exists()) {
+            MergeFiles merge = new MergeFiles(file1, file2);
+            try {
+                merge.Merge();
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        }else{
+            LOG.info("Files not found");
         }
 
     }

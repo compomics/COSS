@@ -51,9 +51,9 @@ public class TestScore extends Score{
 
         } else {
 
-            double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
-            sumTotalIntExp = sumTotalIntLib;
-            sumTotalIntLib = temp;
+            double temp = sumFilteredIntExp;//swap value if order if spetrua given is reversed
+            sumFilteredIntExp = sumFilteredIntLib;
+            sumFilteredIntLib = temp;
             map = prepareData(libSpec, expSpec);        
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
@@ -62,7 +62,7 @@ public class TestScore extends Score{
 
         matchedNumPeaks = mPeaksExp.size();
         calculateSumIntensity(mPeaksExp, mPeaksLib);
-        intensity_part = (sumMatchedIntExp*sumMatchedIntLib)/(sumTotalIntExp*sumTotalIntLib);
+        intensity_part = (sumMatchedIntExp*sumMatchedIntLib)/(sumFilteredIntExp*sumFilteredIntLib);
         double mzPart = matchedNumPeaks / lenA;
         
         double finalScore=mzPart*intensity_part;
