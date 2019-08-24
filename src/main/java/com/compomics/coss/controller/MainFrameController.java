@@ -763,7 +763,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void chooseTargetFile(String file) {
 
-        JFileChooser fileChooser = new JFileChooser("C:/1_pandy_datasets/");
+        JFileChooser fileChooser = new JFileChooser("C:/Users/Genet/OneDrive - UGent/1_pandy_datasets");
         fileChooser.setDialogTitle("Target Spectra File");
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -892,6 +892,7 @@ public class MainFrameController implements UpdateListener {
             showMessageDialog("Validation errors", "Spectral library file format not supported", JOptionPane.WARNING_MESSAGE);
         } else {
 
+            decoyType = i;
             libFile = new File(library);
             gn = new Generate(LOG, this);
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
@@ -943,6 +944,8 @@ public class MainFrameController implements UpdateListener {
                     LOG.info("Total number of identified spectra: " + Integer.toString(result.size()));
 
                     if (!result.isEmpty() && configData.isDecoyAvailable()) {
+                        Collections.sort(result);
+                        Collections.reverse(result);
                         validateResult();
                         LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
                     } else if (configData.isDecoyAvailable()) {

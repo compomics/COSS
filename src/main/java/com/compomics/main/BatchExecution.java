@@ -12,8 +12,8 @@ public class BatchExecution {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        File dir = new File("C:/1_pandy_datasets");
-        String lib_file="C:/human_hcd_itraq/human_hcd_selected_fixedMzShift.msp";
+        File dir = new File("C:/Users/Genet/OneDrive - UGent/0_pandi_piroCAT/batch/kuster1-1");
+        String lib_file="C:/human_hcd_itraq/human_hcd_selected_TD(randMzShift).msp";
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {
             for (File child : directoryListing) {

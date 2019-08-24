@@ -42,8 +42,8 @@ public class Wavelet implements Features {
                 double mz1=(d1 + d2) * 0.5;// pair wise average
                 double mz2=(d1 - d2) * 0.5;// neighbour distance
                 
-                Peak pk1=new Peak(mz1, intensity1);
-                Peak pk2=new Peak(mz2, intensity2);
+                Peak pk1=new Peak(mz1, intensity1, "");
+                Peak pk2=new Peak(mz2, intensity2, "");
                 temp.set(i, pk1);//pair wise average
                 temp.set(i+h, pk2);//neighbour distance                 
                            

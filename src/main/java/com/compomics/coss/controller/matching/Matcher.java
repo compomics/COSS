@@ -119,11 +119,11 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                             int lenA = selectedPeaks_exp.size();
                             int lenB = selectedPeaks_lib.size();
-                            algorithm.setSumTotalIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
-                            algorithm.setSumTotalIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
+                            algorithm.setSumTotalIntExp(algorithm.getSumIntensity(selectedPeaks_exp));
+                            algorithm.setSumTotalIntLib(algorithm.getSumIntensity(selectedPeaks_lib));
+                            
                             double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
-
-                           // score*=algorithm.getNumMatchedPeaks();
+                         
                             selectedPeaks_exp.clear();
                             selectedPeaks_lib.clear();
 
@@ -139,8 +139,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             }
 
                             scores.add(score);
-                            //double intensity_part = object.getIntensity_part();
-                            //double probability_part = object.getProbability_part();
+                            
                         }
                         double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
                         finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
@@ -148,7 +147,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 //                            if(finalScore>maxScore){
 //                                maxScore=finalScore;
 //                            }
-                        if (finalScore > 0) {
+                       // if (finalScore > 0) {
                             MatchedLibSpectra mSpec = new MatchedLibSpectra();
                             mSpec.setScore(finalScore);//(Collections.max(scores));
                             mSpec.setSequence(sp2.getSequence());
@@ -167,7 +166,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             mSpec.settotalFilteredNumPeaks_Lib(tempLenB);
                             specResult.add(mSpec);
 
-                        }
+                       // }
 
                     } catch (Exception ex) {
 
@@ -177,11 +176,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 }
 
                 ++taskCompleted;
-                listener.updateprogress(taskCompleted, percent);
-
-                if (taskCompleted % 100 == 0) {
-                    System.out.print("\b\b\b\b\b\b" + Integer.toString(taskCompleted) + "/" + Integer.toString(confData.getExpSpecCount()));
-                }
+                listener.updateprogress(taskCompleted, percent);           
 
                 if (!specResult.isEmpty()) {
                     ComparisonResult compResult = new ComparisonResult();

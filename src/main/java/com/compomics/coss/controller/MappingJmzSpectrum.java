@@ -48,7 +48,7 @@ public class MappingJmzSpectrum {
             Map.Entry mapping = (Map.Entry) entriesIterator.next();
             mz = (double) mapping.getKey();
             intensity = (double) mapping.getValue();
-            peakList.add(new Peak(mz, intensity));
+            peakList.add(new Peak(mz, intensity, ""));
 
         }
 

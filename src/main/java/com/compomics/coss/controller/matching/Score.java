@@ -44,17 +44,21 @@ public abstract class Score {
         return (new MatchedPeaks()).getMatchedPeaks(filteredExpMS2_1, filteredExpMS2_2, confData.getfragTol());
 
     }
-
-    protected double calculateTotalIntensity(ArrayList<Peak> peaks) {
-        double sum = 0;
-//        for(Peak p:peaks){
-//            sum+=p.getIntensity();
-//        }
-        sum = peaks.stream().map((p) -> p.getIntensity()).reduce(sum, (accumulator, _item) -> accumulator + _item);
-
-        return sum;
-
+    
+    /**
+     * calculate and return sum of intensities of the peaks in the given spectrum
+     * @param mPeaksExp
+     * @return 
+     */
+    protected double getSumIntensity(ArrayList<Peak> mPeaksExp){
+        
+        double sum=0;
+        for(Peak p : mPeaksExp){
+            sum+=p.getIntensity();
+        }
+       return sum;        
     }
+
 
     /**
      * To calculate CumulativeBinominalProbability with given n,N and p values.

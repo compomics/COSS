@@ -62,6 +62,9 @@ public class MSRobin extends Score {
         }
 
         matchedNumPeaks = mPeaksExp.size();
+        sumMatchedIntExp = getSumIntensity(mPeaksExp);
+        sumMatchedIntLib = getSumIntensity(mPeaksLib);
+        
         intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
         double finalScore = getfinalScore(totalN, probability, intensity_part);
         return finalScore;
@@ -114,21 +117,14 @@ public class MSRobin extends Score {
         double alpha_alpha = 0,
                 beta_beta = 0,
                 alpha_beta = 0;
-        double expSpecMatchedInt = 0;
-        double libSpecMatchedInt = 0;
-
+             
         for (int k = 0; k < matchedNumPeaks; k++) {
-            alpha_alpha += mPeaksExp.get(k).getIntensity() * mPeaksExp.get(k).getIntensity();
-            beta_beta += mPeaksLib.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
+            //division by sumIntensities: normalizing peaks
+            alpha_alpha += (mPeaksExp.get(k).getIntensity() * mPeaksExp.get(k).getIntensity());
+            beta_beta += (mPeaksLib.get(k).getIntensity() * mPeaksLib.get(k).getIntensity());
             alpha_beta += mPeaksExp.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
 
-            expSpecMatchedInt += mPeaksExp.get(k).getIntensity();
-            libSpecMatchedInt += mPeaksLib.get(k).getIntensity();
-
         }
-
-        sumMatchedIntExp = expSpecMatchedInt;
-        sumMatchedIntLib = libSpecMatchedInt;
 
         if (matchedNumPeaks != 0) {
             int_part = alpha_beta / (Math.sqrt(alpha_alpha * beta_beta));
