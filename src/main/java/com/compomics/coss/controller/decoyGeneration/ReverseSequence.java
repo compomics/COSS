@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.compomics.ms2io.Peak;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -47,6 +49,7 @@ public class ReverseSequence extends GenerateDecoyLib {
         try {
             int count = 1;
 
+            String sequence = "";
             br = new BufferedReader(new FileReader(file));
             bw = new BufferedWriter(new FileWriter(reverseSequence));
             String line = br.readLine();
@@ -54,10 +57,11 @@ public class ReverseSequence extends GenerateDecoyLib {
             List<Peak> peaks = new ArrayList<>();
             List<Peak> peaks_d = new ArrayList<>();
             int charge = 1;
-            String mods = "";
+            Map<Integer, List<String>> mods = new HashMap<>();
             boolean isAnnotated = false;
             String spectrum = "";
 
+            FragmentIon ions;
             while (line != null) {
                 if (!"".equals(line) && Character.isDigit(line.charAt(0))) {
                     String fline = line.replaceAll("\\s+", " ");
@@ -66,6 +70,12 @@ public class ReverseSequence extends GenerateDecoyLib {
                     peaks.add(peak);
 
                 } else if (!lines.isEmpty() && line.equals("") && !peaks.isEmpty() && !"".equals(spectrum)) {
+                    //reverse sequence keeping the last amino acid position unmodified
+                    String reversed_seq = reverse(sequence.substring(0, sequence.length()-1));
+                    reversed_seq+=sequence.charAt(sequence.length()-1);
+                    ions=new FragmentIon(sequence, mods);                  
+                    Map frag_ion= ions.getFragmentIon();
+                    
                     for (Peak p : peaks) {
                         //copy peak of the library to decoy initially
                         Peak peak_decoy = p;
@@ -77,7 +87,8 @@ public class ReverseSequence extends GenerateDecoyLib {
                             strAnn = strAnn.trim(); //remove white spaces, leading and trailing
                             strAnn = strAnn.replaceAll("[^abyABY0-9]", "");//remove characters except letters a,b,y and numbers                          
 
-                            double mass_frag = 0;//get mass for specific fragment ion ..... key value hash map   map(strAnn)                               
+                            double mass_frag = (double) frag_ion.get(strAnn);//return mass of srtAnn ion
+                            
                             mass_frag += (p.getMz() - mass_frag) / (double) charge;
                             peak_decoy.setMz(mass_frag); //update decoy_decoy peak mz value with the new 
                             isAnnotated = true;
@@ -103,9 +114,33 @@ public class ReverseSequence extends GenerateDecoyLib {
                     spectrum = ""; // clear spectrum
 
                 } else if (line.contains("Comment")) {
+                    mods = new HashMap<Integer, List<String>>();
                     spectrum += line + " _Decoy" + "\n";
                     charge = Integer.parseInt(line.substring(line.indexOf("Charge") + 6, line.indexOf("Charge") + 7));
-                    mods = line.substring(line.indexOf("Mods") + 3, line.indexOf("Fullname") - 1);
+                    String mods_str = line.substring(line.indexOf("Mods") + 3, line.indexOf(" ") - 1);
+                    String[] strAr = mods_str.split("/");
+                    int num_mods=strAr.length-1; //first string represents number of modifications
+                    if(num_mods == Integer.parseInt(strAr[0])){
+                        List l=new ArrayList<String>();
+                        for(int p=0;p<num_mods;p++){
+                            strAr[p]=strAr[p].replaceAll("\\s", ""); //remove all white space
+                            
+                            String[] m = strAr[p].split(",");
+                            int pos=Integer.parseInt(m[0]);
+                            if(!mods.containsKey(pos)){
+                                l=new ArrayList<String>();
+                                l.add(m[2]);                                
+                                mods.put(pos, l);
+                            }else{
+                                l=new ArrayList<String>();
+                                l=mods.get(pos);
+                                l.add(m[2]);
+                                mods.put(pos, l);                                
+                            }
+                            
+                        }
+                    }
+                    
 
                 } else if (line.contains("Charge")) {
                     spectrum += line + "\n";
@@ -113,6 +148,8 @@ public class ReverseSequence extends GenerateDecoyLib {
 
                 } else if ((line.startsWith("Name") && fileExtension.equals("msp")) || (line.startsWith("TITLE") && fileExtension.equals("mgf"))) {
                     spectrum += line + "\n";
+                    sequence = line;
+                    sequence = sequence.replaceAll("[^AC-IK-NP-TVWY]", "");
                     System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
                     Thread.sleep(1);
                     System.out.print("Current decoy spectrum index generated :  " + Integer.toString(count));
