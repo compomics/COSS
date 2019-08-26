@@ -65,32 +65,45 @@ public class ReverseSequence extends GenerateDecoyLib {
             while (line != null) {
                 if (!"".equals(line) && Character.isDigit(line.charAt(0))) {
                     String fline = line.replaceAll("\\s+", " ");
-                    String[] p = fline.split(" ");                  
+                    String[] p = fline.split(" ");
                     Peak peak = new Peak(Double.parseDouble(p[0]), Double.parseDouble(p[1]), p[2]);
                     peaks.add(peak);
 
                 } else if (!lines.isEmpty() && line.equals("") && !peaks.isEmpty() && !"".equals(spectrum)) {
                     //reverse sequence keeping the last amino acid position unmodified
-                    String reversed_seq = reverse(sequence.substring(0, sequence.length()-1));
-                    reversed_seq+=sequence.charAt(sequence.length()-1);
-                    ions=new FragmentIon(sequence, mods);                  
-                    Map frag_ion= ions.getFragmentIon();
-                    
+                    String reversed_seq = reverse(sequence.substring(0, sequence.length() - 1));
+                    reversed_seq += sequence.charAt(sequence.length() - 1);
+                    ions = new FragmentIon(sequence, mods);
+                    Map frag_ion = ions.getFragmentIon();
+
                     for (Peak p : peaks) {
                         //copy peak of the library to decoy initially
                         Peak peak_decoy = p;
                         String ann = p.getPeakAnnotation();
 
                         //alter decoy peak m/z value if annotaion not empty and annotation doesn't contain NH3 and H2O loss
-                        if (!"".equals(ann) && !p.getPeakAnnotation().contains("NH") && !ann.contains("H2O")) {
+                        if (!"".equals(ann) && !"?".equals(ann)) {
+                            //&& !p.getPeakAnnotation().contains("NH") && !ann.contains("H2O") && !ann.contains("CO2")
                             String strAnn = ann.substring(0, ann.indexOf("/"));//sub-string before the first occurence of '/'that contains ion type
-                            strAnn = strAnn.trim(); //remove white spaces, leading and trailing
-                            strAnn = strAnn.replaceAll("[^abyABY0-9]", "");//remove characters except letters a,b,y and numbers                          
 
-                            double mass_frag = (double) frag_ion.get(strAnn);//return mass of srtAnn ion
-                            
-                            mass_frag += (p.getMz() - mass_frag) / (double) charge;
-                            peak_decoy.setMz(mass_frag); //update decoy_decoy peak mz value with the new 
+                            if (!strAnn.contains("y1")&& !strAnn.contains("NH") && !strAnn.contains("H2O") && !strAnn.contains("CO2")) {
+                                int ion_charge=1;
+                                strAnn = strAnn.trim(); //remove white spaces, leading and trailing
+                                if(strAnn.contains("^")){
+                                    ion_charge=Integer.parseInt(strAnn.substring(strAnn.indexOf("^")+1));
+                                    strAnn=strAnn.substring(0, strAnn.indexOf("^"));
+                                }
+
+                                
+                                strAnn = strAnn.replaceAll("[^aby0-9]", "");//remove characters except letters a,b,y and numbers                          
+
+                                double mass_frag = (double) frag_ion.get(strAnn);//return mass of srtAnn ion
+
+                                mass_frag += (p.getMz() - mass_frag) / (double) ion_charge;
+                                peak_decoy.setMz(mass_frag); //update decoy_decoy peak mz value with the new 
+
+                            }
+
                             isAnnotated = true;
                         }
 
@@ -117,30 +130,34 @@ public class ReverseSequence extends GenerateDecoyLib {
                     mods = new HashMap<Integer, List<String>>();
                     spectrum += line + " _Decoy" + "\n";
                     charge = Integer.parseInt(line.substring(line.indexOf("Charge") + 6, line.indexOf("Charge") + 7));
+
                     String mods_str = line.substring(line.indexOf("Mods") + 3, line.indexOf(" ") - 1);
-                    String[] strAr = mods_str.split("/");
-                    int num_mods=strAr.length-1; //first string represents number of modifications
-                    if(num_mods == Integer.parseInt(strAr[0])){
-                        List l=new ArrayList<String>();
-                        for(int p=0;p<num_mods;p++){
-                            strAr[p]=strAr[p].replaceAll("\\s", ""); //remove all white space
-                            
-                            String[] m = strAr[p].split(",");
-                            int pos=Integer.parseInt(m[0]);
-                            if(!mods.containsKey(pos)){
-                                l=new ArrayList<String>();
-                                l.add(m[2]);                                
-                                mods.put(pos, l);
-                            }else{
-                                l=new ArrayList<String>();
-                                l=mods.get(pos);
-                                l.add(m[2]);
-                                mods.put(pos, l);                                
+                    if (mods_str != "Mod=0") {
+                        String[] strAr = mods_str.split("[/()]");
+                        int num_mods = strAr.length - 1; //first string represents number of modifications
+
+                        //if (num_mods == Integer.parseInt(strAr[0])) { //splited string array might have white space
+                        List l = new ArrayList<String>();
+                        for (int p = 0; p < num_mods; p++) {
+                            if (!"".equals(strAr[p])) {
+                                strAr[p] = strAr[p].replaceAll("\\s", ""); //remove all white space
+                                String[] m = strAr[p].split(",");
+                                int pos = Integer.parseInt(m[0]);
+                                if (!mods.containsKey(pos)) {
+                                    l = new ArrayList<String>();
+                                    l.add(m[2]);
+                                    mods.put(pos, l);
+                                } else {
+                                    l = new ArrayList<String>();
+                                    l = mods.get(pos);
+                                    l.add(m[2]);
+                                    mods.put(pos, l);
+                                }
                             }
-                            
+
                         }
+                        //}
                     }
-                    
 
                 } else if (line.contains("Charge")) {
                     spectrum += line + "\n";
@@ -156,11 +173,9 @@ public class ReverseSequence extends GenerateDecoyLib {
                     count++;
                 } else {
                     spectrum += line + "\n";
-
                 }
 
                 line = br.readLine();
-
             }
 
         } catch (IOException ex) {
