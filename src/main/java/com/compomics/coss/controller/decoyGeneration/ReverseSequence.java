@@ -36,12 +36,12 @@ public class ReverseSequence extends GenerateDecoyLib {
 
         if (file.getName().endsWith("mgf")) {
             filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-            reverseSequence = new File(file.getParent(), filename + "_mzshift" + ".mgf");
+            reverseSequence = new File(file.getParent(), filename + "_revSequence" + ".mgf");
             fileExtension = "mgf";
 
         } else if (file.getName().endsWith("msp")) {
             filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-            reverseSequence = new File(file.getParent(), filename + "_mzshift" + ".msp");
+            reverseSequence = new File(file.getParent(), filename + "_revSequence" + ".msp");
             fileExtension = "msp";
 
         }
@@ -56,12 +56,9 @@ public class ReverseSequence extends GenerateDecoyLib {
             List<String[]> lines = new ArrayList<>();
             List<Peak> peaks = new ArrayList<>();
             List<Peak> peaks_d = new ArrayList<>();
-            int charge = 1;
-            Map<Integer, List<String>> mods = new HashMap<>();
-            boolean isAnnotated = false;
-            String spectrum = "";
-
-            FragmentIon ions;
+            int spectrum_charge = 1;
+            Map<Integer, List<String>> modifications = new HashMap<>();    
+         
             while (line != null) {
                 if (!"".equals(line) && Character.isDigit(line.charAt(0))) {
                     String fline = line.replaceAll("\\s+", " ");
@@ -69,114 +66,52 @@ public class ReverseSequence extends GenerateDecoyLib {
                     Peak peak = new Peak(Double.parseDouble(p[0]), Double.parseDouble(p[1]), p[2]);
                     peaks.add(peak);
 
-                } else if (!lines.isEmpty() && line.equals("") && !peaks.isEmpty() && !"".equals(spectrum)) {
+                } else if (line.equals("") && !peaks.isEmpty()) {
                     //reverse sequence keeping the last amino acid position unmodified
                     String reversed_seq = reverse(sequence.substring(0, sequence.length() - 1));
                     reversed_seq += sequence.charAt(sequence.length() - 1);
-                    ions = new FragmentIon(sequence, mods);
-                    Map frag_ion = ions.getFragmentIon();
-
-                    for (Peak p : peaks) {
-                        //copy peak of the library to decoy initially
-                        Peak peak_decoy = p;
-                        String ann = p.getPeakAnnotation();
-
-                        //alter decoy peak m/z value if annotaion not empty and annotation doesn't contain NH3 and H2O loss
-                        if (!"".equals(ann) && !"?".equals(ann)) {
-                            //&& !p.getPeakAnnotation().contains("NH") && !ann.contains("H2O") && !ann.contains("CO2")
-                            String strAnn = ann.substring(0, ann.indexOf("/"));//sub-string before the first occurence of '/'that contains ion type
-
-                            if (!strAnn.contains("y1")&& !strAnn.contains("NH") && !strAnn.contains("H2O") && !strAnn.contains("CO2")) {
-                                int ion_charge=1;
-                                strAnn = strAnn.trim(); //remove white spaces, leading and trailing
-                                if(strAnn.contains("^")){
-                                    ion_charge=Integer.parseInt(strAnn.substring(strAnn.indexOf("^")+1));
-                                    strAnn=strAnn.substring(0, strAnn.indexOf("^"));
-                                }
-
-                                
-                                strAnn = strAnn.replaceAll("[^aby0-9]", "");//remove characters except letters a,b,y and numbers                          
-
-                                double mass_frag = (double) frag_ion.get(strAnn);//return mass of srtAnn ion
-
-                                mass_frag += (p.getMz() - mass_frag) / (double) ion_charge;
-                                peak_decoy.setMz(mass_frag); //update decoy_decoy peak mz value with the new 
-
-                            }
-
-                            isAnnotated = true;
-                        }
-
-                        peaks_d.add(peak_decoy);
-                        //dealing with redundant peaks should be considered here
-
-                    }
-                    peaks.clear();
-                    if (!isAnnotated) {
-                        log.info("Library has one or more un-annotated spectrum and stoped generating decoy library");
-                        return null;
-                    }
+                    FragmentIon ions = new FragmentIon(sequence, modifications);
+                    Map frag_ion_actual = ions.getFragmentIon();
+                    
+                    ions = new FragmentIon(reversed_seq, modifications);
+                    Map frag_ion_reverse = ions.getFragmentIon();
+                    peaks_d=getDecoyPeak(peaks, frag_ion_actual, frag_ion_reverse);
+                    peaks.clear();                
                     Collections.sort(peaks_d);
                     for (Peak p : peaks_d) {
                         //all peaks and new line after them
-                        spectrum += (Double.toString(p.getMz()) + "\t" + Double.toString(p.getIntensity()) + "\t" + p.getPeakAnnotation() + "\n");
+                        String p_list = (Double.toString(p.getMz()) + "\t" + Double.toString(p.getIntensity()) + "\t" + p.getPeakAnnotation() + "\n");
+                        bw.write(p_list);
                     }
-                    spectrum += "\n"; //end of spectrum blank line
-                    bw.write(spectrum);//writing the whole spectrum to destination file
-
-                    spectrum = ""; // clear spectrum
+                    
+                   ////writing the whole p_list to destination file
+                    bw.write("\n");
+                    peaks_d.clear();
 
                 } else if (line.contains("Comment")) {
-                    mods = new HashMap<Integer, List<String>>();
-                    spectrum += line + " _Decoy" + "\n";
-                    charge = Integer.parseInt(line.substring(line.indexOf("Charge") + 6, line.indexOf("Charge") + 7));
-
-                    String mods_str = line.substring(line.indexOf("Mods") + 3, line.indexOf(" ") - 1);
-                    if (mods_str != "Mod=0") {
-                        String[] strAr = mods_str.split("[/()]");
-                        int num_mods = strAr.length - 1; //first string represents number of modifications
-
-                        //if (num_mods == Integer.parseInt(strAr[0])) { //splited string array might have white space
-                        List l = new ArrayList<String>();
-                        for (int p = 0; p < num_mods; p++) {
-                            if (!"".equals(strAr[p])) {
-                                strAr[p] = strAr[p].replaceAll("\\s", ""); //remove all white space
-                                String[] m = strAr[p].split(",");
-                                int pos = Integer.parseInt(m[0]);
-                                if (!mods.containsKey(pos)) {
-                                    l = new ArrayList<String>();
-                                    l.add(m[2]);
-                                    mods.put(pos, l);
-                                } else {
-                                    l = new ArrayList<String>();
-                                    l = mods.get(pos);
-                                    l.add(m[2]);
-                                    mods.put(pos, l);
-                                }
-                            }
-
-                        }
-                        //}
-                    }
+                    bw.write(line + " _Decoy" + "\n");
+                    
+                    modifications = new HashMap<Integer, List<String>>();                     
+                    modifications = getModifications(line);   
 
                 } else if (line.contains("Charge")) {
-                    spectrum += line + "\n";
-                    charge = Integer.parseInt(line.replaceAll("\\D+", ""));
+                     bw.write(line + "\n");
+                    spectrum_charge = getCharge(line);
 
                 } else if ((line.startsWith("Name") && fileExtension.equals("msp")) || (line.startsWith("TITLE") && fileExtension.equals("mgf"))) {
-                    spectrum += line + "\n";
-                    sequence = line;
-                    sequence = sequence.replaceAll("[^AC-IK-NP-TVWY]", "");
+                     bw.write(line + "\n");
+                    sequence = line.substring(line.indexOf(":") + 1, line.indexOf("/"));
+                   
                     System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
                     Thread.sleep(1);
                     System.out.print("Current decoy spectrum index generated :  " + Integer.toString(count));
                     count++;
                 } else {
-                    spectrum += line + "\n";
+                     bw.write(line + "\n");
                 }
-
                 line = br.readLine();
             }
+            
 
         } catch (IOException ex) {
             Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);

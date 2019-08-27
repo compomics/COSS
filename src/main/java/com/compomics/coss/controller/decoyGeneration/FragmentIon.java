@@ -31,6 +31,7 @@ public class FragmentIon {
 
     private void fragment() {
 
+        this.sequence=this.sequence.replaceAll("\\s+","");
         int len_seq = sequence.length();
         int last_index = len_seq - 1;
 
