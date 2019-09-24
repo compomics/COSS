@@ -55,10 +55,10 @@ public final class Modification_Mass {
     private static final double Trimethyl = 42.04695;
     
     
-    public static double getMass(String mod){
+    public static double getMassShift(String mod_name){
         
         double mass=0.0;
-        switch(mod){
+        switch(mod_name){
             case "CAM": mass = 57.021464;
             break;
             case "Oxidation": mass = 15.994915;
@@ -147,5 +147,91 @@ public final class Modification_Mass {
         }
         return mass;
     }
+    
+    
+//    public static String getName(double mod_mass){
+//        
+//        String mod_name="";
+//        switch(mod_mass){
+//            case 57.021464 : mod_name ="CAM/Carbamidomethyl" ;
+//            break; 
+//            case 15.994915: mod_name = "Oxidation";
+//            break;
+//            case -18.010565: mod_name = "Pyro_glu_E/Glu_pyro_Glu/Dehydrated";
+//            break;
+//            case  -17.026549: mod_name = "Pyro_glu_Q/Gln_pyro_Glu";
+//            break;
+//            case  39.994915:  mod_name = "Pyro_carbamidomethyl"; 
+//            break;
+//            case  144.102063 : mod_name = "iTRAQ";
+//            break;
+//            case 229.162932: mod_name = "TMT";
+//            break;
+//            case 42.010565: mod_name = "Acetyl";
+//            break;
+//            case -0.984016: mod_name = "Amidated";
+//            break;
+//            case 226.077598: mod_name = "Biotin";
+//            break;
+//            case 43.005814: mod_name = "Carbamyl" ;
+//            break;
+//            case 58.005479: mod_name = "Carboxymethyl";
+//            break;
+//            case 0.984016: mod_name = "Deamidated" ;
+//            break;
+//            case 28.0313: mod_name = "Dimethyl";
+//            break;
+//            case 204.187801: mod_name = "Farnesyl";
+//            break;
+//            case 159.035399: mod_name = "FormylMet";
+//            break;                
+//            case 272.250401: mod_name = "GeranylGeranyl";
+//            break;
+//            case 176.032088: mod_name = "Glucuronyl";
+//            break;
+//            case 305.068156: mod_name = "Glutathione";
+//            break;
+//            case  42.021798: mod_name = "Guanidinyl";           
+//            break;           
+//            case 203.079373:  mod_name = "HexNAc"; 
+//            break;
+//            case 156.11503: mod_name = "HNE" ;
+//            break;
+//            case  225.093583: mod_name = "Iminobiotin";
+//            break;
+//            case 188.032956: mod_name = "Lipoyl";
+//            break;
+//            case 14.01565: mod_name = "Methyl";
+//            break;
+//            
+//            case 45.987721: mod_name = "Methylthio";
+//            break;
+//            case 210.198366: mod_name = "Myristoyl";
+//            break;
+//            case 125.047679: mod_name = "Nethylmaleimide";
+//            break;
+//            case 238.229666: mod_name = "Palmitoyl";
+//            break;
+//            case 79.966331: mod_name = "Phospho";
+//            break;
+//            case 71.037114: mod_name = "Propionamide";
+//            break;
+//            case 56.026215: mod_name = "Propionyl";
+//            break;
+//            case 119.037114: mod_name = "Pyridylacetyl";
+//            break;
+//            case 105.057849: mod_name = "Pyridylethyl";
+//            break;
+//            case 100.016044: mod_name = "Succinyl";
+//            break;
+//            case 79.956815: mod_name = "Sulfo";
+//            break;  
+//            case 42.04695: mod_name = "Trimethyl";
+//            break;   
+//
+//            
+//        }
+//        return mod_name;
+//    }
 
 }

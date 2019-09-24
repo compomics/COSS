@@ -247,17 +247,17 @@ public class MainGUI extends JFrame {
         
          fixedMzShift.addActionListener((ActionEvent ev) -> {
              String library=settings.txtLibrary.getText();
-             control.generateDeoy(0, library);
+             control.generateDeoy(0);
         });
          
          randIntFixedMzShift.addActionListener((ActionEvent ev) -> {
              String library=settings.txtLibrary.getText();
-             control.generateDeoy(1, library);
+             control.generateDeoy(1);
         });
          
          randMzIntShift.addActionListener((ActionEvent ev) -> {
              String library=settings.txtLibrary.getText();
-             control.generateDeoy(2, library);
+             control.generateDeoy(2);
         });
         
 //        tab.addChangeListener((ChangeEvent e) -> {

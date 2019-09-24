@@ -5,7 +5,7 @@
  */
 package com.compomics.coss.model;
 
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

@@ -1,9 +1,9 @@
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.MgfReader;
-import com.compomics.ms2io.Peak;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.controller.MgfReader;
+import com.compomics.ms2io.model.Peak;
+import com.compomics.ms2io.model.Spectrum;
 import java.io.File;
 import java.util.ArrayList;
 import static org.testng.Assert.*;

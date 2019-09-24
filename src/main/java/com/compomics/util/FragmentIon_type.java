@@ -1,4 +1,4 @@
-package com.compomics.coss.controller.decoyGeneration;
+package com.compomics.util;
 
 /**
  *

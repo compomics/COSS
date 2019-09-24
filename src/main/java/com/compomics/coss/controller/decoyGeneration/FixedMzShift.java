@@ -19,16 +19,16 @@ import java.util.logging.Logger;
  *
  * @author Genet
  */
-public class FixedMzShift extends GenerateDecoyLib {
+public class FixedMzShift extends GenerateDecoy {
 
     File mzShift = null;
 
-    public FixedMzShift(File f, org.apache.log4j.Logger log) {
+    public FixedMzShift(File f, org.apache.log4j.Logger log) throws IOException {
         super(f,log);
     }
 
     @Override
-    public File generate() {
+    public void generate() {
         BufferedWriter bw = null;
         BufferedReader br = null;
         String filename;
@@ -93,7 +93,7 @@ public class FixedMzShift extends GenerateDecoyLib {
             }
         }
 
-       return mzShift;
+      
     }
 
 

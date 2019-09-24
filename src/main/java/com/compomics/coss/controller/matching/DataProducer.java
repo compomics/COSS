@@ -3,7 +3,7 @@ package com.compomics.coss.controller.matching;
 import com.compomics.coss.controller.MappingJmzSpectrum;
 import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
 import java.util.Iterator;
 import org.apache.commons.io.FilenameUtils;
@@ -46,54 +46,51 @@ public class DataProducer implements Runnable { //procucer thread
 
     @Override
     public void run() {
-        int numTasks=confData.getExpSpecCount();
-        int currPos=0;
+        int numTasks = confData.getExpSpecCount();
+        int currPos = 0;
         try {
             Spectrum expSpec;
-            
+            ArrayList libSpec;
 
             //if query spectrum is mzML, ms2, mzXML, dta and pkl
             if (confData.getExpFileformat().equals("ebi")) {
-                
-                JMzReader redr = confData.getEbiReader();               
+
+                JMzReader redr = confData.getEbiReader();
                 String fileType = FilenameUtils.getExtension(confData.getExperimentalSpecFile().getName());
-                MappingJmzSpectrum jmzMap=new MappingJmzSpectrum(fileType);
+                MappingJmzSpectrum jmzMap = new MappingJmzSpectrum(fileType);
                 uk.ac.ebi.pride.tools.jmzreader.model.Spectrum jmzSpec;
                 Iterator<uk.ac.ebi.pride.tools.jmzreader.model.Spectrum> ebiSpecIterator = redr.getSpectrumIterator();
 
-                int downCount=0;
-                while(ebiSpecIterator.hasNext()) {//for(int i=1; i < numTasks ; i++){ //
+                int downCount = 0;
+                while (ebiSpecIterator.hasNext()) {//for(int i=1; i < numTasks ; i++){ //
 
-                    
-                    jmzSpec =  ebiSpecIterator.next();//  redr.getSpectrumByIndex(i);// 
+                    jmzSpec = ebiSpecIterator.next();//  redr.getSpectrumByIndex(i);// 
                     if (jmzSpec.getMsLevel() != 2) {
-                       downCount++;
+                        downCount++;
                         continue;
                     }
-                      //creating spectrum that can be read by the matcher
-                  
+                    //creating spectrum that can be read by the matcher
+
                     expSpec = jmzMap.getMappedSpectrum(jmzSpec);
 
-                    double parentMass=expSpec.getPCMass();
+                    double parentMass = expSpec.getPCMass();
                     double da_error = parentMass * this.precTolerance;
-                    ArrayList libSpec = confData.getLibSpecReader().readPart(expSpec.getPCMass(), da_error);
+                    libSpec = confData.getLibSpecReader().readPart(expSpec.getPCMass(), da_error);
                     data.putExpSpec(expSpec);
                     data.putLibSpec(libSpec);
 
-                    if(cancelled){
+                    if (cancelled) {
                         break;
                     }
-                    
+
                     currPos++;
-                    
+
                 }
-                if(downCount!=0){
-                    System.out.println("query file has non MS2 spectra, number of MS2 spectra found "+ Integer.toString(downCount));
+                if (downCount != 0) {
+                    System.out.println("query file has non MS2 spectra, number of MS2 spectra found " + Integer.toString(downCount));
                 }
 
-
-            } else if(confData.getExpFileformat().equals("ms2io")){
-                ArrayList libSpec;
+            } else if (confData.getExpFileformat().equals("ms2io")) {
                 for (int a = 0; a < numTasks; a++) {
                    
                     expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
@@ -102,8 +99,11 @@ public class DataProducer implements Runnable { //procucer thread
                     double da_error = mass * this.precTolerance;
 
                     libSpec = confData.getLibSpecReader().readPart(mass, da_error);
-                    data.putExpSpec(expSpec);
-                    data.putLibSpec(libSpec);
+                   // synchronized (data) {
+                        data.putExpSpec(expSpec);
+                        data.putLibSpec(libSpec);
+                   // }
+
                     if (cancelled) {
                         break;
                     }
@@ -111,8 +111,8 @@ public class DataProducer implements Runnable { //procucer thread
                 }
             }
         } catch (Exception e) {
-            this.stillReading = false;
-            this.cancelled = true;
+//            this.stillReading = false;
+//            this.cancelled = true;
             System.out.println(e.toString() + "position error " + Integer.toString(currPos));
 
         } finally {

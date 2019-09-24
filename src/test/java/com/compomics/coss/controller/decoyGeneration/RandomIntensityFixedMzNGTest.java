@@ -1,6 +1,7 @@
 package com.compomics.coss.controller.decoyGeneration;
 
 import java.io.File;
+import java.io.IOException;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -27,7 +28,7 @@ public class RandomIntensityFixedMzNGTest {
      * Test of generate method, of class RandomIntensityFixedMz.
      */
     @Test
-    public void testGenerate() {
+    public void testGenerate() throws IOException {
         System.out.println("generate");
         RandomIntensityFixedMz instance = new RandomIntensityFixedMz(new File("testData/testfile.mgf"), null);
         File expResult = null;

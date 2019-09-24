@@ -1,6 +1,8 @@
 package com.compomics.coss.controller;
 
-import com.compomics.coss.controller.decoyGeneration.Generate;
+import com.compomics.ms2io.model.Spectrum;
+import com.compomics.ms2io.model.Peak;
+import com.compomics.coss.controller.decoyGeneration.*;
 import com.compomics.coss.view.ResultPanel;
 import com.compomics.coss.view.RasterPanel;
 import com.compomics.coss.view.TargetDB_View;
@@ -498,8 +500,8 @@ public class MainFrameController implements UpdateListener {
                 ArrayList<Peak> peaks = targSpec.getPeakList();
                 double precMass_tar = targSpec.getPCMass();
                 double precMass_match = matchedSpec.getPCMass();
-                String targCharge = targSpec.getCharge();
-                String matchedCharge = matchedSpec.getCharge();
+                String targCharge = targSpec.getCharge_asStr();
+                String matchedCharge = matchedSpec.getCharge_asStr();
                 String tarName = targSpec.getTitle();
                 String matchedName = matchedSpec.getTitle();
 
@@ -558,7 +560,7 @@ public class MainFrameController implements UpdateListener {
                 row[1] = expSpec.getTitle();
                 row[2] = expSpec.getScanNumber();
                 row[3] = expSpec.getPCMass();
-                row[4] = expSpec.getCharge();
+                row[4] = expSpec.getCharge_asStr();
                 double score = result.get(p).getTopScore();
                 row[5] = Double.toString(score);
 
@@ -763,7 +765,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void chooseTargetFile(String file) {
 
-        JFileChooser fileChooser = new JFileChooser("C:/Users/Genet/OneDrive - UGent/1_pandy_datasets");
+        JFileChooser fileChooser = new JFileChooser("D:/kusterDS/");
         fileChooser.setDialogTitle("Target Spectra File");
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -839,7 +841,7 @@ public class MainFrameController implements UpdateListener {
                 mz = new double[lenPeaks];
                 intensity = new double[lenPeaks];
                 precMass = tSpec.getPCMass();
-                precCharge = tSpec.getCharge();
+                precCharge = tSpec.getCharge_asStr();
                 name = tSpec.getTitle();
 
                 int c = 0;
@@ -873,8 +875,6 @@ public class MainFrameController implements UpdateListener {
     }
 
     int decoyType = 0;
-    Generate gn = null;
-    File libFile = null;
 
     /**
      * generate decoy library and append on the given spectral library file
@@ -883,18 +883,15 @@ public class MainFrameController implements UpdateListener {
      * 1 is random mz and intensity change of each peak in the spectrum
      * @param library path to library file
      */
-    public void generateDeoy(int i, String library) {
+    public void generateDeoy(int i) {
 
-        if ("".equals(library)) {
+        if ("".equals(configData.getSpecLibraryFile())) {
             showMessageDialog("Validation errors", "No spectra library given", JOptionPane.WARNING_MESSAGE);
 
-        } else if (!library.endsWith(".mgf") && !library.endsWith(".msp")) {
+        } else if (!configData.getSpecLibraryFile().getName().endsWith(".mgf") && !configData.getSpecLibraryFile().getName().endsWith(".msp")) {
             showMessageDialog("Validation errors", "Spectral library file format not supported", JOptionPane.WARNING_MESSAGE);
         } else {
 
-            decoyType = i;
-            libFile = new File(library);
-            gn = new Generate(LOG, this);
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();
 
@@ -948,7 +945,7 @@ public class MainFrameController implements UpdateListener {
                         Collections.reverse(result);
                         validateResult();
                         LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
-                    } else if (configData.isDecoyAvailable()) {
+                    } else if (!configData.isDecoyAvailable()) {
                         LOG.info("No decoy spectra found in library");
                     }
                     fillExpSpectraTable();
@@ -1055,8 +1052,25 @@ public class MainFrameController implements UpdateListener {
             mainView.searchBtnActive(false);
 
             LOG.info("Generating decoy ....");
+            GenerateDecoy gen = null;
+            switch (decoyType) {
+                case 0:
+                    gen = new ReverseSequence(configData.getSpecLibraryFile(), LOG);
+                    gen.generate();
+                    break;
 
-            gn.start(libFile, decoyType);
+                case 1:
+                    gen = new FixedMzShift(configData.getSpecLibraryFile(), LOG);
+                    gen.generate();
+                    break;
+
+                case 2:
+                    gen = new FixedMzShift(configData.getSpecLibraryFile(), LOG);
+                    gen.generate();
+                    break;
+
+            }
+
             return null;
         }
 

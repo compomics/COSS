@@ -1,6 +1,6 @@
 package com.compomics.coss.controller;
 
-import com.compomics.coss.controller.decoyGeneration.Generate;
+import com.compomics.coss.controller.decoyGeneration.*;
 import com.compomics.coss.model.ComparisonResult;
 import com.compomics.coss.model.ConfigHolder;
 import java.io.File;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import com.compomics.coss.model.ConfigData;
+import java.io.IOException;
 
 /**
  * Controller class to run the project from command line
@@ -125,8 +126,18 @@ public class MainConsoleController implements UpdateListener {
         configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance"));
         configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
 
-        if (lenArgs > 2) {
-            double pcTol = Double.parseDouble(ipArgs[2]);
+        if(lenArgs == 3) {
+            int matching_algorithm = Integer.parseInt(ipArgs[2]);
+            if (matching_algorithm == 0 || matching_algorithm == 1) {
+                configData.setScoringFunction(matching_algorithm);
+            }else{
+                System.out.print("scoring function input error: 0: for MsRobin, and 1 for Cosine similarity");
+            }
+            
+        }
+
+        else if(lenArgs == 4) {
+            double pcTol = Double.parseDouble(ipArgs[3]);
             if (pcTol < 0) {
                 System.out.print("Make sure the precursor tolerance value is correct. \n it should be given in ppm");
             }else{
@@ -136,8 +147,8 @@ public class MainConsoleController implements UpdateListener {
 
         }
 
-        if (lenArgs > 3) {
-            double frTol = Double.parseDouble(ipArgs[3]);
+        else if(lenArgs == 5) {
+            double frTol = Double.parseDouble(ipArgs[4]);
             if (frTol > 0) {
                 System.out.print("Make sure the fragment tolerance value is correct. \n it should be given in Da");
             }else{
@@ -147,15 +158,14 @@ public class MainConsoleController implements UpdateListener {
 
         }
 
-        if (lenArgs > 4) {
-            double charge = Double.parseDouble(ipArgs[4]);
+        else if(lenArgs == 6) {
+            double charge = Double.parseDouble(ipArgs[5]);
             if (charge < 0) {
                 System.out.print("invalid charge value, default charge value is set instead");
                 Runtime.getRuntime().exit(0);
             }else{
                 configData.setPrecTol(charge);
-            }
-            
+            }           
 
         }
 
@@ -283,7 +293,7 @@ public class MainConsoleController implements UpdateListener {
      * 1 is random mz and intensity change of each peak in the spectrum
      * @param library path to library file
      */
-    public void generateDeoy(int i, String library) {
+    public void generateDeoy(int i, String library) throws IOException {
         
         if ("".equals(library)) {
             System.out.println("Validation errors: No spectra library has given");
@@ -293,8 +303,9 @@ public class MainConsoleController implements UpdateListener {
         } else {
 
             File libFile = new File(library);
-            Generate gn = new Generate(LOG, this);   
-            gn.start(libFile, i);
+            GenerateDecoy gn;
+            gn = new ReverseSequence(libFile, LOG);
+            gn.generate();
 
         }
 

@@ -1,6 +1,6 @@
 package com.compomics.coss.controller.matching;
 
-import com.compomics.ms2io.Peak;
+import com.compomics.ms2io.model.Peak;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

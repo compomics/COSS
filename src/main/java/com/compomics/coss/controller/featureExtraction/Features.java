@@ -5,7 +5,8 @@
  */
 package com.compomics.coss.controller.featureExtraction;
 
-import com.compomics.ms2io.Peak;
+import com.compomics.ms2io.model.Peak;
+import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
 
 /**
@@ -14,6 +15,6 @@ import java.util.ArrayList;
  */
 public interface Features {
     
-    ArrayList<Peak>  getFeatures();
+    ArrayList<Peak>  getFeatures(Spectrum spectrum, int topN);
     
 }

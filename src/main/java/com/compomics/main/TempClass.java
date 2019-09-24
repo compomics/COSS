@@ -2,14 +2,15 @@ package com.compomics.main;
 
 //import com.compomics.coss.controller.decoyGeneration.FragmentIon;
 import com.compomics.coss.controller.MainFrameController;
-import com.compomics.coss.controller.decoyGeneration.FragmentIon;
-import com.compomics.coss.controller.decoyGeneration.GenerateDecoyLib;
+import com.compomics.util.FragmentIon;
+import com.compomics.coss.controller.decoyGeneration.*;
 //import com.compomics.coss.controller.decoyGeneration.MergeFiles;
-import com.compomics.coss.controller.decoyGeneration.ReverseSequence;
+import com.compomics.coss.controller.SpectrumAnnotation.*;
 import org.apache.log4j.Logger;
 import java.util.logging.Level;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,24 +31,25 @@ public class TempClass {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        try {
+    public static void main(String[] args) throws IOException {
+        //try {
             
-            File file_lib=new File("C:/human_hcd/test_lib.msp");
-            //File file_decoy=new File("C:/human_hcd_itraq/human_hcd_selected.msp_decoy.msp");
-//
+            File file_lib=new File("C:/human_hcd/MassIVEPart2_2_annotated.msp");
+
+
+            //File file_decoy=new File("C:/human_hcd_itraq/human_hcd_selected.msp_decoy.msp");//
 //            System.out.println("Appending decoy to library");
 //            MergeFiles m = new MergeFiles(file_lib, file_decoy);
 //            m.Merge();
 //            System.out.println("\nDecoy spectra appended to file " + file_lib.getName());
 
 //            System.out.println("getFragmentIon");
-            String aa_sequence = "AAAAAAAVSGNNASDEPSR"; //unmodified
+//            String aa_sequence = "AAAAAAAVSGNNASDEPSR"; //unmodified
 //            
 //            String aa_sequence = "AAAAQDEITGDGTTTVVCLVGELLR";   //modified CAM at 17th aa
 //            
-            Map modifications = new HashMap<Integer, List<String>>();
-            List mods = new ArrayList<String>();
+//            Map modifications = new HashMap<Integer, List<String>>();
+//            List mods = new ArrayList<String>();
 //            `
 //            //only for modified peptide
 //            //1(17,C,CAM)
@@ -67,16 +69,25 @@ public class TempClass {
 //                System.out.println("\n");
 //            }
 
-            
-            GenerateDecoyLib gen = new ReverseSequence(file_lib, LOG );
+//            
+            GenerateDecoy gen = new ReverseSequence(file_lib, LOG );
             gen.generate();
+            
+            
 
-
-
-
-        } catch (Exception ex) {//InterruptedException ex) {
-            System.out.println(ex.toString());
-        }
+//           
+//        try {
+//            Annotation annot=new Annotation(file_lib, 0.5);
+//            annot.annotateSpecFile(false);
+//            
+//            
+//            
+//            //} catch (Exception ex) {//InterruptedException ex) {
+//            //    System.out.println(ex.toString());
+//            // }
+//        } catch (Exception ex) {
+//            java.util.logging.Logger.getLogger(TempClass.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
 }

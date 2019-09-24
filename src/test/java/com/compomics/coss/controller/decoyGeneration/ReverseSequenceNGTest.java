@@ -33,11 +33,11 @@ public class ReverseSequenceNGTest {
      */
     @Test
     public void testGenerate() {
-        System.out.println("generate");
-        ReverseSequence instance = null;
-        File expResult = null;
-        File result = instance.generate();
-        assertEquals(result, expResult);
+//        System.out.println("generate");
+//        ReverseSequence instance = null;
+//        File expResult = null;
+//        File result = instance.generate();
+//        assertEquals(result, expResult);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

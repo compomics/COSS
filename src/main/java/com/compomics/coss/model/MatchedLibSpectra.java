@@ -5,7 +5,7 @@
  */
 package com.compomics.coss.model;
 
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Spectrum;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -18,6 +18,7 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     public MatchedLibSpectra() {
     }
     
+    private static MatchedLibSpectra this_obj;
     private Spectrum spectrum;
     private double score;
     private int source;
@@ -33,7 +34,9 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     double sumMatchedIntA ;
     double sumMatchedIntB ;
 
-    
+//    public void finalyze(){
+//        this_obj=this;
+//    }
      public Spectrum getSpectrum() {
         return this.spectrum;
     }

@@ -1,8 +1,7 @@
-package com.compomics.coss.controller.decoyGeneration;
+package com.compomics.util;
 
-import com.compomics.util.*;
+import com.compomics.ms2io.model.Modification;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,7 +11,7 @@ import java.util.Map;
 public class FragmentIon {
 
     private String sequence = "";
-    private Map<Integer, List<String>> modifications;
+    private Map<Integer, Modification> modifications;
     private Map frag_ion;
 
     /**
@@ -22,7 +21,7 @@ public class FragmentIon {
      * @param modifications any modification on the peptide: Key: modified amino
      * acid position & value: modification type
      */
-    public FragmentIon(String aa_sequence, Map<Integer, List<String>> modifications) {
+    public FragmentIon(String aa_sequence, Map<Integer, Modification> modifications) {
         frag_ion = new HashMap<String, Double>();
         this.sequence = aa_sequence;
         this.modifications = modifications;
@@ -46,6 +45,7 @@ public class FragmentIon {
             double a_mass = 0;
 
             int y_index_track =last_index - i;
+            Modification mods;
             for (int j = 0; j < len_chars; j++) {
 
                 b_mass += AA_Mass.getAA_mass(b_ion.charAt(j));
@@ -54,22 +54,23 @@ public class FragmentIon {
                 if (!modifications.isEmpty()) {
                     if (modifications.containsKey(j)) {
                         //iterate over list of modification at this AA position
-                        List<String> mods = modifications.get(j);
-                        double mod = 0.0;
-                        for (int k = 0; k < mods.size(); k++) {
-                            mod += Modification_Mass.getMass(mods.get(k));
-
-                        }
+                        //it is possible that multiple modification on a single site?????
+                        mods = modifications.get(j);
+                        double mod = mods.getModificationMassShift();
+                        
+//                        for (int k = 0; k < mods.size(); k++) {
+//                            mod += Modification_Mass.getMassShift(mods.get(k));
+//
+//                        }
                         b_mass += mod;
                     }
                     if (modifications.containsKey(y_index_track + j)) {
                         //iterate over list of modification at this AA position
-                        List<String> mods = modifications.get(y_index_track + j);
-                        double mod = 0.0;
-                        for (int k = 0; k < mods.size(); k++) {
-                            mod += Modification_Mass.getMass(mods.get(k));
-
-                        }
+                        mods = modifications.get(y_index_track + j);
+                        double mod = mods.getModificationMassShift();
+//                        for (int k = 0; k < mods.size(); k++) {
+//                            mod += Modification_Mass.getMassShift(mods.get(k));
+//                        }
                         y_mass += mod;
                     }
                 }

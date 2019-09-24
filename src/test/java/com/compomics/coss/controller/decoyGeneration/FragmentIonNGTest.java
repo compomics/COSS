@@ -5,6 +5,7 @@
  */
 package com.compomics.coss.controller.decoyGeneration;
 
+import com.compomics.util.FragmentIon;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

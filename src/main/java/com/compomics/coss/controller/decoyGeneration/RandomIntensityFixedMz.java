@@ -21,16 +21,16 @@ import java.util.logging.Logger;
  *
  * @author Genet
  */
-public class RandomIntensityFixedMz extends GenerateDecoyLib {
+public class RandomIntensityFixedMz extends GenerateDecoy {
 
     File randomIntShift;
 
-    public RandomIntensityFixedMz(File f, org.apache.log4j.Logger log) {
+    public RandomIntensityFixedMz(File f, org.apache.log4j.Logger log) throws IOException {
         super(f, log);
     }
 
     @Override
-    public File generate() {
+    public void generate() {
         BufferedWriter bw = null;
         BufferedReader br = null;
         String filename;
@@ -148,7 +148,7 @@ public class RandomIntensityFixedMz extends GenerateDecoyLib {
                 Logger.getLogger(com.compomics.coss.controller.decoyGeneration.FixedMzShift.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return randomIntShift;
+      
     }
 
 }

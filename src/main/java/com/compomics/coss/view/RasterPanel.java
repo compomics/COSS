@@ -1,8 +1,8 @@
 package com.compomics.coss.view;
 
-import com.compomics.ms2io.IndexKey;
-import com.compomics.ms2io.Spectrum;
-import com.compomics.ms2io.SpectraReader;
+import com.compomics.ms2io.model.IndexKey;
+import com.compomics.ms2io.model.Spectrum;
+import com.compomics.ms2io.controller.SpectraReader;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
