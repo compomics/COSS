@@ -27,7 +27,7 @@ import javax.swing.WindowConstants;
  * @author Genet
  */
 public class MainGUI extends JFrame {
-    
+
     SettingPanel settings;
     ResultPanel result;
     MainFrameController control;
@@ -46,7 +46,7 @@ public class MainGUI extends JFrame {
         super("COSS");
         this.control = controler;
         this.settings = settings;
-        this.result = result;        
+        this.result = result;
         this.pnlTargView = targetView;
         initComponents();
     }
@@ -65,22 +65,21 @@ public class MainGUI extends JFrame {
         this.setIconImage(iconSetting.getImage());
 
         //Initialize components
-        JMenuBar menuBar = new JMenuBar();        
+        JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
         JMenu settingMenu = new JMenu("Setting");
-        JMenu decoyMenu = new JMenu("Generate Decoy DB");
+        JMenu decoyMenu = new JMenu("Generate Decoy");
         JMenu helpMenu = new JMenu("Help");
-        JMenuItem toCSV=new JMenuItem("CSV");
-        JMenuItem toTabText=new JMenuItem("Text");
-        JMenuItem toExcel=new JMenuItem("Excel");
-        
-       
+        JMenuItem toCSV = new JMenuItem("CSV");
+        JMenuItem toTabText = new JMenuItem("Text");
+        JMenuItem toExcel = new JMenuItem("Excel");
+
         // Mnemonic
         fileMenu.setMnemonic(KeyEvent.VK_F);
         editMenu.setMnemonic(KeyEvent.VK_E);
         helpMenu.setMnemonic(KeyEvent.VK_F1);
-        
+
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
         menuBar.add(settingMenu);
@@ -97,21 +96,27 @@ public class MainGUI extends JFrame {
         JMenuItem paste = new JMenuItem("Paste", KeyEvent.VK_P);
         JMenuItem about = new JMenuItem("About", KeyEvent.VK_A);
         JMenuItem configSystem = new JMenuItem("Configure Library", KeyEvent.VK_L);
-        
-        JMenuItem fixedMzShift = new JMenuItem("Fixed M/Z Shift");
-        JMenuItem randIntFixedMzShift = new JMenuItem("Fixed M/Z random Intensity");
-        randIntFixedMzShift.setEnabled(false);
-        JMenuItem randMzIntShift = new JMenuItem("Random M/Z and Intensity");
-        
+
+        JMenuItem reversSequence = new JMenuItem("Reverse sequence");
+        JMenuItem randomSequence = new JMenuItem("Random sequence");
+        JMenuItem fixedMz = new JMenuItem("Fixed mz shift");
+        JMenuItem randomMz = new JMenuItem("Random mz shift");
+        JMenuItem annotate = new JMenuItem("Annotate File");
+        JMenuItem mergeFiles = new JMenuItem("Merge files");
+
         export.add(toExcel);
         export.add(toCSV);
         export.add(toTabText);
+
+        decoyMenu.add(reversSequence);
+        decoyMenu.add(randomSequence);
+        decoyMenu.add(fixedMz);
+        decoyMenu.add(randomMz);
+        decoyMenu.add(annotate);
+        decoyMenu.add(mergeFiles);
         
-        
-        decoyMenu.add(fixedMzShift);
-        decoyMenu.add(randIntFixedMzShift);
-        decoyMenu.add(randMzIntShift);
-        
+        fixedMz.setEnabled(false);
+        randomMz.setEnabled(false);
         fileMenu.add(open);
         fileMenu.add(save);
         fileMenu.add(importResult);
@@ -121,20 +126,19 @@ public class MainGUI extends JFrame {
         editMenu.add(paste);
         helpMenu.add(about);
         settingMenu.add(configSystem);
-        
-        
+
         pnlsetting = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlsetting.setLayout(new BorderLayout());
-        
+
         pnlresult = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlresult.setLayout(new BorderLayout());
-        
+
         pnlCommands = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlCommands.setLayout(new BorderLayout());
-        
+
         JPanel pnlLog = new JPanel(new FlowLayout(FlowLayout.LEFT));
         pnlLog.setLayout(new BorderLayout());
-        
+
         txtlog = new JTextArea();
         JScrollPane scrLogArea = new JScrollPane();
         txtlog.setColumns(20);
@@ -145,13 +149,13 @@ public class MainGUI extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         JTabbedPane tab = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
         //tab.addTab("Settings", iconSetting,  new JScrollPane(pnlsetting));
-        tab.addTab("Settings", new JScrollPane(pnlsetting));        
+        tab.addTab("Settings", new JScrollPane(pnlsetting));
         tab.addTab("Result", new JScrollPane(pnlresult));
         //tab.setSize(WIDTH, WIDTH);
 
         srchCmdPnl = new SearchCommandPnl(control);
-       // valdtCmdPnl = new ValidationCommandPanel(control);
-       // valdHistPnl=new ValidationHistogramPanel(null, null);
+        // valdtCmdPnl = new ValidationCommandPanel(control);
+        // valdHistPnl=new ValidationHistogramPanel(null, null);
         srchCmdPnl.prgProgress.setStringPainted(true);
         srchCmdPnl.prgProgress.setForeground(Color.BLUE);
         pnlCommands.add(srchCmdPnl);
@@ -161,7 +165,7 @@ public class MainGUI extends JFrame {
         pnlUpper.setLayout(new GridLayout(1, 2));
         pnlUpper.add(tab);
         pnlUpper.add(pnlTargView);
-        
+
         JPanel pnlLower = new JPanel();
         pnlLower.setLayout(new GridLayout(1, 2));
         pnlLower.add(pnlCommands);
@@ -172,7 +176,7 @@ public class MainGUI extends JFrame {
 
         //ResultPanel result = new ResultPanel();
         pnlresult.add(result);
-        
+
         pnlLog.add(scrLogArea);
 
         //Control Events
@@ -188,11 +192,11 @@ public class MainGUI extends JFrame {
                         "Are you sure to close this window?", "Really Closing?",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE);
-                
+
                 if (selectionOption == JOptionPane.YES_OPTION) {
                     if (control.isBussy) {
                         control.stopSearch();
-                        
+
                     }
                     dispose();
                     System.exit(0);
@@ -200,37 +204,33 @@ public class MainGUI extends JFrame {
             }
         }
         );
-        
+
         save.addActionListener((ActionEvent ev) -> {
             control.exportResults(0);
         });
-        
-       
-             
+
         toExcel.addActionListener((ActionEvent ev) -> {
             control.exportResults(1);
         });
-        
+
         toCSV.addActionListener((ActionEvent ev) -> {
             control.exportResults(2);
         });
-        
+
         toTabText.addActionListener((ActionEvent ev) -> {
             control.exportResults(3);
         });
-     
-        
+
         importResult.addActionListener((ActionEvent ev) -> {
             control.importResults();
         });
-        
-        
+
         exit.addActionListener((ActionEvent ev) -> {
             int selectionOption = JOptionPane.showConfirmDialog(null,
                     "Are you sure want to exit?", "Really Closing?",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
-            
+
             if (selectionOption == JOptionPane.YES_OPTION) {
                 if (control.isBussy) {
                     control.stopSearch();
@@ -238,28 +238,35 @@ public class MainGUI extends JFrame {
                 System.exit(0);
             }
         });
-        
+
         configSystem.addActionListener((ActionEvent e) -> {
             //control.chooseLibraryFile();
             // frmNewLibrary.setVisible(true);
         });
-        
-        
-         fixedMzShift.addActionListener((ActionEvent ev) -> {
-             String library=settings.txtLibrary.getText();
-             control.generateDeoy(0);
+
+        reversSequence.addActionListener((ActionEvent ev) -> {
+            control.generateDeoy(0);
         });
-         
-         randIntFixedMzShift.addActionListener((ActionEvent ev) -> {
-             String library=settings.txtLibrary.getText();
-             control.generateDeoy(1);
-        });
-         
-         randMzIntShift.addActionListener((ActionEvent ev) -> {
-             String library=settings.txtLibrary.getText();
-             control.generateDeoy(2);
+
+        annotate.addActionListener((ActionEvent ev) -> {
+            control.annotateSpectrumFile(false);
         });
         
+        mergeFiles.addActionListener((ActionEvent ev) -> {
+            control.mergeFiles();
+        });
+        
+        randomSequence.addActionListener((ActionEvent ev) -> {
+            control.generateDeoy(1);
+        });
+
+        fixedMz.addActionListener((ActionEvent ev) -> {
+            control.generateDeoy(2);
+        });
+        randomMz.addActionListener((ActionEvent ev) -> {
+            control.generateDeoy(3);
+        });
+
 //        tab.addChangeListener((ChangeEvent e) -> {
 //            if (e.getSource() instanceof JTabbedPane) {
 //                JTabbedPane pane = (JTabbedPane) e.getSource();
@@ -284,18 +291,17 @@ public class MainGUI extends JFrame {
 //                
 //            }            
 //        });
-        
-        setJMenuBar(menuBar);        
+        setJMenuBar(menuBar);
         BorderLayout layout = new BorderLayout();
         getContentPane().setLayout(layout);
         add(new JScrollPane(pnlUpper), BorderLayout.CENTER);
         add(new JScrollPane(pnlLower), BorderLayout.SOUTH);
-        
+
         pack();
-        
+
     }
 //</editor-fold>
-    
+
 //    public void setResults(List<ArrayList<ComparisonResult>> resT, List<ArrayList<ComparisonResult>> resD) {
 //        valdHistPnl = new ValidationHistogramPanel(resT, resD);
 //        //valdHistPnl.setPreferredSize(new Dimension(300,200));
@@ -315,18 +321,16 @@ public class MainGUI extends JFrame {
     public void searchBtnActive(boolean b) {
         srchCmdPnl.btnStartSearch.setEnabled(b);
     }
-    
+
     public void readerBtnActive(boolean b) {
         srchCmdPnl.btnConfigReader.setEnabled(b);
     }
-    
-       
 
     private SearchCommandPnl srchCmdPnl;
-   // private ValidationHistogramPanel valdHistPnl;
+    // private ValidationHistogramPanel valdHistPnl;
     public JPanel pnlsetting;
-    public JPanel pnlresult;    
+    public JPanel pnlresult;
     public JPanel pnlCommands;
     public JTextArea txtlog;
-   
+
 }

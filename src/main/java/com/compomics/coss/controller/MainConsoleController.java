@@ -304,7 +304,7 @@ public class MainConsoleController implements UpdateListener {
 
             File libFile = new File(library);
             GenerateDecoy gn;
-            gn = new ReverseSequence(libFile, LOG);
+            gn = new ReverseSequence(libFile, 0.05, LOG);
             gn.generate();
 
         }

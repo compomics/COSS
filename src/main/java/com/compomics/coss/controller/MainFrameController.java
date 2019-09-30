@@ -1,5 +1,6 @@
 package com.compomics.coss.controller;
 
+import com.compomics.coss.controller.SpectrumAnnotation.Annotation;
 import com.compomics.ms2io.model.Spectrum;
 import com.compomics.ms2io.model.Peak;
 import com.compomics.coss.controller.decoyGeneration.*;
@@ -875,6 +876,7 @@ public class MainFrameController implements UpdateListener {
     }
 
     int decoyType = 0;
+    File libFile;
 
     /**
      * generate decoy library and append on the given spectral library file
@@ -884,16 +886,61 @@ public class MainFrameController implements UpdateListener {
      * @param library path to library file
      */
     public void generateDeoy(int i) {
+        decoyType = i;
 
-        if ("".equals(configData.getSpecLibraryFile())) {
-            showMessageDialog("Validation errors", "No spectra library given", JOptionPane.WARNING_MESSAGE);
+        String tempS2 = settingsPnl.txtLibrary.getText();
+        if ("".equals(tempS2)) {
+            LOG.info("Please select library file");
 
-        } else if (!configData.getSpecLibraryFile().getName().endsWith(".mgf") && !configData.getSpecLibraryFile().getName().endsWith(".msp")) {
-            showMessageDialog("Validation errors", "Spectral library file format not supported", JOptionPane.WARNING_MESSAGE);
+        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt")) {
+            LOG.info(" Spectral library file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
         } else {
+
+            libFile = new File(tempS2);
 
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();
+
+        }
+
+    }
+
+    public void annotateSpectrumFile(boolean overwriteOriginal) {
+        String tempS2 = settingsPnl.txtLibrary.getText();
+        if ("".equals(tempS2)) {
+            LOG.info("Please select library file");
+
+        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt")) {
+            LOG.info(" Spectral library file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
+        } else {
+
+            libFile = new File(tempS2);
+
+            SwingSpectrumAnnotatorThread workerThread = new SwingSpectrumAnnotatorThread();
+            workerThread.execute();
+
+        }
+
+    }
+
+    public void mergeFiles() {
+        String tempS = settingsPnl.txtLibrary.getText();
+        String tempS2 = settingsPnl.txttargetspec.getText();
+
+        if ("".equals(tempS2) || "".equals(tempS)) {
+            LOG.info("Please give files to be merged");
+
+        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt") && !tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".sptxt")) {
+            LOG.info(" Spectral file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
+        } else {
+            MergeFiles merg = new MergeFiles(new File(tempS), new File(tempS2));
+            try {
+                merg.Merge();
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } finally {
+
+            }
 
         }
 
@@ -1042,6 +1089,53 @@ public class MainFrameController implements UpdateListener {
     /**
      * swing thread generating decoy
      */
+    private class SwingSpectrumAnnotatorThread extends SwingWorker<Void, Void> {
+
+        @Override
+        protected Void doInBackground() throws Exception {
+
+            // isBussy = true;        
+            mainView.readerBtnActive(false);
+            mainView.searchBtnActive(false);
+
+            LOG.info("Annotating spectrum file....");
+            Annotation ann = new Annotation(libFile, 0.5);
+            try {
+                ann.annotateSpecFile(false);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void done() {
+
+            try {
+
+                LOG.info("Spectrum file annotation is completed");
+                isReaderReady = true;
+                isBussy = false;
+                mainView.readerBtnActive(true);
+                mainView.searchBtnActive(true);
+
+            } catch (CancellationException ex) {
+                LOG.info("the spectrum similarity score pipeline run was cancelled");
+            } finally {
+
+            }
+        }
+
+    }
+
+    /**
+     * swing thread generating decoy
+     */
     private class SwingDecoyGeneratorThread extends SwingWorker<Void, Void> {
 
         @Override
@@ -1055,17 +1149,17 @@ public class MainFrameController implements UpdateListener {
             GenerateDecoy gen = null;
             switch (decoyType) {
                 case 0:
-                    gen = new ReverseSequence(configData.getSpecLibraryFile(), LOG);
+                    gen = new ReverseSequence(libFile, 0.05, LOG);
                     gen.generate();
                     break;
 
                 case 1:
-                    gen = new FixedMzShift(configData.getSpecLibraryFile(), LOG);
+                    gen = new RandomSequene(libFile, 0.05, LOG);
                     gen.generate();
                     break;
 
                 case 2:
-                    gen = new FixedMzShift(configData.getSpecLibraryFile(), LOG);
+                    gen = new FixedMzShift(libFile, 0.05, LOG);
                     gen.generate();
                     break;
 

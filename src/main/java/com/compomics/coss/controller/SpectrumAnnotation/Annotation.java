@@ -1,6 +1,5 @@
 package com.compomics.coss.controller.SpectrumAnnotation;
 
-import com.compomics.coss.model.ComparisonResult;
 import com.compomics.ms2io.controller.Indexer;
 import com.compomics.ms2io.controller.MgfReader;
 import com.compomics.ms2io.controller.MspReader;
@@ -8,14 +7,9 @@ import com.compomics.ms2io.controller.MspWriter;
 import com.compomics.ms2io.controller.SpectraReader;
 import com.compomics.ms2io.controller.SpectraWriter;
 import com.compomics.ms2io.model.*;
-import com.compomics.util.AtomMass;
-import com.compomics.util.FragmentIon;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

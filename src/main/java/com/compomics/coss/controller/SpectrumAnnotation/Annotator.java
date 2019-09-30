@@ -136,7 +136,7 @@ public class Annotator implements Callable<Spectrum> {
                 
                 
                  /**
-                 * mass affected by both NH3 loss and charges 1 and 2
+                 * mass affected by both NH3 loss and charges 1 and 2 respectively
                  */
                 NH3_loss_1Z_mass = NH3_loss_mass + 1;
                 deltaNH3_1Z = Math.abs(NH3_loss_1Z_mass-Pk_mass);

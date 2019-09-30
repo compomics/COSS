@@ -20,7 +20,7 @@ public class BatchExecution {
     private static final Logger LOG = Logger.getLogger(MainFrameController.class);
 
     public static void main(String[] args) {
-        File dir = new File("C:/Users/Genet/OneDrive - UGent/1_pandy_datasets/batch"); //"C:/human_hcd/batch");
+        File dir = new File("D:/kusterDS/batch/temp"); //"C:/human_hcd/batch");
         String lib_file="C:/human_hcd/MassIVE_realNsynthetic_Annotated_TargetDecoy.msp";
         File[] directoryListing = dir.listFiles();
 

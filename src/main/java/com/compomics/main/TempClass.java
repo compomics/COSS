@@ -34,7 +34,7 @@ public class TempClass {
     public static void main(String[] args) throws IOException {
         //try {
             
-            File file_lib=new File("C:/human_hcd/MassIVEPart2_2_annotated.msp");
+            File file_lib=new File("C:/human_hcd/human_hcd_selected_3_annotated.msp");
 
 
             //File file_decoy=new File("C:/human_hcd_itraq/human_hcd_selected.msp_decoy.msp");//
@@ -70,12 +70,12 @@ public class TempClass {
 //            }
 
 //            
-            GenerateDecoy gen = new ReverseSequence(file_lib, LOG );
+            GenerateDecoy gen = new ReverseSequence(file_lib, 0.05,LOG );
             gen.generate();
             
             
 
-//           
+           
 //        try {
 //            Annotation annot=new Annotation(file_lib, 0.5);
 //            annot.annotateSpecFile(false);

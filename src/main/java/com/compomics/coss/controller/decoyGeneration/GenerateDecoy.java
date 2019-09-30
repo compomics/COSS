@@ -24,19 +24,20 @@ import java.io.IOException;
  */
 public abstract class GenerateDecoy {
 
-    protected final File file;
+    protected File file;
     // protected final UpdateListener lstnr;
     protected File decoyFile;
     protected SpectraReader specReader;
     protected SpectraWriter specWriter;
     protected List<IndexKey> indxList;
-    
+    protected double fragTol;
     protected org.apache.log4j.Logger log;
 
-    public GenerateDecoy(File f, org.apache.log4j.Logger lg) throws IOException {
+    public GenerateDecoy(File f, double fragTol, org.apache.log4j.Logger lg) throws IOException {
         this.log = lg;
         this.file = f;
         set_spectrum_ReadWrite();
+        this.fragTol=fragTol;
         // this.lstnr=lr;
     }
     
