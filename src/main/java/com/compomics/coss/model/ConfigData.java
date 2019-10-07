@@ -1,8 +1,8 @@
 package com.compomics.coss.model;
 
-import com.compomics.ms2io.IndexKey;
+import com.compomics.ms2io.model.IndexKey;
 import java.io.File;
-import com.compomics.ms2io.SpectraReader;
+import com.compomics.ms2io.controller.SpectraReader;
 import java.util.List;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 

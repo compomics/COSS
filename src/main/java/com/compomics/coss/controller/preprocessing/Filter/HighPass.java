@@ -5,8 +5,8 @@
  */
 package com.compomics.coss.controller.preprocessing.Filter;
 
-import com.compomics.ms2io.Peak;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Peak;
+import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
 import java.util.List;
 

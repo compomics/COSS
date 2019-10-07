@@ -6,14 +6,11 @@
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.Peak;
+import com.compomics.ms2io.model.Peak;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  *
  * @author Genet
@@ -38,10 +35,6 @@ public class MeanSquareError extends Score {
      */
     @Override
     public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenA, int lenB, int topN) {
-
-        double probability = (double) topN / (double) confData.getMassWindow();
-        int totalN = 0;
-        
         Map<String, ArrayList<Peak>> map = new TreeMap<>();
         ArrayList<Peak> mPeaksExp;
         ArrayList<Peak> mPeaksLib;
@@ -49,7 +42,7 @@ public class MeanSquareError extends Score {
             map = prepareData(expSpec, libSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
-            totalN=lenA;
+           
 
         } else {
 
@@ -60,23 +53,14 @@ public class MeanSquareError extends Score {
             map = prepareData(libSpec, expSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
-            totalN=lenB;
+         
 
         }
 
         matchedNumPeaks = mPeaksExp.size();
-        double intScore=meanSquareError(mPeaksExp, mPeaksLib);
-        
-//        double probability_part=0;
-//        try {
-//            probability_part = calculateCumulativeBinominalProbability(totalN, probability);
-//        } catch (Exception ex) {
-//            Logger.getLogger(MeanSquareError.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        double log_probability = -10 * (Math.log10(probability_part));
-//                     
-//        double finalScore = log_probability * intScore;
-        
+        sumMatchedIntExp = getSumIntensity(mPeaksExp);
+        sumMatchedIntLib = getSumIntensity(mPeaksLib);
+        double intScore = meanSquareError(mPeaksExp, mPeaksLib);  
         return (intScore);
     }
 
@@ -87,9 +71,6 @@ public class MeanSquareError extends Score {
 
             double err = v1.get(a).getIntensity() - v2.get(a).getIntensity();
             sumSqrError += err * err;
-
-            sumMatchedIntExp += v1.get(a).getIntensity();
-            sumMatchedIntLib += v2.get(a).getIntensity();
         }
 
         double mse = Double.MAX_VALUE;

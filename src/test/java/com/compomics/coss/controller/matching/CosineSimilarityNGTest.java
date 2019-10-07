@@ -1,14 +1,14 @@
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.Peak;
+import com.compomics.ms2io.model.Peak;
 import java.util.ArrayList;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import com.compomics.ms2io.MgfReader;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.controller.MgfReader;
+import com.compomics.ms2io.model.Spectrum;
 import java.io.File;
 
 /**

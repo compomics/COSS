@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.compomics.coss.controller.decoyGeneration;
 
 import java.io.File;
@@ -10,9 +15,9 @@ import org.testng.annotations.Test;
  *
  * @author Genet
  */
-public class FixedMzShiftNGTest {
+public class ReverseSequenceNGTest {
     
-    public FixedMzShiftNGTest() {
+    public ReverseSequenceNGTest() {
     }
 
     @BeforeClass
@@ -24,16 +29,17 @@ public class FixedMzShiftNGTest {
     }
 
     /**
-     * Test of generate method, of class FixedMzShift.
+     * Test of generate method, of class ReverseSequence.
      */
     @Test
     public void testGenerate() {
-        System.out.println("generate");
-//        FixedMzShift instance = new FixedMzShift(new File("testData\testfile.mgf"), null);
-//        File expResult = instance.generate();
+//        System.out.println("generate");
+//        ReverseSequence instance = null;
+//        File expResult = null;
 //        File result = instance.generate();
 //        assertEquals(result, expResult);
-//       
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
     
 }

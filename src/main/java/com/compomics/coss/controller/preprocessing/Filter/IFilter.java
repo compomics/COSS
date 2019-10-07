@@ -15,7 +15,7 @@
  */
 package com.compomics.coss.controller.preprocessing.Filter;
 
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Spectrum;
 
 
 

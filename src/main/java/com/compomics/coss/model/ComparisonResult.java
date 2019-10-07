@@ -1,6 +1,6 @@
 package com.compomics.coss.model;
 
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Spectrum;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.compomics.coss.controller.preprocessing.Transformation;
 
-import com.compomics.ms2io.MgfReader;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.controller.MgfReader;
+import com.compomics.ms2io.model.Spectrum;
 import java.io.File;
 import java.util.ArrayList;
 import static org.testng.Assert.*;

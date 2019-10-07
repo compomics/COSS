@@ -12,7 +12,7 @@ import com.compomics.coss.controller.matching.MeanSquareError;
 import com.compomics.coss.controller.matching.Score;
 import com.compomics.coss.controller.matching.TestScore;
 import com.compomics.coss.model.TheDataUnderComparison;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Spectrum;
 import com.compomics.coss.model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.model.ConfigData;

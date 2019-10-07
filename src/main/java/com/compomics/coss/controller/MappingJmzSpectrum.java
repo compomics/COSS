@@ -3,8 +3,8 @@
  */
 package com.compomics.coss.controller;
 
-import com.compomics.ms2io.Peak;
-import com.compomics.ms2io.Spectrum;
+import com.compomics.ms2io.model.Peak;
+import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -48,7 +48,7 @@ public class MappingJmzSpectrum {
             Map.Entry mapping = (Map.Entry) entriesIterator.next();
             mz = (double) mapping.getKey();
             intensity = (double) mapping.getValue();
-            peakList.add(new Peak(mz, intensity));
+            peakList.add(new Peak(mz, intensity, ""));
 
         }
 

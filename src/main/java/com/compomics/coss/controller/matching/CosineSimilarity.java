@@ -1,13 +1,11 @@
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.Peak;
+import com.compomics.ms2io.model.Peak;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -34,8 +32,6 @@ public class CosineSimilarity extends Score {
     @Override
     public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenA, int lenB, int topN) {
 
-         double probability = (double) topN / (double) confData.getMassWindow();
-         int totalN=0;
         Map<String, ArrayList<Peak>> map = new TreeMap<>();
         ArrayList<Peak> mPeaksExp;
         ArrayList<Peak> mPeaksLib;
@@ -43,7 +39,7 @@ public class CosineSimilarity extends Score {
             map = prepareData(expSpec, libSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
-            totalN=lenA;
+      
 
         } else {
 
@@ -54,11 +50,13 @@ public class CosineSimilarity extends Score {
             map = prepareData(libSpec, expSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
-            totalN=lenB;
+     
 
         }
 
         matchedNumPeaks = mPeaksExp.size();
+        sumMatchedIntExp = getSumIntensity(mPeaksExp);
+        sumMatchedIntLib =getSumIntensity(mPeaksLib);
 
         double intScore=-1;
         try{
@@ -67,6 +65,7 @@ public class CosineSimilarity extends Score {
             System.out.println(ex.toString());
         }
         
+<<<<<<< HEAD
         double probability_part=0;
         try {
             probability_part = calculateCumulativeBinominalProbability(totalN, probability);
@@ -79,6 +78,10 @@ public class CosineSimilarity extends Score {
        // double finalScore = intScore * matchedNumPeaks;// (matchedNumPeaks/filteredNumPeaksExp); //score controlled by number of matched peaks
         
         return (finalScore);// (intScore);
+=======
+        double finalScore=intScore*matchedNumPeaks;        
+        return finalScore;
+>>>>>>> maintainance
     }
 
     private double cosineScore(List<Peak> v1, List<Peak> v2) { // parameters vector1 and vector2
@@ -91,16 +94,13 @@ public class CosineSimilarity extends Score {
             for (int a = 0; a < matchedNumPeaks; a++) {
                 productSum += v1.get(a).getIntensity() * v2.get(a).getIntensity(); //summation(vector1*vector2)
                 v1SquareSum += v1.get(a).getIntensity() * v1.get(a).getIntensity();//summation of squares of vector1
-                v2SquareSum += v2.get(a).getIntensity() * v2.get(a).getIntensity();// summation of squares of vector2
-
-                sumMatchedIntExp += v1.get(a).getIntensity();
-                sumMatchedIntLib += v2.get(a).getIntensity();
+                v2SquareSum += v2.get(a).getIntensity() * v2.get(a).getIntensity();// summation of squares of vector2                
             }
 
             double sqrtV1 = Math.sqrt(v1SquareSum);
             double sqrtV2 = Math.sqrt(v2SquareSum);
             score = productSum / (sqrtV1 * sqrtV2);
-            //score*= (matchedNumPeaks*matchedNumPeaks);
+
         }
         return score;
     }

@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.controller;
 
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.IndexKey;
-import com.compomics.ms2io.Indexer;
+import com.compomics.ms2io.model.IndexKey;
+import com.compomics.ms2io.controller.Indexer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -16,9 +11,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import com.compomics.ms2io.MgfReader;
-import com.compomics.ms2io.MspReader;
-import com.compomics.ms2io.SpectraReader;
+import com.compomics.ms2io.controller.MgfReader;
+import com.compomics.ms2io.controller.MspReader;
+import com.compomics.ms2io.controller.SpectraReader;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

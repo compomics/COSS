@@ -1,10 +1,10 @@
 package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
-import com.compomics.ms2io.Peak;
+import com.compomics.ms2io.model.Peak;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +14,10 @@ import java.util.logging.Logger;
  * @author Genet
  */
 public class MSRobin extends Score {
+
+    Map<String, ArrayList<Peak>> map = new HashMap<>(1000);
+    ArrayList<Peak> mPeaksExp;
+    ArrayList<Peak> mPeaksLib;
 
     /**
      * @param confData
@@ -34,36 +38,46 @@ public class MSRobin extends Score {
     @Override
     public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenA, int lenB, int topN) {
 
+        double finalScore = 0;
         double intensity_part = 0;
         double probability = (double) topN / (double) confData.getMassWindow();
 
-        // double[] results;
-        Map<String, ArrayList<Peak>> map = new TreeMap<>();
-        int totalN = 0;
-        ArrayList<Peak> mPeaksExp;
-        ArrayList<Peak> mPeaksLib;
-        if (lenB < lenA) {
-            map = prepareData(expSpec, libSpec);
-            mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
-            mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
-            totalN = lenA;
+        synchronized (this) {
+            int totalN = 0;
+            if (lenB < lenA) {
+                map = prepareData(expSpec, libSpec);
+                mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
+                mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
+                totalN = lenA;
 
-        } else {
+            } else {
 
+                double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
+                sumTotalIntExp = sumTotalIntLib;
+                sumTotalIntLib = temp;
+
+                map = prepareData(libSpec, expSpec);
+                totalN = lenB;
+                mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
+                mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
+
+            }
+
+<<<<<<< HEAD
             double temp = sumFilteredIntExp;//swap value if order if spetrua given is reversed
             sumFilteredIntExp = sumFilteredIntLib;
             sumFilteredIntLib = temp;
+=======
+            matchedNumPeaks = mPeaksExp.size();
+            sumMatchedIntExp = getSumIntensity(mPeaksExp);
+            sumMatchedIntLib = getSumIntensity(mPeaksLib);
+>>>>>>> maintainance
 
-            map = prepareData(libSpec, expSpec);
-            totalN = lenB;
-            mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
-            mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
+            intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
+            finalScore = getfinalScore(totalN, probability, intensity_part);
 
         }
 
-        matchedNumPeaks = mPeaksExp.size();
-        intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
-        double finalScore = getfinalScore(totalN, probability, intensity_part);
         return finalScore;
     }
 
@@ -114,21 +128,14 @@ public class MSRobin extends Score {
         double alpha_alpha = 0,
                 beta_beta = 0,
                 alpha_beta = 0;
-        double expSpecMatchedInt = 0;
-        double libSpecMatchedInt = 0;
 
         for (int k = 0; k < matchedNumPeaks; k++) {
-            alpha_alpha += mPeaksExp.get(k).getIntensity() * mPeaksExp.get(k).getIntensity();
-            beta_beta += mPeaksLib.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
+            //division by sumIntensities: normalizing peaks
+            alpha_alpha += (mPeaksExp.get(k).getIntensity() * mPeaksExp.get(k).getIntensity());
+            beta_beta += (mPeaksLib.get(k).getIntensity() * mPeaksLib.get(k).getIntensity());
             alpha_beta += mPeaksExp.get(k).getIntensity() * mPeaksLib.get(k).getIntensity();
 
-            expSpecMatchedInt += mPeaksExp.get(k).getIntensity();
-            libSpecMatchedInt += mPeaksLib.get(k).getIntensity();
-
         }
-
-        sumMatchedIntExp = expSpecMatchedInt;
-        sumMatchedIntLib = libSpecMatchedInt;
 
         if (matchedNumPeaks != 0) {
             int_part = alpha_beta / (Math.sqrt(alpha_alpha * beta_beta));
@@ -136,7 +143,5 @@ public class MSRobin extends Score {
 
         return int_part;
     }
-
-  
 
 }
