@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  */
 public class ReverseSequence extends GenerateDecoy {
     
-    public ReverseSequence(File f, double fragTol, org.apache.log4j.Logger log) throws IOException {
+    public ReverseSequence(File f, org.apache.log4j.Logger log) throws IOException {
         
-        super(f,fragTol, log);
+        super(f,log);
     }
 
     @Override

@@ -76,7 +76,10 @@ $java -jar COSS-X.Y.jar
 Make sure Java is installed on your machine.*
 	
 - Parameter Setting: Select and fill all required parameters.
-- Decoy generation: It is recommended to add decoy spectra to your spectral library for result validation. If your library does not contain decoy spectra, these can be added with COSS. COSS has two algorithms to generate decoy spectra. Click the GenerateDecoy menu and select the algorithm to generate the decoy spectra (which will be equal in size to your spectra library) and concatenate the decoys to your library.
+- Decoy generation: It is recommended to add decoy spectra to your spectral library for result validation. You can generate decoy library spectra using COSS builtin decoy generation. COSS has two algorithms to generate decoy spectra, reverse sequence and random sequence techniques. Click the GenerateDecoy menu and select the algorithm to generate the decoy spectra (which will be equal in size to your spectra library) and concatenate the decoys to your library. 
+
+*Note: make sure the spectral library is annotated before generating decoy library, if not you can use spectrum annotator provided in COSS.
+
 - Configuring File Reader: Click "Config Spec. Reader". At this time, the system disables the "Configure Reader" and "Start Seach" buttons until it is finished with the configuration. 
 - Searching: Click "Start Searching", COSS starts searching and displays the status on the progress bar. The left-hand side window shows information of the query file. It also visualizes the spectra.
 - Result: To see the results, click on the Result tab from the main window. The upper table lists the experimental spectra while the lower table lists the top 10 matched spectra for the selected experimental spectrum. An interactive spectrum comparison view is presented at the bottom with the selected experimental spectrum (red) mirrored with the selected matched library spectrum (blue).
@@ -84,19 +87,25 @@ Make sure Java is installed on your machine.*
 ### CLI
 Command line searching is possible in COSS with the following commands:
 ```
-java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile    
+java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity)   
 ```
 or                    
 ```
-java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) 
+java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) 
 ```
 or
 ```
-java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
 ```
-Decoy spectra can be generated and appended with the following command:
+Decoy spectra can be generated and appended with the following command: dV- reverse, dR- random
 ```
-java -jar COSS-X.Y.jar -d librarySpectraFile
+java -jar COSS-X.Y.jar -dV librarySpectraFile
+```
+
+Spectrum annotation can be done using the following command:
+
+```
+java -jar COSS-X.Y.jar -a librarySpectraFile fragment_tolerance
 ```
 *X.Y stands for the version number (eg. COSS-1.1.jar)  
 Make sure Java is installed on your machine.*

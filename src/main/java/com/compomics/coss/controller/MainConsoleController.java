@@ -1,6 +1,7 @@
 package com.compomics.coss.controller;
 
 import com.compomics.coss.controller.decoyGeneration.*;
+import com.compomics.coss.controller.SpectrumAnnotation.Annotation;
 import com.compomics.coss.model.ComparisonResult;
 import com.compomics.coss.model.ConfigHolder;
 import java.io.File;
@@ -9,6 +10,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.compomics.coss.model.ConfigData;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 
 /**
  * Controller class to run the project from command line
@@ -37,8 +40,8 @@ public class MainConsoleController implements UpdateListener {
         try {
 
             int lenArgs = args.length;
-            String arg1=args[0];
-            if(lenArgs <= 1 || lenArgs > 5){                
+            String arg1 = args[0];
+            if (lenArgs <= 1 || lenArgs > 5) {
                 System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
                 System.out.println("\n\nUsage: \n");
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile \n");
@@ -46,29 +49,44 @@ public class MainConsoleController implements UpdateListener {
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
                 System.out.println("OR\n");
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge \n");
-                System.out.println("OR decoy spectra can be generated and appended to the given library file usint the command below\n");
+                System.out.println("OR decoy spectra can be generated and appended to the given library file using the command below\n");
                 System.out.println("java -jar COSS-X.Y.jar -d librarySpectraFile \n");
-                    
+                System.out.println("OR spectra library file can be annotated using the command below\n");
+                System.out.println("java -jar COSS-X.Y.jar -a librarySpectraFile \n");
+
                 Runtime.getRuntime().exit(0);
-               
+
             }
-            
-            if( lenArgs == 2 && (arg1.equals("-dF") || arg1.equals("-dR"))){
+
+            if (lenArgs == 2 && (arg1.startsWith("-d"))) {
                 //Generate decoy library and exit
-               
-                if(arg1.equals("-dF")){// fixed mz shift of peaks
+
+                if (arg1.equals("-dV")) {// reverse sequence decoy generateion
                     System.out.println("Generating decoy library with fixed mz value shift");
                     generateDeoy(0, args[1]);
                     Runtime.getRuntime().exit(0);
-                    
-                }else if(arg1.equals("-dR")){ //shuffle mz and random intensity 
+
+                } else if (arg1.equals("-dR")) { //random sequence 
                     System.out.println("Generating decoy library with shuffle mz value and random intensity");
                     generateDeoy(1, args[1]);
                     Runtime.getRuntime().exit(0);
                 }
+
+            } else if (lenArgs == 3 && (arg1.startsWith("-a"))) {
+
+                System.out.println("Annotating spectral library file...");
+                double fragTol=0.5;
+                try{
+                    fragTol= Double.parseDouble(args[2]);
+                }catch(NumberFormatException ex){
+                    LOG.info("check the fragment tolearnce input: " + ex.toString());
+                }
                 
+                
+                annotateLibrary(fragTol, args[1]);
+                Runtime.getRuntime().exit(0);
+
             }
-          
 
             configData = new ConfigData();
 
@@ -126,46 +144,38 @@ public class MainConsoleController implements UpdateListener {
         configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance"));
         configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
 
-        if(lenArgs == 3) {
+        if (lenArgs == 3) {
             int matching_algorithm = Integer.parseInt(ipArgs[2]);
             if (matching_algorithm == 0 || matching_algorithm == 1) {
                 configData.setScoringFunction(matching_algorithm);
-            }else{
+            } else {
                 System.out.print("scoring function input error: 0: for MsRobin, and 1 for Cosine similarity");
             }
-            
-        }
 
-        else if(lenArgs == 4) {
+        } else if (lenArgs == 4) {
             double pcTol = Double.parseDouble(ipArgs[3]);
             if (pcTol < 0) {
                 System.out.print("Make sure the precursor tolerance value is correct. \n it should be given in ppm");
-            }else{
+            } else {
                 configData.setPrecTol(pcTol);
             }
-            
 
-        }
-
-        else if(lenArgs == 5) {
+        } else if (lenArgs == 5) {
             double frTol = Double.parseDouble(ipArgs[4]);
             if (frTol > 0) {
                 System.out.print("Make sure the fragment tolerance value is correct. \n it should be given in Da");
-            }else{
-               configData.setPrecTol(frTol); 
+            } else {
+                configData.setPrecTol(frTol);
             }
-            
 
-        }
-
-        else if(lenArgs == 6) {
+        } else if (lenArgs == 6) {
             double charge = Double.parseDouble(ipArgs[5]);
             if (charge < 0) {
                 System.out.print("invalid charge value, default charge value is set instead");
                 Runtime.getRuntime().exit(0);
-            }else{
+            } else {
                 configData.setPrecTol(charge);
-            }           
+            }
 
         }
 
@@ -187,7 +197,7 @@ public class MainConsoleController implements UpdateListener {
         if (removePrecursor == 1) {
             removePCM = true;
         }
-      
+
         configData.applyFilter(applyFilter);
         configData.setFilterType(useFilter);
         configData.setCutOff(ConfigHolder.getInstance().getInt("cut.off"));
@@ -285,16 +295,16 @@ public class MainConsoleController implements UpdateListener {
         System.out.print("\b\b\b\b\b\b\b\b" + Integer.toString(v) + "%" + "  ");
 
     }
-    
-     /**
+
+    /**
      * generate decoy library and append on the given spectral library file
      *
-     * @param i : type of decoy generation technique; 0 if fixed mz value shift
-     * 1 is random mz and intensity change of each peak in the spectrum
+     * @param i : type of decoy generation technique; 0 if reverse sequence 1 is
+     * random sequence
      * @param library path to library file
      */
     public void generateDeoy(int i, String library) throws IOException {
-        
+
         if ("".equals(library)) {
             System.out.println("Validation errors: No spectra library has given");
 
@@ -304,8 +314,43 @@ public class MainConsoleController implements UpdateListener {
 
             File libFile = new File(library);
             GenerateDecoy gn;
-            gn = new ReverseSequence(libFile, 0.05, LOG);
+            if (i == 0) {
+                gn = new ReverseSequence(libFile, LOG);
+            } else {
+                gn = new RandomSequene(libFile, LOG);
+            }
             gn.generate();
+
+        }
+
+    }
+
+    /**
+     * this function annotates a, b and y ions
+     *
+     * @param fragTol fragment tolerance to use
+     * @param library library spectra to be annotated
+     * @throws IOException
+     */
+    public void annotateLibrary(double fragTol, String library) throws IOException {
+
+        if ("".equals(library)) {
+            System.out.println("Validation errors: No spectra library has given");
+
+        } else if (!library.endsWith(".mgf") && !library.endsWith(".msp")) {
+            System.out.println("Validation errors: given spectral library file format is not supported");
+        } else {
+
+            try {
+                File libFile = new File(library);
+                Annotation ann = new Annotation(libFile, fragTol);
+
+                ann.annotateSpecFile(false);
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(MainConsoleController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                java.util.logging.Logger.getLogger(MainConsoleController.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
 
