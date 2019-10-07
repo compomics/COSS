@@ -23,8 +23,8 @@ public class FixedMzShift extends GenerateDecoy {
 
     File mzShift = null;
 
-    public FixedMzShift(File f, double fragTol, org.apache.log4j.Logger log) throws IOException {
-        super(f, fragTol, log);
+    public FixedMzShift(File f, org.apache.log4j.Logger log) throws IOException {
+        super(f, log);
     }
 
     @Override

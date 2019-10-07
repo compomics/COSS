@@ -84,7 +84,7 @@ public class TempClass {
 //            }
 
 //            
-            GenerateDecoy gen = new ReverseSequence(file_lib, 0.05,LOG );
+            GenerateDecoy gen = new ReverseSequence(file_lib, LOG );
             gen.generate();
             
             

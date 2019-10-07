@@ -18,8 +18,8 @@ import java.util.logging.Logger;
  */
 public class RandomSequene extends GenerateDecoy {
     
-    public RandomSequene(File f, double  fragTol, org.apache.log4j.Logger log) throws IOException {
-        super(f, fragTol, log);
+    public RandomSequene(File f, org.apache.log4j.Logger log) throws IOException {
+        super(f, log);
     }
 
     @Override

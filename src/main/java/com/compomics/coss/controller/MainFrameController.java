@@ -1170,17 +1170,17 @@ public class MainFrameController implements UpdateListener {
             GenerateDecoy gen = null;
             switch (decoyType) {
                 case 0:
-                    gen = new ReverseSequence(libFile, 0.05, LOG);
+                    gen = new ReverseSequence(libFile, LOG);
                     gen.generate();
                     break;
 
                 case 1:
-                    gen = new RandomSequene(libFile, 0.05, LOG);
+                    gen = new RandomSequene(libFile, LOG);
                     gen.generate();
                     break;
 
                 case 2:
-                    gen = new FixedMzShift(libFile, 0.05, LOG);
+                    gen = new FixedMzShift(libFile, LOG);
                     gen.generate();
                     break;
 

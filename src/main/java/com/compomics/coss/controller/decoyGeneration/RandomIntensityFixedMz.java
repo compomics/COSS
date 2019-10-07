@@ -25,8 +25,8 @@ public class RandomIntensityFixedMz extends GenerateDecoy {
 
     File randomIntShift;
 
-    public RandomIntensityFixedMz(File f, double fragTol, org.apache.log4j.Logger log) throws IOException {
-        super(f,fragTol, log);
+    public RandomIntensityFixedMz(File f, org.apache.log4j.Logger log) throws IOException {
+        super(f, log);
     }
 
     @Override
