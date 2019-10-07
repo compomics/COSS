@@ -43,9 +43,9 @@ public class CosineSimilarity extends Score {
 
         } else {
 
-            double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
-            sumTotalIntExp = sumTotalIntLib;
-            sumTotalIntLib = temp;
+            double temp = sumFilteredIntExp;//swap value if order if spetrua given is reversed
+            sumFilteredIntExp = sumFilteredIntLib;
+            sumFilteredIntLib = temp;
 
             map = prepareData(libSpec, expSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
@@ -65,8 +65,23 @@ public class CosineSimilarity extends Score {
             System.out.println(ex.toString());
         }
         
+<<<<<<< HEAD
+        double probability_part=0;
+        try {
+            probability_part = calculateCumulativeBinominalProbability(totalN, probability);
+        } catch (Exception ex) {
+            Logger.getLogger(CosineSimilarity.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        double log_probability = -10 * (Math.log10(probability_part));
+                     
+        double finalScore = intScore * log_probability ;  //score controlled by probability of mathced peaks
+       // double finalScore = intScore * matchedNumPeaks;// (matchedNumPeaks/filteredNumPeaksExp); //score controlled by number of matched peaks
+        
+        return (finalScore);// (intScore);
+=======
         double finalScore=intScore*matchedNumPeaks;        
         return finalScore;
+>>>>>>> maintainance
     }
 
     private double cosineScore(List<Peak> v1, List<Peak> v2) { // parameters vector1 and vector2
