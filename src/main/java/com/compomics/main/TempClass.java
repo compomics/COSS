@@ -31,20 +31,6 @@ public class TempClass {
     /**
      * @param args the command line arguments
      */
-<<<<<<< HEAD
-    public static void main(String[] args) {
-        try {
-            File file_lib=new File("C:/1_pandi_part/Adult_Spinalcord_Gel_Elite_67_f01_piroCAT.mgf");
-            File file_decoy=new File("C:/human_hcd_itraq/Velos005137_Pirococus.mgf");
-
-            System.out.println("Appending decoy to library");
-            MergeFiles m = new MergeFiles(file_lib, file_decoy);
-            m.Merge();
-            System.out.println("\nDecoy spectra appended to file " + file_lib.getName());
-        } catch (InterruptedException ex) {
-            System.out.println(ex.toString());
-        }
-=======
     public static void main(String[] args) throws IOException {
         //try {
             
@@ -84,7 +70,7 @@ public class TempClass {
 //            }
 
 //            
-            GenerateDecoy gen = new ReverseSequence(file_lib, LOG );
+            GenerateDecoy gen = new ReverseSequence(file_lib,LOG );
             gen.generate();
             
             
@@ -102,7 +88,6 @@ public class TempClass {
 //        } catch (Exception ex) {
 //            java.util.logging.Logger.getLogger(TempClass.class.getName()).log(Level.SEVERE, null, ex);
 //        }
->>>>>>> maintainance
     }
 
 }
