@@ -118,16 +118,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             numDecoy++;
                         }
 
-<<<<<<< HEAD
-                        double mInt_exp = 0;
-                        double mInt_lib = 0;
-                        double fInt_exp = 0;
-                        double fInt_lib = 0;
-                        int mNumPeaks = 0;                       
-                        int filteredNumPeaks_exp = 0;
-                        int filteredNumPeaks_lib = 0;
-                        double tempScore =  -1;
-=======
                         double mIntA = 0;
                         double mIntB = 0;
                         double tIntA = 0;
@@ -138,7 +128,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         double tempScore = -1;
 
                         
->>>>>>> maintainance
 
                         for (int topN = 1; topN < 11; topN++) { // highest score from 1 - 10 peaks selection
                             //int topN=10;    //only for the top 10 peaks
@@ -149,69 +138,24 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                             int lenA = selectedPeaks_exp.size();
                             int lenB = selectedPeaks_lib.size();
-<<<<<<< HEAD
-                            algorithm.setSumFilteredIntExp(algorithm.calculateTotalIntensity(selectedPeaks_exp));
-                            algorithm.setSumFilteredIntLib(algorithm.calculateTotalIntensity(selectedPeaks_lib));
-                            
-                            algorithm.setNumFilteredPeaksExp(lenA);
-                            algorithm.setNumFilteredPeaksLib(lenB);
-                            
-                            double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
-
-                            
-                            selectedPeaks_exp.clear();
-                            selectedPeaks_lib.clear();
-=======
                             algorithm.setSumTotalIntExp(algorithm.getSumIntensity(selectedPeaks_exp));
                             algorithm.setSumTotalIntLib(algorithm.getSumIntensity(selectedPeaks_lib));
 
                             double score = algorithm.calculateScore(selectedPeaks_exp, selectedPeaks_lib, lenA, lenB, topN);
 
->>>>>>> maintainance
 
                             if (score > tempScore) { //tempScore<score for MSRobin and cosine similarity
                                 tempScore = score;
-                                mInt_exp = algorithm.getSumMatchedIntExp(); //matched intensity sum of experimental spectrum
-                                mInt_lib = algorithm.getSumMatchedIntLib(); //matched intensity  sum of library spectrum
-                                fInt_exp = algorithm.getSumFilteredIntExp(); // filtered intensity sum of experimental spectrum
-                                fInt_lib = algorithm.getSumFilteredIntLib();  //filtered intensity sum of experimental spectrum
-                                filteredNumPeaks_exp = lenA;
-                                filteredNumPeaks_lib = lenB;
+                                mIntA = algorithm.getSumMatchedIntExp();
+                                mIntB = algorithm.getSumMatchedIntLib();
+                                tIntA = algorithm.getSumTotalIntExp();
+                                tIntB = algorithm.getSumTotalIntLib();
+                                tempLenA = lenA;
+                                tempLenB = lenB;
                                 mNumPeaks = algorithm.getNumMatchedPeaks();
-                                
                             }
 
                             scores.add(score);
-<<<<<<< HEAD
-                        }
-                        double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
-                        finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
-                      
-//                            if(finalScore>maxScore){
-//                                maxScore=finalScore;
-//                            }
-                       // if (finalScore > 0) {
-                            MatchedLibSpectra mSpec = new MatchedLibSpectra();
-                            mSpec.setScore(finalScore);//(Collections.max(scores));
-                            mSpec.setSequence(sp2.getSequence());
-                            if (sp2.getTitle().contains("decoy") || sp2.getProtein().contains("DECOY")) {
-                                mSpec.setSource(1);
-                            } else {
-                                mSpec.setSource(0);
-                            }
-                            mSpec.setNumMathcedPeaks(mNumPeaks);
-                            mSpec.setSpectrum(sp2);
-                            mSpec.setSumFilteredIntensity_Exp(fInt_exp);
-                            mSpec.setSumFilteredIntensity_Lib(fInt_lib);
-                            mSpec.setSumMatchedInt_Exp(mInt_exp);
-                            mSpec.setSumMatchedInt_Lib(mInt_lib);
-                            mSpec.settotalFilteredNumPeaks_Exp(filteredNumPeaks_exp);
-                            mSpec.settotalFilteredNumPeaks_Lib(filteredNumPeaks_lib);
-                            specResult.add(mSpec);
-
-                       // }
-
-=======
 
                         }
                         double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
@@ -236,7 +180,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         specResult.add(mSpec);
 
                         // }
->>>>>>> maintainance
                     } catch (Exception ex) {
 
                         Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, "\n Description : " + ex);
@@ -288,33 +231,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
             // specCount++;
         }
 
-<<<<<<< HEAD
-        try {
-            if (oos != null) {
-                oos.close();
-            }
-            if (fos != null) {
-                fos.close();
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "closing file writing" + ex);
-        }
-
-        List<ComparisonResult> simResult = null;
-        if (!cancelled && !this.procucer.isCancelled()) {
-            System.out.print("\n search completed \n");
-
-            if (numDecoy == 0) {
-                log.info("No decoy spectra found to validate result");
-                confData.setDecoyAvailability(false);
-            }
-//            if (numDecoy < numTarget) {
-//                log.info("Number of decoy spectra is too small to validate result");
-//                confData.setDecoyAvailability(false);
-//            }
-            else {
-=======
 //        try {
 //            if (oos != null) {
 //                oos.close();
@@ -333,7 +249,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
             confData.setDecoyAvailability(false);
             if (numDecoy != 0) {
->>>>>>> maintainance
                 confData.setDecoyAvailability(true);
             }
 

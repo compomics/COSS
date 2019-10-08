@@ -63,15 +63,9 @@ public class MSRobin extends Score {
 
             }
 
-<<<<<<< HEAD
-            double temp = sumFilteredIntExp;//swap value if order if spetrua given is reversed
-            sumFilteredIntExp = sumFilteredIntLib;
-            sumFilteredIntLib = temp;
-=======
             matchedNumPeaks = mPeaksExp.size();
             sumMatchedIntExp = getSumIntensity(mPeaksExp);
             sumMatchedIntLib = getSumIntensity(mPeaksLib);
->>>>>>> maintainance
 
             intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
             finalScore = getfinalScore(totalN, probability, intensity_part);
