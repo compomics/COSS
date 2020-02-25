@@ -27,6 +27,14 @@ COSS supports the following spectral file format for query (experimental) spectr
  
 Accepted spectral library file formats are mgf and msp.
 
+## Search parameters
+ - precursor mass: precursor mass error tolerance (in ppm/Da.)
+ - fragment tolerance: fragment mass error tolerance (in ppm/Da.)
+ - Max. precursor charge: maximum charge of precursor
+ 
+## Preprocessing
+ - This section of the implementation is designed to have multiple options for best search results. Research is still going on and at this time COSS is set to default values.
+
 [Go to top of page](#coss)
 
 ---

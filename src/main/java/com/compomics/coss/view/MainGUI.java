@@ -102,7 +102,7 @@ public class MainGUI extends JFrame {
         JMenuItem fixedMz = new JMenuItem("Fixed mz shift");
         JMenuItem randomMz = new JMenuItem("Random mz shift");
         JMenuItem annotate = new JMenuItem("Annotate File");
-        JMenuItem mergeFiles = new JMenuItem("Merge files");
+       //JMenuItem mergeFiles = new JMenuItem("Merge files");
 
         export.add(toExcel);
         export.add(toCSV);
@@ -113,10 +113,10 @@ public class MainGUI extends JFrame {
         decoyMenu.add(fixedMz);
         decoyMenu.add(randomMz);
         decoyMenu.add(annotate);
-        decoyMenu.add(mergeFiles);
+        //decoyMenu.add(mergeFiles);
         
-        fixedMz.setEnabled(false);
-        randomMz.setEnabled(false);
+        //fixedMz.setEnabled(false);
+        //randomMz.setEnabled(false);
         fileMenu.add(open);
         fileMenu.add(save);
         fileMenu.add(importResult);
@@ -252,9 +252,9 @@ public class MainGUI extends JFrame {
             control.annotateSpectrumFile(false);
         });
         
-        mergeFiles.addActionListener((ActionEvent ev) -> {
-            control.mergeFiles();
-        });
+//        mergeFiles.addActionListener((ActionEvent ev) -> {
+//            control.mergeFiles();
+//        });
         
         randomSequence.addActionListener((ActionEvent ev) -> {
             control.generateDeoy(1);

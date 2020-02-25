@@ -61,8 +61,19 @@ public class ReverseSequence extends GenerateDecoy {
         }
         
         specWriter.closeWriter();
-        executor.shutdown();    
+        executor.shutdown();  
         
+
+            MergeFiles merg = new MergeFiles(file, decoyFile);
+            try {
+                merg.Merge();
+                decoyFile.delete();
+            } catch (InterruptedException ex) {
+                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            } finally {
+
+            }
+
     
     }
     

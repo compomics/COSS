@@ -67,7 +67,7 @@ public class Annotator implements Callable<Spectrum> {
                  */
                 delta =Math.abs(mass- Pk_mass);                
                 if (delta <= this.fragTol){
-                    p.setPeakAnnotation(frag.getKey().toString());
+                    p.setPeakAnnotation("\"" + frag.getKey().toString() +"\"");
                     break;
                 }
                
@@ -81,14 +81,14 @@ public class Annotator implements Callable<Spectrum> {
                 charge1_mass = mass + 1;   
                 deltaZ1 =  Math.abs(charge1_mass- Pk_mass);
                 if (deltaZ1<=this.fragTol) {
-                    p.setPeakAnnotation(frag.getKey().toString() + "^1");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString() + "^1" +"\"");
                     break;
                 }
                 
                 charge2_mass = (charge1_mass + 1)/2.0;
                 deltaZ2 =  Math.abs(charge2_mass-Pk_mass);
                  if (deltaZ2 <= this.fragTol) {                    
-                    p.setPeakAnnotation(frag.getKey() + "^2");
+                    p.setPeakAnnotation( "\"" + frag.getKey().toString()+ "^2" +"\"");
                     break;                   
                 }
                                  
@@ -103,11 +103,11 @@ public class Annotator implements Callable<Spectrum> {
                 deltaH2O_ = Math.abs(H2O_loss_mass- Pk_mass);
                 deltaNH3_ = Math.abs(NH3_loss_mass - Pk_mass);
                 if (deltaH2O_ <= this.fragTol) {
-                    p.setPeakAnnotation(frag.getKey().toString() + "-H2O");
+                    p.setPeakAnnotation( "\"" + frag.getKey().toString() +"-H2O"+"\"" );
                     break;                   
 
                 } else if (deltaNH3_<=this.fragTol) {                    
-                    p.setPeakAnnotation(frag.getKey().toString() + "-NH3");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString()+ "-NH3" +"\"");
                     break;
                 } 
          
@@ -118,7 +118,7 @@ public class Annotator implements Callable<Spectrum> {
                 H2O_loss_1Z_mass = H2O_loss_mass + 1;
                 deltaH2O_1Z = Math.abs(H2O_loss_1Z_mass - Pk_mass);                
                 if (deltaH2O_1Z <= this.fragTol) {                    
-                    p.setPeakAnnotation(frag.getKey().toString() + "-H2O" + "^1");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString()+ "-H2O" + "^1" +"\"");
                     break;                   
 
                 } 
@@ -128,7 +128,7 @@ public class Annotator implements Callable<Spectrum> {
                 deltaH2O_2Z = Math.abs(H2O_loss_2Z_mass-Pk_mass);
                 if (deltaH2O_2Z <= this.fragTol) {
                     
-                    p.setPeakAnnotation(frag.getKey().toString() + "-H2O" + "^2");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString() + "-H2O" + "^2"+"\"" );
                     break;
                     
 
@@ -141,7 +141,7 @@ public class Annotator implements Callable<Spectrum> {
                 NH3_loss_1Z_mass = NH3_loss_mass + 1;
                 deltaNH3_1Z = Math.abs(NH3_loss_1Z_mass-Pk_mass);
                 if (deltaNH3_1Z <= this.fragTol) {                    
-                    p.setPeakAnnotation(frag.getKey().toString() + "-NH3" + "^1");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString()+ "-NH3" + "^1" +"\"" );
                     break;
                     
                 } 
@@ -150,7 +150,7 @@ public class Annotator implements Callable<Spectrum> {
                 deltaNH3_2Z = Math.abs(NH3_loss_2Z_mass-Pk_mass);
                 if (deltaNH3_2Z <= this.fragTol) {
                     
-                    p.setPeakAnnotation(frag.getKey().toString() + "-NH3" + "^2");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString()+ "-NH3" + "^2" +"\"" );
                     break;
                     
                 }
@@ -162,14 +162,14 @@ public class Annotator implements Callable<Spectrum> {
                 charge3_mass = (charge2_mass + 1)/3.0;
                 deltaZ3 = Math.abs(charge3_mass - Pk_mass);
                 if (deltaZ3 <= this.fragTol) {
-                    p.setPeakAnnotation(frag.getKey() + "^3");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString() + "^3" +"\"");
                     break;      
                 }
                 
                  H2O_loss_3Z_mass = (H2O_loss_2Z_mass+1)/3.0;   
                  deltaH2O_3Z = Math.abs(H2O_loss_3Z_mass-Pk_mass);
                  if (deltaH2O_3Z <= this.fragTol) {                    
-                    p.setPeakAnnotation(frag.getKey().toString() + "-H2O" + "^3");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString() + "-H2O" + "^3" +"\"");
                     break;
                 }
                  
@@ -178,7 +178,7 @@ public class Annotator implements Callable<Spectrum> {
                 deltaNH3_3Z = Math.abs(NH3_loss_3Z_mass - Pk_mass);
                 if (deltaNH3_3Z <= this.fragTol) {
                     
-                    p.setPeakAnnotation(frag.getKey().toString() + "-NH3" + "^3");
+                    p.setPeakAnnotation("\"" + frag.getKey().toString() + "-NH3" + "^3" +"\"");
                     break;
                     
                 }

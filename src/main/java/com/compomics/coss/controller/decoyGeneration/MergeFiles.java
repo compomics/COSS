@@ -55,12 +55,9 @@ public class MergeFiles {
 
             String line = br.readLine();
             int count=1;
-            while (line != null) {
-                if(line.startsWith("TITLE")){
-                    line=line+"_pirococus";
-                }
+            while (line != null) {                
+                bw.write(line); //wr.write(spectrum, bw);  
                 bw.write("\n");
-                bw.write(line); //wr.write(spectrum, bw);              
                 line = br.readLine();
 
                 if(line!=null && line.contains("Name")){

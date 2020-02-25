@@ -55,8 +55,9 @@ public abstract class GenerateDecoy {
 
         }
         String filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-        File f_decoy = new File(this.file.getParent(), filename + "_decoy.msp");
-        specWriter = new MspWriter(f_decoy);
+        decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
+        
+        specWriter = new MspWriter(decoyFile);
         
     }
 

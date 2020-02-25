@@ -167,10 +167,10 @@ public class MergeDecoy extends javax.swing.JFrame {
     
     private void btnMergeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMergeActionPerformed
         
-        libFile=this.txtLibfile.getText();
-        decoyFile=this.txtdecfile.getText();
-       // this.controller.mergeFile(libFile, decoyFile);
-        this.setVisible(false);
+//        libFile=this.txtLibfile.getText();
+//        decoyFile=this.txtdecfile.getText();
+//       // this.controller.mergeFile(libFile, decoyFile);
+//        this.setVisible(false);
     }//GEN-LAST:event_btnMergeActionPerformed
 
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed

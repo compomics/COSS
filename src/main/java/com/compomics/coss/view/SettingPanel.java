@@ -44,10 +44,11 @@ public class SettingPanel extends JPanel {
     private void init() {
 
         //Initializing and setting of component properties
-        Object[] scoringFun = new Object[3];
+        Object[] scoringFun = new Object[4];
         scoringFun[0] = "MSROBIN";
         scoringFun[1] = "COSINE";
         scoringFun[2] = "MSE";
+        scoringFun[3] = "DotProduct";
 
         Object[] transform = new Object[4];
         transform[0] = "Log2";
@@ -56,8 +57,8 @@ public class SettingPanel extends JPanel {
         transform[3] = "SquareRoot";
         
         Object[] filter = new Object[2];
-        filter[0] = "HighPass";
-        filter[1] = "   ";
+        filter[0] = " ";
+        filter[1] = " ";
 
         //Buttons
         JButton btntargetspec = new JButton("...");
@@ -75,7 +76,7 @@ public class SettingPanel extends JPanel {
         JLabel lblCutOff = new JLabel("CutOff");
         JLabel lblMassWindow=new JLabel("Filter WindowSize");
         JLabel lblFragmentTolerance = new JLabel("Fragment Tolerance");
-        JLabel lblPrecursorCharge = new JLabel("Precursor Charge");
+    
         JLabel lblPrecursorTolerance = new JLabel("Precursor Tolerance");
         cmbPrcTolUnit = new JComboBox();
         cmbFragTolUnit = new JComboBox();
@@ -94,7 +95,7 @@ public class SettingPanel extends JPanel {
         txtCutOff = new JTextField();
         //txtCutOff.setEnabled(false);
         txtFragmentTolerance = new JTextField();
-        txtPrecursorCharge = new JTextField();
+      
         txtPrecursorTolerance = new JTextField();
 
         //Check Boxes
@@ -104,7 +105,7 @@ public class SettingPanel extends JPanel {
         chkRemovePrecursor = new JCheckBox("Remove Precursor");
         //chkRemovePrecursor.setEnabled(false);
         chkTransform = new JCheckBox("Transformation Type");
-        chkTransform.setSelected(false);
+        //chkTransform.setSelected(false);
         //chkTransform.setEnabled(false);
         //Combo Boxes
 
@@ -185,10 +186,7 @@ public class SettingPanel extends JPanel {
                                         .addComponent(txtPrecursorTolerance, 40, 40, 40)
                                         .addGap(18, 18, 18)
                                         .addComponent(cmbPrcTolUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(lblPrecursorCharge)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtPrecursorCharge, 40, 40, 40)))
+                                )
                         .addContainerGap(75, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -215,9 +213,6 @@ public class SettingPanel extends JPanel {
                                 .addComponent(txtFragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(cmbFragTolUnit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(20, 20, 20)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(lblPrecursorCharge)
-                                .addComponent(txtPrecursorCharge, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -362,8 +357,11 @@ public class SettingPanel extends JPanel {
 //                cmbScoringFun.setSelectedIndex(0);
 //            }
 
+
         });
 
+        txtCutOff.setEnabled(false);
+        chkFilter.setEnabled(false);
         btntargetspec.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -422,7 +420,6 @@ public class SettingPanel extends JPanel {
         txttargetspec.setText("");
         //cboSpectraLibrary.setSelectedIndex(0);
         cmbScoringFun.setSelectedIndex(0);
-        txtPrecursorCharge.setText("");
         txtPrecursorTolerance.setText("");
         txtFragmentTolerance.setText("");
 
@@ -434,8 +431,7 @@ public class SettingPanel extends JPanel {
     public JTextField txtLibrary;
     public JTextField txtCutOff;
     public JTextField txtMassWindow;
-    public JTextField txtFragmentTolerance;
-    public JTextField txtPrecursorCharge;
+    public JTextField txtFragmentTolerance;  
     public JTextField txtPrecursorTolerance;
 
     //Check Boxes

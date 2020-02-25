@@ -1,7 +1,7 @@
 
 package com.compomics.coss.controller.decoyGeneration;
 
-import com.compomics.coss.controller.SpectrumAnnotation.Annotator;
+
 import com.compomics.ms2io.model.Spectrum;
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class RandomSequene extends GenerateDecoy {
         String sequence="";
         String shuffle_sequence="";
      
-        for (int i = 0; i < len_index ; i++) {
+        for (int i = 0; i < len_index ; i++){
             try {
                 spectrum = specReader.readAt(indxList.get(i).getPos());
                 sequence = spectrum.getSequence();

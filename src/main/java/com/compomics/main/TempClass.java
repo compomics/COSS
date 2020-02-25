@@ -34,7 +34,7 @@ public class TempClass {
     public static void main(String[] args) throws IOException {
         //try {
             
-            File file_lib=new File("C:/human_hcd/human_hcd_selected_3_annotated.msp");
+            File file_lib=new File("C:/human_hcd/lib/human_hcd_selected_part.msp");
 
 
             //File file_decoy=new File("C:/human_hcd_itraq/human_hcd_selected.msp_decoy.msp");//

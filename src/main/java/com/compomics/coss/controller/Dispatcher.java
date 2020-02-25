@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 import com.compomics.coss.controller.matching.CosineSimilarity;
 import com.compomics.coss.controller.matching.DataProducer;
+import com.compomics.coss.controller.matching.DotProduct;
 import com.compomics.coss.controller.matching.MSRobin;
 import com.compomics.coss.controller.matching.Matcher;
 import com.compomics.coss.controller.matching.MeanSquareError;
@@ -74,6 +75,10 @@ public class Dispatcher {
                     break;
                 case 2:
                     scoreObj = new MeanSquareError(this.confData, this.log);
+                    break;
+                
+                case 3:
+                    scoreObj = new DotProduct(this.confData, this.log);
                     break;
                 default:
                     scoreObj = new MSRobin(this.confData, this.log);

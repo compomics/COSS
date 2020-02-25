@@ -247,7 +247,6 @@ public class MainFrameController implements UpdateListener {
     private void setSearchSettings() {
         int scoringFun = settingsPnl.cmbScoringFun.getSelectedIndex();
 
-        int maxPrecCharg = Integer.parseInt(settingsPnl.txtPrecursorCharge.getText());
         double precTolerance = Double.parseDouble(settingsPnl.txtPrecursorTolerance.getText());
         double fragTolerance = Double.parseDouble(settingsPnl.txtFragmentTolerance.getText());
 
@@ -269,7 +268,6 @@ public class MainFrameController implements UpdateListener {
         isSettingSame = false;
 
         if (configData.getScoringFunction() == scoringFun
-                && configData.getMaxPrecursorCharg() == maxPrecCharg
                 && configData.getPrecTol() == precTolerance
                 && configData.getfragTol() == fragTolerance) {
             isSettingSame = true;
@@ -283,7 +281,6 @@ public class MainFrameController implements UpdateListener {
             configData.setMsRobinOption(0);
 
             //instrument settings
-            configData.setMaxPrecursorCharg(maxPrecCharg);
             configData.setPrecTol(precTolerance);
             configData.setfragTol(fragTolerance);
             //preprocessing settings
@@ -311,7 +308,6 @@ public class MainFrameController implements UpdateListener {
         settingsPnl.cmbScoringFun.setSelectedIndex(ConfigHolder.getInstance().getInt("matching.algorithm"));
 
         //MS instrument based settings
-        settingsPnl.txtPrecursorCharge.setText(Integer.toString(ConfigHolder.getInstance().getInt("max.charge")));
         settingsPnl.txtPrecursorTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("precursor.tolerance")));
         settingsPnl.txtFragmentTolerance.setText(Double.toString(ConfigHolder.getInstance().getDouble("fragment.tolerance")));
 
@@ -369,20 +365,7 @@ public class MainFrameController implements UpdateListener {
             }
         }
 
-        temp = settingsPnl.txtPrecursorCharge.getText();
-        if (temp.equals("")) {
-            validationMessages.add("Please provide a maximum precursor charge value.");
-        } else {
-            try {
-                double d = Double.parseDouble(temp);
-                if (d < 0.0) {
-                    validationMessages.add("Please provide a valid precursor tolerance value.");
-                }
-            } catch (NumberFormatException nfe) {
-                validationMessages.add("Please provide a numeric maximum precursor charge value.");
-            }
-        }
-
+ 
         temp = settingsPnl.txtFragmentTolerance.getText();
         if (temp.equals("")) {
             validationMessages.add("Please provide a fragment tolerance value.");
@@ -609,7 +592,7 @@ public class MainFrameController implements UpdateListener {
                 row[2] = spec.getSequence();
                 row[3] = spec.getProtein();
                 row[4] = spec.getPCMass();
-                row[5] = spec.getCharge();
+                row[5] = spec.getCharge_asStr();
                 row[6] = Double.toString(score);
                 row[7] = Integer.toString(mSpec.getSpectrum().getNumPeaks());
                 row[8] = Integer.toString(mSpec.getTotalFilteredNumPeaks_Lib());
@@ -766,7 +749,7 @@ public class MainFrameController implements UpdateListener {
      */
     public void chooseTargetFile(String file) {
 
-        JFileChooser fileChooser = new JFileChooser("D:/kusterDS/");
+        JFileChooser fileChooser = new JFileChooser("C:/human_hcd/");
         fileChooser.setDialogTitle("Target Spectra File");
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -900,6 +883,7 @@ public class MainFrameController implements UpdateListener {
 
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();
+            
 
         }
 
@@ -923,28 +907,28 @@ public class MainFrameController implements UpdateListener {
 
     }
 
-    public void mergeFiles() {
-        String tempS = settingsPnl.txtLibrary.getText();
-        String tempS2 = settingsPnl.txttargetspec.getText();
-
-        if ("".equals(tempS2) || "".equals(tempS)) {
-            LOG.info("Please give files to be merged");
-
-        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt") && !tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".sptxt")) {
-            LOG.info(" Spectral file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
-        } else {
-            MergeFiles merg = new MergeFiles(new File(tempS), new File(tempS2));
-            try {
-                merg.Merge();
-            } catch (InterruptedException ex) {
-                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            } finally {
-
-            }
-
-        }
-
-    }
+//    public void mergeFiles() {
+//        String tempS = settingsPnl.txtLibrary.getText();
+//        String tempS2 = settingsPnl.txttargetspec.getText();
+//
+//        if ("".equals(tempS2) || "".equals(tempS)) {
+//            LOG.info("Please give files to be merged");
+//
+//        } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt") && !tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".sptxt")) {
+//            LOG.info(" Spectral file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
+//        } else {
+//            MergeFiles merg = new MergeFiles(new File(tempS), new File(tempS2));
+//            try {
+//                merg.Merge();
+//            } catch (InterruptedException ex) {
+//                java.util.logging.Logger.getLogger(ReverseSequence.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            } finally {
+//
+//            }
+//
+//        }
+//
+//    }
 
     /**
      * swing thread to start the search and it runs on background
@@ -1159,7 +1143,12 @@ public class MainFrameController implements UpdateListener {
                     break;
 
                 case 2:
-                    gen = new FixedMzShift(libFile, LOG);
+                    gen = new FixedPeakShift(libFile, LOG);
+                    gen.generate();
+                    break;
+                    
+                case 3:
+                    gen = new RandomPeaks(libFile, LOG);
                     gen.generate();
                     break;
 

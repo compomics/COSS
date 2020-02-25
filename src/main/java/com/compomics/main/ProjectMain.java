@@ -32,6 +32,8 @@ public class ProjectMain {
      * No-arg constructor.
      */
     public ProjectMain() {
+        
+        
     }
 
     /**
@@ -69,7 +71,6 @@ public class ProjectMain {
                 initiateProject.launch(args);
             }
         });
-
     }
 
     /**
@@ -88,8 +89,7 @@ public class ProjectMain {
             } else if (args.length != 0) {
 
                 MainConsoleController controller = new MainConsoleController();
-                controller.startRunning(args);
-                
+                controller.startRunning(args);                
 
             }
 

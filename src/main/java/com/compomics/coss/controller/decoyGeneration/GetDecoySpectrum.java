@@ -137,5 +137,9 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
         
         return decoy_peaks;
     }
+    
+    public ArrayList<Peak> getDecoyPeaks_mzShift(Spectrum spec){
+     return null;   
+    }
 
 }

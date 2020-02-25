@@ -114,7 +114,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                     try {
                         Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
-                        if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")) {
+                        if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")||sp2.getComment().contains("DECOY")) {
                             numDecoy++;
                         }
 

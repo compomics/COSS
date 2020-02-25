@@ -2,7 +2,9 @@ package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.model.Peak;
+import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +45,30 @@ public abstract class Score {
 
         return (new MatchedPeaks()).getMatchedPeaks(filteredExpMS2_1, filteredExpMS2_2, confData.getfragTol());
 
+    }
+    
+    
+    protected ArrayList<Peak> normalizeSpectrum(ArrayList<Peak> spec){
+        double max=0;
+        ArrayList<Peak> normalizedPeak=new ArrayList<>();
+        for(Peak p : spec){
+            double intensity = p.getIntensity();
+            if(max < intensity){
+                max=intensity;
+            }
+        }
+        if(max == 0){
+            return spec;
+        }
+        
+        for(Peak p : spec){
+           double intensity = p.getIntensity()/max;
+           Peak np= new Peak(p.getMz(), intensity, p.getPeakAnnotation());
+           normalizedPeak.add(np);
+        }
+        return normalizedPeak;
+        
+        
     }
     
     /**
