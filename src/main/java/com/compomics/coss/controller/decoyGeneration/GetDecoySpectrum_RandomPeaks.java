@@ -33,9 +33,17 @@ public class GetDecoySpectrum_RandomPeaks implements Callable<Spectrum> {
         Collections.shuffle(rand_index);
 
 
+        Peak pk;
+        double newMz=0;
+        int index=0;
         for (int i = 0; i< peak_size;i++) {
 
-            peaks_d.add(peaks.get((int)rand_index.get(i)));
+            index = (int)rand_index.get(i);
+            newMz= peaks.get(index).getMz();            
+            pk=peaks.get(i);
+            pk.setMz(newMz);
+            
+            peaks_d.add(pk);
             
         }
 

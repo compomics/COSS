@@ -66,6 +66,7 @@ public class MergeFiles {
                     count++;
                     System.out.print("Number of spectrum apended: " + Integer.toString(count));                    
                 }
+                
             }
 
 

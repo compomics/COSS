@@ -365,7 +365,6 @@ public class MainFrameController implements UpdateListener {
             }
         }
 
- 
         temp = settingsPnl.txtFragmentTolerance.getText();
         if (temp.equals("")) {
             validationMessages.add("Please provide a fragment tolerance value.");
@@ -400,11 +399,18 @@ public class MainFrameController implements UpdateListener {
             validationMessages.add(" Targer Spectra file type not valid");
         }
 
+        if (!new File(tempS).exists()) {
+            validationMessages.add("Query spectra file not existed.");
+        }
+
         String tempS2 = settingsPnl.txtLibrary.getText();
         if ("".equals(tempS2)) {
             validationMessages.add("Please select library file");
         } else if (!tempS2.endsWith(".mgf") && !tempS2.endsWith(".msp") && !tempS2.endsWith(".sptxt")) {
             validationMessages.add(" Spectral library file type is invalid." + " \n " + "Only .mgf, .msp and .sptxt file format supported");
+        }
+        if (!new File(tempS2).exists()) {
+            validationMessages.add("Library spectra file not existed.");
         }
 
         boolean file1Existed = false;
@@ -883,7 +889,6 @@ public class MainFrameController implements UpdateListener {
 
             SwingDecoyGeneratorThread workerThread = new SwingDecoyGeneratorThread();
             workerThread.execute();
-            
 
         }
 
@@ -929,7 +934,6 @@ public class MainFrameController implements UpdateListener {
 //        }
 //
 //    }
-
     /**
      * swing thread to start the search and it runs on background
      */
@@ -1146,9 +1150,14 @@ public class MainFrameController implements UpdateListener {
                     gen = new FixedPeakShift(libFile, LOG);
                     gen.generate();
                     break;
-                    
+
                 case 3:
                     gen = new RandomPeaks(libFile, LOG);
+                    gen.generate();
+                    break;
+
+                case 4:
+                    gen = new PrecursorSwap(libFile, LOG);
                     gen.generate();
                     break;
 

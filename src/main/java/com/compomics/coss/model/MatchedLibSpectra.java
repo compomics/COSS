@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.compomics.coss.model;
 
 import com.compomics.ms2io.model.Spectrum;
@@ -18,7 +13,7 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     public MatchedLibSpectra() {
     }
     
-    private static MatchedLibSpectra this_obj;
+   // private static MatchedLibSpectra this_obj;
     private Spectrum spectrum;
     private double score;
     private int source;

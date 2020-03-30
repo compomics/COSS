@@ -101,6 +101,7 @@ public class MainGUI extends JFrame {
         JMenuItem randomSequence = new JMenuItem("Random sequence");
         JMenuItem fixedMz = new JMenuItem("Fixed mz shift");
         JMenuItem randomMz = new JMenuItem("Random mz shift");
+        JMenuItem PrecorsorSwap = new JMenuItem("Precursor Swap");
         JMenuItem annotate = new JMenuItem("Annotate File");
        //JMenuItem mergeFiles = new JMenuItem("Merge files");
 
@@ -112,6 +113,7 @@ public class MainGUI extends JFrame {
         decoyMenu.add(randomSequence);
         decoyMenu.add(fixedMz);
         decoyMenu.add(randomMz);
+        decoyMenu.add(PrecorsorSwap);
         decoyMenu.add(annotate);
         //decoyMenu.add(mergeFiles);
         
@@ -267,6 +269,9 @@ public class MainGUI extends JFrame {
             control.generateDeoy(3);
         });
 
+        PrecorsorSwap.addActionListener((ActionEvent ev) -> {
+            control.generateDeoy(4);
+        });
 //        tab.addChangeListener((ChangeEvent e) -> {
 //            if (e.getSource() instanceof JTabbedPane) {
 //                JTabbedPane pane = (JTabbedPane) e.getSource();

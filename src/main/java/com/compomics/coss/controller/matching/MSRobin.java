@@ -68,6 +68,8 @@ public class MSRobin extends Score {
             sumMatchedIntLib = getSumIntensity(mPeaksLib);
 
             intensity_part = calculateIntensityPart(mPeaksExp, mPeaksLib);
+            
+            //finalScore = intensity_part * calculateJaccard(matchedNumPeaks, lenA, lenB);
             finalScore = getfinalScore(totalN, probability, intensity_part);
 
         }

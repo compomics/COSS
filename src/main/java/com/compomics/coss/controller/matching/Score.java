@@ -104,6 +104,22 @@ public abstract class Score {
         return probability;
     }
 
+    
+    
+    /**
+     * To calculate Jaccard of query and library peaks
+     * 
+     *
+     * @return
+     * @throws Exception
+     */
+    // @Override
+    protected double calculateJaccard(int num_matchedPeaks, int num_querySpec, int num_libSpec){
+        double jaccard=0;
+        jaccard = num_matchedPeaks/(num_libSpec+num_querySpec-num_matchedPeaks);
+        return jaccard;
+    }
+    
     protected static long calculateCombination(int n, int r) throws Exception {
         long score = 0;
         if (r == 0) {

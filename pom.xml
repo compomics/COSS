@@ -219,6 +219,13 @@
             <name>EBI Nexus Snapshots Repository</name>
             <url>http://www.ebi.ac.uk/Tools/maven/repos/content/repositories/pst-snapshots</url>
         </repository>
+        
+      
+<!--        <repository>
+            <id>sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshotsorg</url>
+        </repository>-->
+
     </repositories>
     
     
@@ -437,6 +444,16 @@
             <artifactId>jmzidentml</artifactId>
             <version>1.2.11</version>
         </dependency>
+       
+
+
+<!--      <dependency>
+            <groupId>org.mapdb</groupId>
+            <artifactId>mapdb</artifactId>
+            <version>3.0.7</version>
+        </dependency>-->
+        
+        
     </dependencies>
     
  
