@@ -43,7 +43,7 @@ public class TFDR {
         SpectraReader rd = new MspReader(file, indxList);
        // SpectraWriter rw = new MgfWriter(new File("C:\\human_hcd\\lib\\MassIVE\\GeneratedSpectraLib_Annotated\\MassIVE_synthetic_10p_sharedSpecs_random.mgf"));
     
-       String file_name = "C:\\human_hcd\\lib\\MassIVE\\SearchResults\\COSS_MsRobin\\validated\\validatedMassIVE_syntheticTest_20p_PCSwap_MsRobin";
+       String file_name = "C:\\human_hcd\\lib\\MassIVE\\SearchResults\\COSS_MsRobin\\validated\\validatedMassIVE_syntheticTest_20p_randomSeq005";
         Spectrum spec=null;
         FileInputStream ip = new FileInputStream(file_name + ".xlsx");
  

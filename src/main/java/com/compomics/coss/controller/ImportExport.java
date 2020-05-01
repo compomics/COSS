@@ -174,7 +174,7 @@ public class ImportExport {
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation(FDR)", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+            String[] columns = {"Title", "Library", "Scan No.","RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib","Score", "Validation(FDR)","Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
@@ -206,6 +206,7 @@ public class ImportExport {
             // Create Other rows and cells with employees data
             int rowNum = 1;
             Spectrum spec;
+            Spectrum matchedSpec;
 
             for (ComparisonResult res : result) {
                 List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
@@ -214,26 +215,30 @@ public class ImportExport {
                 int s = 0;
                 Row row = sheet.createRow(rowNum);
                 spec = res.getEspSpectrum();
+                matchedSpec=res.getMatchedLibSpec().get(0).getSpectrum();
                 row.createCell(0).setCellValue(spec.getTitle());
                 row.createCell(1).setCellValue(mSpec.get(s).getSource());
                 row.createCell(2).setCellValue(spec.getScanNumber());
-                row.createCell(3).setCellValue(mSpec.get(s).getSequence());
-                row.createCell(4).setCellValue(spec.getPCMass());
-                row.createCell(5).setCellValue(spec.getCharge_asStr());
-                row.createCell(6).setCellValue(res.getTopScore());
+                row.createCell(3).setCellValue(spec.getRtTime());
+                row.createCell(4).setCellValue(mSpec.get(s).getSequence());
+                row.createCell(5).setCellValue(spec.getPCMass());
+                row.createCell(6).setCellValue(spec.getCharge_asStr());
+                row.createCell(7).setCellValue(matchedSpec.getCharge_asStr());
+                row.createCell(8).setCellValue(res.getTopScore());
                 if (configData.isDecoyAvailable()) {
-                    row.createCell(7).setCellValue(res.getFDR());
+                    row.createCell(9).setCellValue(res.getFDR());
 
                 } else {
-                    row.createCell(7).setCellValue("NA");
+                    row.createCell(9).setCellValue("NA");
                 }
-                row.createCell(8).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Exp());
-                row.createCell(9).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Lib());
-                row.createCell(10).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
-                row.createCell(11).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
-                row.createCell(12).setCellValue(mSpec.get(s).getNumMatchedPeaks());
-                row.createCell(13).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
-                row.createCell(14).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
+                row.createCell(10).setCellValue(matchedSpec.getProtein());
+                row.createCell(11).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Exp());
+                row.createCell(12).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Lib());
+                row.createCell(13).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
+                row.createCell(14).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
+                row.createCell(15).setCellValue(mSpec.get(s).getNumMatchedPeaks());
+                row.createCell(16).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
+                row.createCell(17).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
                 rowNum++;
 
                 //}
@@ -262,8 +267,9 @@ public class ImportExport {
 
     private void saveAsText(String filename, String delimiter, String extsn) throws IOException {
         Spectrum spec;
+        Spectrum matechedSpec;
 
-        String[] columns = {"Title", "Library", "Scan No.", "Sequence", "Prec. Mass", "Charge", "Score", "Validation(FDR)", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+        String[] columns =  {"Title", "Library", "Scan No.","RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib","Score", "Validation(FDR)","Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
         FileWriter fileOut = new FileWriter(filename + extsn);
 
         String delm = delimiter;
@@ -278,18 +284,23 @@ public class ImportExport {
             int s = 0;
 
             spec = res.getEspSpectrum();
+            matechedSpec = res.getMatchedLibSpec().get(0).getSpectrum();
             fileOut.write(spec.getTitle() + delm);
 
             fileOut.write(Integer.toString(mSpec.get(s).getSource()) + delm);
 
             fileOut.write(spec.getScanNumber() + delm);
+            
+            fileOut.write(spec.getRtTime() + delm);
 
             fileOut.write(mSpec.get(s).getSequence());
 
             fileOut.write(Double.toString(spec.getPCMass()) + delm);
 
-            fileOut.write(spec.getCharge() + delm);
+            fileOut.write(spec.getCharge_asStr() + delm);
 
+            fileOut.write(matechedSpec.getCharge_asStr() + delm);
+            
             fileOut.write(Double.toString(res.getTopScore()) + delm);
 
             if (configData.isDecoyAvailable()) {
@@ -299,6 +310,9 @@ public class ImportExport {
                 fileOut.write("NA" + delm);
 
             }
+            
+            fileOut.write(matechedSpec.getProtein() + delm);
+            
             fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()) + delm);
 
             fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()) + delm);

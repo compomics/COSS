@@ -106,8 +106,8 @@ public class MainFrameController implements UpdateListener {
         logTextAreaAppender.setLayout(layout);
 
         //Initializing result tables
-        final String[] colNamesRes = {"Title", "Scan Num.", "Sequence", "Protein", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
-        final String[] colNamesExperimental = {"No. ", "Title", "Scan", "M/Z", "Charge", "Score", "Validation(FDR)", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
+        final String[] colNamesRes = {"Title", "ScanNo", "Sequence", "Protein", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
+        final String[] colNamesExperimental = {"No. ", "Title", "ScanNo", "RetentionT", "M/Z", "Charge", "Score", "Validation(FDR)", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
 
         tblModelResult = new DefaultTableModel(colNamesRes, 0) {
             @Override
@@ -537,7 +537,7 @@ public class MainFrameController implements UpdateListener {
             int resultSize = 0;
             resultSize = result.size();// configData.getExpSpectraIndex().size();
             Spectrum expSpec;
-            Object[] row = new Object[12];
+            Object[] row = new Object[13];
             ComparisonResult res;
             MatchedLibSpectra matchedSpec;
 
@@ -549,23 +549,24 @@ public class MainFrameController implements UpdateListener {
                 row[0] = Integer.toString(p + 1);
                 row[1] = expSpec.getTitle();
                 row[2] = expSpec.getScanNumber();
-                row[3] = expSpec.getPCMass();
-                row[4] = expSpec.getCharge_asStr();
+                row[3] = expSpec.getRtTime();
+                row[4] = expSpec.getPCMass();
+                row[5] = expSpec.getCharge_asStr();
                 double score = result.get(p).getTopScore();
-                row[5] = Double.toString(score);
+                row[6] = Double.toString(score);
 
                 if (configData.isDecoyAvailable()) {
-                    row[6] = Double.toString(res.getFDR());
+                    row[7] = Double.toString(res.getFDR());
 
                 } else {
-                    row[6] = "NA";
+                    row[7] = "NA";
                 }
 
-                row[7] = expSpec.getNumPeaks();
-                row[8] = Integer.toString(matchedSpec.getTotalFilteredNumPeaks_Exp());
-                row[9] = Double.toString(matchedSpec.getSumFilteredIntensity_Exp());
-                row[10] = Double.toString(matchedSpec.getSumMatchedInt_Exp());
-                row[11] = Integer.toString(matchedSpec.getNumMatchedPeaks());
+                row[8] = expSpec.getNumPeaks();
+                row[9] = Integer.toString(matchedSpec.getTotalFilteredNumPeaks_Exp());
+                row[10] = Double.toString(matchedSpec.getSumFilteredIntensity_Exp());
+                row[11] = Double.toString(matchedSpec.getSumMatchedInt_Exp());
+                row[12] = Integer.toString(matchedSpec.getNumMatchedPeaks());
 
                 tblModelTarget.addRow(row);
             }
@@ -1087,7 +1088,7 @@ public class MainFrameController implements UpdateListener {
             mainView.searchBtnActive(false);
 
             LOG.info("Annotating spectrum file....");
-            Annotation ann = new Annotation(libFile, 0.5);
+            Annotation ann = new Annotation(libFile, 0.05);
             try {
                 ann.annotateSpecFile(false);
             } catch (IOException ex) {
