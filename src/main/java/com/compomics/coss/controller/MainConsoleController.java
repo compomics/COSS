@@ -24,7 +24,7 @@ public class MainConsoleController implements UpdateListener {
      * @param args the command line arguments
      */
     // static ConfigHolder config = new ConfigHolder();
-    private static final Logger LOG = Logger.getLogger(MainFrameController.class);
+    private static final Logger LOG = Logger.getLogger(MainConsoleController.class);
     static ConfigData configData;
     static Dispatcher dispatcher;
     List<ComparisonResult> result = new ArrayList<>();
@@ -142,7 +142,6 @@ public class MainConsoleController implements UpdateListener {
         //MS instrument based settings
         configData.setPrecTol(ConfigHolder.getInstance().getDouble("precursor.tolerance") / 1000000);
         configData.setfragTol(ConfigHolder.getInstance().getDouble("fragment.tolerance"));
-        configData.setMaxPrecursorCharg(ConfigHolder.getInstance().getInt("max.charge"));
 
         if (lenArgs == 3) {
             int matching_algorithm = Integer.parseInt(ipArgs[2]);
@@ -275,10 +274,6 @@ public class MainConsoleController implements UpdateListener {
 
         if (configData.getPrecTol() < 0.0) {
             validationMessages.add("Please provide a positive precursor tolerance value.");
-        }
-
-        if (configData.getMaxPrecursorCharg() < 0.0) {
-            validationMessages.add("Please provide a positive precursor charge value.");
         }
 
         if (configData.getfragTol() < 0.0) {

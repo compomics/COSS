@@ -106,7 +106,7 @@ public class MainFrameController implements UpdateListener {
         logTextAreaAppender.setLayout(layout);
 
         //Initializing result tables
-        final String[] colNamesRes = {"Title", "ScanNo", "Sequence", "Protein", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
+        final String[] colNamesRes = {"Title", "ScanNo", "Sequence", "Protein","Mods", "M/Z", "Charge", "Score", "#Peaks", "#FiltedPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
         final String[] colNamesExperimental = {"No. ", "Title", "ScanNo", "RetentionT", "M/Z", "Charge", "Score", "Validation(FDR)", "#Peaks", "#FilteredPeaks", "TotalInt", "MatchedInt", "#MatchedPeaks"};
 
         tblModelResult = new DefaultTableModel(colNamesRes, 0) {
@@ -545,7 +545,6 @@ public class MainFrameController implements UpdateListener {
                 res = result.get(p);
                 matchedSpec = res.getMatchedLibSpec().get(0);
                 expSpec = res.getEspSpectrum();
-
                 row[0] = Integer.toString(p + 1);
                 row[1] = expSpec.getTitle();
                 row[2] = expSpec.getScanNumber();
@@ -586,26 +585,32 @@ public class MainFrameController implements UpdateListener {
             ComparisonResult res = result.get(this.targSpectrumNum);
             tblModelResult.setRowCount(0);
 
-            Object[] row = new Object[12];
+            Object[] row = new Object[13];
             List<MatchedLibSpectra> specs = res.getMatchedLibSpec();
             Spectrum spec;
             double score;
 
+            String protein="";
             for (MatchedLibSpectra mSpec : specs) {
                 spec = mSpec.getSpectrum();
                 score = mSpec.getScore();
                 row[0] = spec.getTitle();
                 row[1] = spec.getScanNumber();
                 row[2] = spec.getSequence();
-                row[3] = spec.getProtein();
-                row[4] = spec.getPCMass();
-                row[5] = spec.getCharge_asStr();
-                row[6] = Double.toString(score);
-                row[7] = Integer.toString(mSpec.getSpectrum().getNumPeaks());
-                row[8] = Integer.toString(mSpec.getTotalFilteredNumPeaks_Lib());
-                row[9] = Double.toString(mSpec.getSumFilteredIntensity_Lib());
-                row[10] = Double.toString(mSpec.getSumMatchedInt_Lib());
-                row[11] = Double.toString(mSpec.getNumMatchedPeaks());
+                
+                protein = spec.getProtein();
+                protein.replaceAll("^\"|\"$", "");
+                row[3] = protein.substring(1);
+                row[4]= spec.getModifications_asStr();
+                
+                row[5] = spec.getPCMass();
+                row[6] = spec.getCharge_asStr();
+                row[7] = Double.toString(score);
+                row[8] = Integer.toString(mSpec.getSpectrum().getNumPeaks());
+                row[9] = Integer.toString(mSpec.getTotalFilteredNumPeaks_Lib());
+                row[10] = Double.toString(mSpec.getSumFilteredIntensity_Lib());
+                row[11] = Double.toString(mSpec.getSumMatchedInt_Lib());
+                row[12] = Double.toString(mSpec.getNumMatchedPeaks());
                 tblModelResult.addRow(row);
 
             }
@@ -735,7 +740,6 @@ public class MainFrameController implements UpdateListener {
             ConfigHolder.getInstance().setProperty("matching.algorithm", configData.getScoringFunction());
             ConfigHolder.getInstance().setProperty("fragment.tolerance", configData.getfragTol());
             ConfigHolder.getInstance().setProperty("precursor.tolerance", configData.getPrecTol());
-            ConfigHolder.getInstance().setProperty("max.charge", configData.getMaxPrecursorCharg());
             ConfigHolder.getInstance().setProperty("db.spectra.path", configData.getSpecLibraryFile());
             ConfigHolder.getInstance().setProperty("target.spectra", configData.getExperimentalSpecFile());
         }

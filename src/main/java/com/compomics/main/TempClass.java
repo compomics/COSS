@@ -6,6 +6,11 @@ import com.compomics.util.FragmentIon;
 import com.compomics.coss.controller.decoyGeneration.*;
 //import com.compomics.coss.controller.decoyGeneration.MergeFiles;
 import com.compomics.coss.controller.SpectrumAnnotation.*;
+import com.compomics.ms2io.controller.Indexer;
+import com.compomics.ms2io.controller.MspReader;
+import com.compomics.ms2io.controller.SpectraReader;
+import com.compomics.ms2io.model.IndexKey;
+import com.compomics.ms2io.model.Spectrum;
 import org.apache.log4j.Logger;
 import java.util.logging.Level;
 
@@ -26,23 +31,37 @@ import java.util.regex.Pattern;
  * @author Genet
  */
 public class TempClass {
-    private static final Logger LOG = Logger.getLogger( MainFrameController.class);
+
+    private static final Logger LOG = Logger.getLogger(MainFrameController.class);
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
         //try {
-            
-            File file_lib=new File("C:/human_hcd/lib/human_hcd_selected_part.msp");
 
+        File file_lib = new File("C:/human_hcd/others/test_lib - Copy.msp");
+        Indexer giExp = new Indexer(file_lib);
+        List<IndexKey> indxList = giExp.generate();
+        SpectraReader instance = new MspReader(file_lib, indxList);
+        Spectrum spec;
+        for(IndexKey k:indxList){
+            spec=instance.readAt(k.getPos());
+            String ss=spec.getProtein();
+            ss.replaceAll("^\"|\"$", "");            
+            System.out.println(ss.substring(1));
+        }
 
-            //File file_decoy=new File("C:/human_hcd_itraq/human_hcd_selected.msp_decoy.msp");//
+        
+        //SpectraReader instance = new MspReader(file_lib);
+        //List<Spectrum> specs = instance.readAll();
+        System.out.println("checking");
+
+        //File file_decoy=new File("C:/human_hcd_itraq/human_hcd_selected.msp_decoy.msp");//
 //            System.out.println("Appending decoy to library");
 //            MergeFiles m = new MergeFiles(file_lib, file_decoy);
 //            m.Merge();
 //            System.out.println("\nDecoy spectra appended to file " + file_lib.getName());
-
 //            System.out.println("getFragmentIon");
 //            String aa_sequence = "AAAAAAAVSGNNASDEPSR"; //unmodified
 //            
@@ -68,14 +87,10 @@ public class TempClass {
 //                System.out.println(result.get("y" + Integer.toString(i+1)) + "    ");
 //                System.out.println("\n");
 //            }
-
 //            
-            GenerateDecoy gen = new ReverseSequence(file_lib,LOG );
-            gen.generate();
-            
-            
-
-           
+//            GenerateDecoy gen = new ReverseSequence(file_lib,LOG );
+//            gen.generate();
+//            
 //        try {
 //            Annotation annot=new Annotation(file_lib, 0.5);
 //            annot.annotateSpecFile(false);

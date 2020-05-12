@@ -26,7 +26,6 @@ public class ConfigData {
     private double fragTol;
     private int MSRobinOption;
     private int intensityOption;
-    private int maxPrecursorCharge;
 
     //preprocessing settings
     private boolean isTransform;
@@ -171,23 +170,7 @@ public class ConfigData {
         this.expIndex = indx;
     }
 
-    /**
-     * set spectra library
-     *
-     * @return
-     */
-    public int getMaxPrecursorCharg() {
-        return this.maxPrecursorCharge;
-    }
-
-    /**
-     * set maximum precursor charge
-     *
-     * @param maxPrecCharge the value to be set to max precursor charge
-     */
-    public void setMaxPrecursorCharg(int maxPrecCharge) {
-        this.maxPrecursorCharge = maxPrecCharge;
-    }
+ 
 
     public int getScoringFunction() {
         return this.scoringFun;
