@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.compomics</groupId>
     <artifactId>COSS</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     
     <name>COSS</name>
@@ -194,6 +194,12 @@
         </repository>
           
         <repository>
+            <id>netbeans</id>
+            <name>Netbeans rep</name>
+            <url>http://bits.netbeans.org/maven2/</url>
+        </repository>
+        
+        <repository>
             <id>unknown-jars-temp-repo</id>
             <name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
             <url>file:${project.basedir}/lib</url>
@@ -221,7 +227,7 @@
         </repository>
         
       
-<!--        <repository>
+        <!--        <repository>
             <id>sonatype-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshotsorg</url>
         </repository>-->
@@ -260,6 +266,7 @@
                     <artifactId>pdf-transcoder</artifactId>
                     <groupId>batik</groupId>
                 </exclusion>
+                
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
@@ -271,7 +278,8 @@
                 <exclusion>
                     <artifactId>ssj</artifactId>
                     <groupId>umontreal.iro.lecuyer.gof</groupId>
-                </exclusion>
+                </exclusion>       
+                
                 
                 <exclusion> 
                     <groupId>org.slf4j</groupId>
@@ -284,7 +292,10 @@
   
             </exclusions>
         </dependency>
+            
+            
                 
+                        
         <!-- To include the proteomic module -->
         <dependency>
             <groupId>org.expasy.mzjava</groupId>
@@ -345,11 +356,11 @@
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>unknown.binary</groupId>
             <artifactId>AbsoluteLayout</artifactId>
             <version>SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
         
         <dependency>
             <groupId>org.springframework</groupId>
@@ -447,7 +458,7 @@
        
 
 
-<!--      <dependency>
+        <!--      <dependency>
             <groupId>org.mapdb</groupId>
             <artifactId>mapdb</artifactId>
             <version>3.0.7</version>

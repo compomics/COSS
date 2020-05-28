@@ -87,7 +87,6 @@ public class ProjectMain {
                 controller.init();
                 controller.showMainFrame();
             } else if (args.length != 0) {
-
                 MainConsoleController controller = new MainConsoleController();
                 controller.startRunning(args);                
 

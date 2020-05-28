@@ -60,7 +60,7 @@ public class ResultPanel extends JPanel {
 
         //panels
         pnlBestMatchs = new JPanel();
-        pnlBestMatchs.setBorder(javax.swing.BorderFactory.createTitledBorder("Best Match Spectra"));
+        pnlBestMatchs.setBorder(javax.swing.BorderFactory.createTitledBorder("Best matched spectra"));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(pnlBestMatchs);
         pnlBestMatchs.setLayout(jPanel2Layout);

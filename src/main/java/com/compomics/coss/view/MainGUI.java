@@ -102,7 +102,7 @@ public class MainGUI extends JFrame {
         JMenuItem fixedMz = new JMenuItem("Fixed mz shift");
         JMenuItem randomMz = new JMenuItem("Random mz shift");
         JMenuItem PrecorsorSwap = new JMenuItem("Precursor Swap");
-        JMenuItem annotate = new JMenuItem("Annotate File");
+        JMenuItem annotate = new JMenuItem("Annotate Spectra");
        //JMenuItem mergeFiles = new JMenuItem("Merge files");
 
         export.add(toExcel);

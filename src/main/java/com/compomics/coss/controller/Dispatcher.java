@@ -17,7 +17,10 @@ import com.compomics.ms2io.model.Spectrum;
 import com.compomics.coss.model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.model.ConfigData;
+import java.util.Collection;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -76,7 +79,7 @@ public class Dispatcher {
                 case 2:
                     scoreObj = new MeanSquareError(this.confData, this.log);
                     break;
-                
+
                 case 3:
                     scoreObj = new DotProduct(this.confData, this.log);
                     break;
@@ -87,22 +90,55 @@ public class Dispatcher {
             }
 
             if (scoreObj != null) {
-                ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(40, true);
-                ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(40, true);
+                ArrayBlockingQueue<Spectrum> expspec = new ArrayBlockingQueue<>(1000, true);
+                ArrayBlockingQueue<ArrayList<Spectrum>> libSelected = new ArrayBlockingQueue<>(1000, true);
                 TheDataUnderComparison data = new TheDataUnderComparison(expspec, libSelected);
 
                 producer = new DataProducer(data, confData);
                 match = new Matcher(scoreObj, producer, data, confData, listener, log);
 
                 ExecutorService executor = Executors.newFixedThreadPool(2);
-
                 Future future1 = executor.submit(producer);
                 Future<List<ComparisonResult>> future = executor.submit(match);
-
-                future1.get();
+                 future1.get();
                 simResult = future.get();
                 executor.shutdown();
-                
+//                ExecutorService producerThread = Executors.newFixedThreadPool(1);
+//                ExecutorService consumerThread = Executors.newFixedThreadPool(5);
+//
+//                List<ComparisonResult> simResult1 = new ArrayList<>();
+//                List<ComparisonResult> simResult2 = new ArrayList<>();
+//                List<ComparisonResult> simResult3 = new ArrayList<>();
+//                List<ComparisonResult> simResult4 = new ArrayList<>();
+//                List<ComparisonResult> simResult5 = new ArrayList<>();
+//                
+//                Future<List<ComparisonResult>> future1 = null;
+//                Future<List<ComparisonResult>> future2 = null;
+//                Future<List<ComparisonResult>> future3 = null;
+//                Future<List<ComparisonResult>> future4 = null;
+//                Future<List<ComparisonResult>> future5 = null;
+//                
+//                Future futureP = producerThread.submit(producer);
+//                
+//                for (int i = 0; i < 5; i++) {
+//
+//                    future1=consumerThread.submit(match);
+//                    future2=consumerThread.submit(match);
+//                    future3=consumerThread.submit(match);
+//                    future4=consumerThread.submit(match);
+//                    future5=consumerThread.submit(match);
+//                }
+//
+//                futureP.get();
+//                simResult1 = future1.get();
+//                simResult2 = future2.get();
+//                simResult3 = future3.get();
+//                simResult4 = future4.get();
+//                simResult5 = future5.get();
+//                
+//                simResult = Stream.of(simResult1, simResult2, simResult3,simResult4, simResult5)
+//                                      .flatMap(Collection::stream)
+//                                      .collect(Collectors.toList()); 
                 if (simResult != null) {
                     Collections.sort(simResult);
                     Collections.reverse(simResult);
