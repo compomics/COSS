@@ -1,3 +1,4 @@
+
 package com.compomics.util;
 
 import com.compomics.ms2io.model.Modification;

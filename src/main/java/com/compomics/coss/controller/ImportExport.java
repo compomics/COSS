@@ -269,7 +269,7 @@ public class ImportExport {
         }
     }
 
-    private void saveAsText(String filename, String delimiter, String extsn) throws IOException {
+    private void saveAsText(String filename, String delm, String extsn) throws IOException {
         Spectrum spec;
         Spectrum matechedSpec;
 
@@ -277,7 +277,7 @@ public class ImportExport {
         String[] columns =  {"Title", "Library", "Scan No.","RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib","Score", "Validation(FDR)", "Mods", "Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
         FileWriter fileOut = new FileWriter(filename + extsn);
 
-        String delm = delimiter;
+     
         //writing the column name
         fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(delm)));
         fileOut.write("\n");
@@ -298,7 +298,7 @@ public class ImportExport {
             
             fileOut.write(spec.getRtTime() + delm);
 
-            fileOut.write(mSpec.get(s).getSequence());
+            fileOut.write(mSpec.get(s).getSequence() + delm);
 
             fileOut.write(Double.toString(spec.getPCMass()) + delm);
 

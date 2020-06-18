@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.compomics.coss.controller.decoyGeneration;
 
 import java.io.BufferedReader;
@@ -55,7 +51,9 @@ public class MergeFiles {
 
             String line = br.readLine();
             int count=1;
-            while (line != null) {                
+            bw.write("\n");
+            while (line != null) {   
+                
                 bw.write(line); //wr.write(spectrum, bw);  
                 bw.write("\n");
                 line = br.readLine();

@@ -55,8 +55,13 @@ public abstract class GenerateDecoy {
 
         }
         String filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-        decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
         
+        decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
+        if(decoyFile.exists()){
+            decoyFile.delete();
+        }
+        
+        decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
         specWriter = new MspWriter(decoyFile);
         
     }
@@ -64,7 +69,6 @@ public abstract class GenerateDecoy {
     public abstract void generate();
 
     protected String shuffle(String aaSequence) {
-
         char[] shuffledSequence = aaSequence.toCharArray();
         ArrayUtils.shuffle(shuffledSequence);
         return new String(shuffledSequence);
@@ -77,9 +81,8 @@ public abstract class GenerateDecoy {
 
         Map<Double, Double> shuffleMap = new LinkedHashMap<>();
         list.forEach(k -> shuffleMap.put(k, spectrum.get(k)));
-
         return shuffleMap;
-
+        
     }
 
     /**

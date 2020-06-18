@@ -18,11 +18,13 @@ import java.util.concurrent.Callable;
 public class GetDecoySpectrum implements Callable<Spectrum> {
 
     Spectrum spectrum;
-    String rev_or_shuffle_seq;
+    String sequence;
+    int[] newSequenceIndex;
 
-    public GetDecoySpectrum(Spectrum spec, String rev_or_shuff_sequence) {
+    public GetDecoySpectrum(Spectrum spec, String sequence, int[] newIndex) {
         this.spectrum = spec;
-        this.rev_or_shuffle_seq = rev_or_shuff_sequence;
+        this.sequence = sequence;
+        this.newSequenceIndex = newIndex;
     }
 
     @Override
@@ -35,13 +37,25 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
         FragmentIon ions = new FragmentIon(this.spectrum.getSequence(), modifications);
         Map frag_ion_actual = ions.getFragmentIon();
 
-        ions = new FragmentIon(this.rev_or_shuffle_seq, modifications);
+        ions = new FragmentIon(this.sequence, modifications);
         Map frag_ion_reverse = ions.getFragmentIon();
 
+        List<Modification> newMods = new ArrayList<>();
+       Modification mod;
+        for (Modification m : this.spectrum.getModifications()) {  
+            mod=m;
+            int newPos = this.newSequenceIndex[mod.getModificationPosition()];
+            mod.setModificationPosition(newPos);
+            newMods.add(mod);
+        }
+        
+        
         peaks_d = getDecoyPeak(this.spectrum.getPeakList(), frag_ion_actual, frag_ion_reverse);
         Collections.sort(peaks_d);
         this.spectrum.setPeakList(peaks_d);
-        spectrum.setComment(spectrum.getComment() + " _Decoy");
+        this.spectrum.setSequence(this.sequence);
+        this.spectrum.setModification(newMods);
+        this.spectrum.setComment(spectrum.getComment() + " _Decoy");
         return this.spectrum;
 
     }
@@ -74,8 +88,8 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
                     strAnn = ann.substring(0, ann.indexOf("/"));//sub-string before the first occurence of '/'that contains ion type
                 }
 
-                if (!strAnn.contains("[") && !strAnn.contains("]") && (strAnn.contains("a") || strAnn.contains("b") || strAnn.contains("y") )) {
-                   
+                if (!strAnn.contains("[") && !strAnn.contains("]") && (strAnn.contains("a") || strAnn.contains("b") || strAnn.contains("y"))) {
+
                     int ion_charge = 1;
                     strAnn = strAnn.trim(); //remove white spaces, leading and trailing
                     if (strAnn.contains("^")) {
@@ -115,7 +129,6 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
                 // isAnnotated = true;
             }
 
-          
             if (!d_peaks.containsKey(dp.getMz())) {
                 d_peaks.put(dp.getMz(), dp);
 
@@ -133,13 +146,12 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
             decoy_peaks.add((Peak) e.getValue());
 
         }
-        
-        
+
         return decoy_peaks;
     }
-    
-    public ArrayList<Peak> getDecoyPeaks_mzShift(Spectrum spec){
-     return null;   
+
+    public ArrayList<Peak> getDecoyPeaks_mzShift(Spectrum spec) {
+        return null;
     }
 
 }

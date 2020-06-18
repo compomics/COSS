@@ -600,7 +600,10 @@ public class MainFrameController implements UpdateListener {
                 
                 protein = spec.getProtein();
                 protein.replaceAll("^\"|\"$", "");
-                row[3] = protein.substring(1);
+                if(!protein.isEmpty()){
+                    protein=protein.substring(1);
+                }
+                row[3] = protein;
                 row[4]= spec.getModifications_asStr();
                 
                 row[5] = spec.getPCMass();
