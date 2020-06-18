@@ -174,7 +174,7 @@ public class ImportExport {
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"Title", "Library", "Scan No.","RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib","Score", "Validation(FDR)","Mods","Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib", "Score", "Validation(FDR)", "Mods", "Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
@@ -208,42 +208,50 @@ public class ImportExport {
             Spectrum spec;
             Spectrum matchedSpec;
 
-            String protein="";
+            int rank = 0;
+            String protein = "";
             for (ComparisonResult res : result) {
                 List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
-                // int lenMspec = mSpec.size();
-                //for (int s = 0; s < lenMspec; s++) {
-                int s = 0;
-                Row row = sheet.createRow(rowNum);
-                spec = res.getEspSpectrum();
-                matchedSpec=res.getMatchedLibSpec().get(0).getSpectrum();
-                row.createCell(0).setCellValue(spec.getTitle());
-                row.createCell(1).setCellValue(mSpec.get(s).getSource());
-                row.createCell(2).setCellValue(spec.getScanNumber());
-                row.createCell(3).setCellValue(spec.getRtTime());
-                row.createCell(4).setCellValue(mSpec.get(s).getSequence());
-                row.createCell(5).setCellValue(spec.getPCMass());
-                row.createCell(6).setCellValue(spec.getCharge_asStr());
-                row.createCell(7).setCellValue(matchedSpec.getCharge_asStr());
-                row.createCell(8).setCellValue(res.getTopScore());
-                if (configData.isDecoyAvailable()) {
-                    row.createCell(9).setCellValue(res.getFDR());
 
-                } else {
-                    row.createCell(9).setCellValue("NA");
+                int lenMSpecs = mSpec.size();
+                
+                for (int s = 0; s < lenMSpecs; s++) {
+                    //                int s = 0;
+                    Row row = sheet.createRow(rowNum);
+                    spec = res.getEspSpectrum();
+                    matchedSpec = mSpec.get(s).getSpectrum();
+
+                    row.createCell(0).setCellValue(this.configData.getExperimentalSpecFile().getName().toString());
+                    row.createCell(1).setCellValue(spec.getTitle());
+                    row.createCell(2).setCellValue(s+1);
+                    row.createCell(3).setCellValue(mSpec.get(s).getSource());
+                    row.createCell(4).setCellValue(spec.getScanNumber());
+                    row.createCell(5).setCellValue(spec.getRtTime());
+                    row.createCell(6).setCellValue(mSpec.get(s).getSequence());
+                    row.createCell(7).setCellValue(spec.getPCMass());
+                    row.createCell(8).setCellValue(spec.getCharge_asStr());
+                    row.createCell(9).setCellValue(matchedSpec.getCharge_asStr());
+                    row.createCell(10).setCellValue(res.getTopScore());
+                    if (configData.isDecoyAvailable()) {
+                        row.createCell(11).setCellValue(res.getFDR());
+
+                    } else {
+                        row.createCell(11).setCellValue("NA");
+                    }
+                    row.createCell(12).setCellValue(matchedSpec.getModifications_asStr());
+                    protein = matchedSpec.getProtein();
+                    protein.replaceAll("^\"|\"$", "");
+                    row.createCell(13).setCellValue(protein);//.substring(1, -1));
+                    row.createCell(14).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Exp());
+                    row.createCell(15).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Lib());
+                    row.createCell(16).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
+                    row.createCell(17).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
+                    row.createCell(18).setCellValue(mSpec.get(s).getNumMatchedPeaks());
+                    row.createCell(19).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
+                    row.createCell(20).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
+                    rowNum++;
+                    rank++;
                 }
-                row.createCell(10).setCellValue(matchedSpec.getModifications_asStr());
-                protein = matchedSpec.getProtein();
-                protein.replaceAll("^\"|\"$", "");
-                row.createCell(11).setCellValue(protein);//.substring(1, -1));
-                row.createCell(12).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Exp());
-                row.createCell(13).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Lib());
-                row.createCell(14).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
-                row.createCell(15).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
-                row.createCell(16).setCellValue(mSpec.get(s).getNumMatchedPeaks());
-                row.createCell(17).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
-                row.createCell(18).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
-                rowNum++;
 
                 //}
             }   // Resize all columns to fit the content size
@@ -273,67 +281,72 @@ public class ImportExport {
         Spectrum spec;
         Spectrum matechedSpec;
 
-        String protein="";
-        String[] columns =  {"Title", "Library", "Scan No.","RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib","Score", "Validation(FDR)", "Mods", "Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+        String protein = "";
+        String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib", "Score", "Validation(FDR)", "Mods", "Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
         FileWriter fileOut = new FileWriter(filename + extsn);
 
-     
         //writing the column name
         fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(delm)));
         fileOut.write("\n");
 
         for (ComparisonResult res : result) {
             List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
-            // int lenMspec = mSpec.size();
-            //for (int s = 0; s < lenMspec; s++) {
-            int s = 0;
-
+            int lenMspec = mSpec.size();
             spec = res.getEspSpectrum();
-            matechedSpec = res.getMatchedLibSpec().get(0).getSpectrum();
-            fileOut.write(spec.getTitle() + delm);
+            for (int s = 0; s < lenMspec; s++) {
+                
+                matechedSpec = res.getMatchedLibSpec().get(s).getSpectrum();
 
-            fileOut.write(Integer.toString(mSpec.get(s).getSource()) + delm);
+                fileOut.write(this.configData.getExperimentalSpecFile().getName().toString() + delm);
 
-            fileOut.write(spec.getScanNumber() + delm);
-            
-            fileOut.write(spec.getRtTime() + delm);
+                fileOut.write(spec.getTitle() + delm);
+                
+                fileOut.write(Integer.toString(s+1) + delm);
 
-            fileOut.write(mSpec.get(s).getSequence() + delm);
+                fileOut.write(Integer.toString(mSpec.get(s).getSource()) + delm);
 
-            fileOut.write(Double.toString(spec.getPCMass()) + delm);
+                fileOut.write(spec.getScanNumber() + delm);
 
-            fileOut.write(spec.getCharge_asStr() + delm);
+                fileOut.write(spec.getRtTime() + delm);
 
-            fileOut.write(matechedSpec.getCharge_asStr() + delm);
-            
-            fileOut.write(Double.toString(res.getTopScore()) + delm);
+                fileOut.write(mSpec.get(s).getSequence() + delm);
 
-            if (configData.isDecoyAvailable()) {
-                fileOut.write(Double.toString(res.getFDR()) + delm);
+                fileOut.write(Double.toString(spec.getPCMass()) + delm);
 
-            } else {
-                fileOut.write("NA" + delm);
+                fileOut.write(spec.getCharge_asStr() + delm);
 
+                fileOut.write(matechedSpec.getCharge_asStr() + delm);
+
+                fileOut.write(Double.toString(res.getTopScore()) + delm);
+
+                if (configData.isDecoyAvailable()) {
+                    fileOut.write(Double.toString(res.getFDR()) + delm);
+
+                } else {
+                    fileOut.write("NA" + delm);
+
+                }
+                fileOut.write(matechedSpec.getModifications_asStr());
+                protein = matechedSpec.getProtein();
+                protein.replaceAll("^\"|\"$", "");
+                fileOut.write(protein + delm);
+
+                fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()) + delm);
+
+                fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()) + delm);
+
+                fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()) + delm);
+
+                fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()) + delm);
+
+                fileOut.write(Integer.toString(mSpec.get(s).getNumMatchedPeaks()) + delm);
+
+                fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()) + delm);
+
+                fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()) + delm);
+
+                fileOut.write("\n");
             }
-            fileOut.write(matechedSpec.getModifications_asStr());
-            protein = matechedSpec.getProtein();
-            protein.replaceAll("^\"|\"$", "");
-            fileOut.write(protein + delm);
-            
-            fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()) + delm);
-
-            fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()) + delm);
-
-            fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()) + delm);
-
-            fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()) + delm);
-
-            fileOut.write(Integer.toString(mSpec.get(s).getNumMatchedPeaks()) + delm);
-
-            fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()) + delm);
-
-            fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()) + delm);
-            fileOut.write("\n");
 
         }
         fileOut.flush();
