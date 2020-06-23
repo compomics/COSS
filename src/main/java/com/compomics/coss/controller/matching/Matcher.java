@@ -157,9 +157,9 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         mSpec.setScore(finalScore);//(Collections.max(scores));
                         mSpec.setSequence(sp2.getSequence());
                         if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")) {
-                            mSpec.setSource(1);
-                        } else {
                             mSpec.setSource(0);
+                        } else {
+                            mSpec.setSource(1);
                         }
                         mSpec.setNumMathcedPeaks(mNumPeaks);
                         mSpec.setSpectrum(sp2);
@@ -174,7 +174,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         // }
                     } catch (Exception ex) {
 
-                        Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, "\n Description : " + ex);
+                        Logger.getLogger(Matcher.class.getName()).log(Level.SEVERE, "\n Description : " + ex);
                     }
 
                 }
@@ -215,7 +215,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 }
 
             } catch (Exception ex) {//InterruptedException | IOException ex) {
-                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Matcher.class.getName()).log(Level.SEVERE, null, ex);
             }
             if (cancelled) {
                 break;

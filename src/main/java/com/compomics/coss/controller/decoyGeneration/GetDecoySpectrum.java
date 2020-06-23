@@ -39,22 +39,23 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
 
         ions = new FragmentIon(this.sequence, modifications);
         Map frag_ion_reverse = ions.getFragmentIon();
-
-        List<Modification> newMods = new ArrayList<>();
-       Modification mod;
-        for (Modification m : this.spectrum.getModifications()) {  
-            mod=m;
-            int newPos = this.newSequenceIndex[mod.getModificationPosition()];
-            mod.setModificationPosition(newPos);
-            newMods.add(mod);
-        }
-        
-        
         peaks_d = getDecoyPeak(this.spectrum.getPeakList(), frag_ion_actual, frag_ion_reverse);
         Collections.sort(peaks_d);
         this.spectrum.setPeakList(peaks_d);
+
+        if (!this.spectrum.getModifications().isEmpty()) {
+            List<Modification> newMods = new ArrayList<>();
+            Modification mod;
+            for (Modification m : this.spectrum.getModifications()) {
+                mod = m;
+                int newPos = this.newSequenceIndex[mod.getModificationPosition()];
+                mod.setModificationPosition(newPos);
+                newMods.add(mod);
+            }
+            this.spectrum.setModification(newMods);
+        }
+
         this.spectrum.setSequence(this.sequence);
-        this.spectrum.setModification(newMods);
         this.spectrum.setComment(spectrum.getComment() + " _Decoy");
         return this.spectrum;
 

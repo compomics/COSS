@@ -99,10 +99,10 @@ public class DataProducer implements Runnable { //procucer thread
                     double da_error = mass * this.precTolerance;
 
                     libSpec = confData.getLibSpecReader().readPart(mass, da_error);
-                   // synchronized (data) {
+                    synchronized (data) {
                         data.putExpSpec(expSpec);
                         data.putLibSpec(libSpec);
-                   // }
+                    }
 
                     if (cancelled) {
                         break;
@@ -111,9 +111,9 @@ public class DataProducer implements Runnable { //procucer thread
                 }
             }
         } catch (Exception e) {
-//            this.stillReading = false;
-//            this.cancelled = true;
-            System.out.println(e.toString() + "position error " + Integer.toString(currPos));
+            this.stillReading = false;
+            this.cancelled = true;
+            System.out.println(DataProducer.class.getName() + " " + e.toString() + " " + "position error " + Integer.toString(currPos));
 
         } finally {
             this.stillReading = false;

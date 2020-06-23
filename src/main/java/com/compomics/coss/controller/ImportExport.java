@@ -210,20 +210,22 @@ public class ImportExport {
 
             int rank = 0;
             String protein = "";
+            String specFilename = "";
             for (ComparisonResult res : result) {
                 List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
 
                 int lenMSpecs = mSpec.size();
-                
+
                 for (int s = 0; s < lenMSpecs; s++) {
                     //                int s = 0;
                     Row row = sheet.createRow(rowNum);
                     spec = res.getEspSpectrum();
                     matchedSpec = mSpec.get(s).getSpectrum();
 
-                    row.createCell(0).setCellValue(this.configData.getExperimentalSpecFile().getName().toString());
+                    specFilename = this.configData.getExperimentalSpecFile().getName().toString();
+                    row.createCell(0).setCellValue(specFilename.substring(0, specFilename.indexOf(".")));
                     row.createCell(1).setCellValue(spec.getTitle());
-                    row.createCell(2).setCellValue(s+1);
+                    row.createCell(2).setCellValue(s + 1);
                     row.createCell(3).setCellValue(mSpec.get(s).getSource());
                     row.createCell(4).setCellValue(spec.getScanNumber());
                     row.createCell(5).setCellValue(spec.getRtTime());
@@ -232,7 +234,7 @@ public class ImportExport {
                     row.createCell(8).setCellValue(spec.getCharge_asStr());
                     row.createCell(9).setCellValue(matchedSpec.getCharge_asStr());
                     row.createCell(10).setCellValue(res.getTopScore());
-                    if (configData.isDecoyAvailable()) {
+                    if (configData.isDecoyAvailable() && s == 0) {
                         row.createCell(11).setCellValue(res.getFDR());
 
                     } else {
@@ -288,20 +290,22 @@ public class ImportExport {
         //writing the column name
         fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(delm)));
         fileOut.write("\n");
+        String specFilename = "";
 
         for (ComparisonResult res : result) {
             List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
             int lenMspec = mSpec.size();
             spec = res.getEspSpectrum();
             for (int s = 0; s < lenMspec; s++) {
-                
+
                 matechedSpec = res.getMatchedLibSpec().get(s).getSpectrum();
 
-                fileOut.write(this.configData.getExperimentalSpecFile().getName().toString() + delm);
+                specFilename = this.configData.getExperimentalSpecFile().getName().toString();
+                fileOut.write(specFilename.substring(0, specFilename.indexOf(".")) + delm);
 
                 fileOut.write(spec.getTitle() + delm);
-                
-                fileOut.write(Integer.toString(s+1) + delm);
+
+                fileOut.write(Integer.toString(s + 1) + delm);
 
                 fileOut.write(Integer.toString(mSpec.get(s).getSource()) + delm);
 
@@ -319,7 +323,7 @@ public class ImportExport {
 
                 fileOut.write(Double.toString(res.getTopScore()) + delm);
 
-                if (configData.isDecoyAvailable()) {
+                if (configData.isDecoyAvailable() && s == 0) {
                     fileOut.write(Double.toString(res.getFDR()) + delm);
 
                 } else {

@@ -24,7 +24,7 @@ public class Validation {
         
         for (ComparisonResult r : result) {
             
-            if (r.getMatchedLibSpec().get(0).getSource() == 1) {
+            if (r.getMatchedLibSpec().get(0).getSource() == 0) {
 
                 numDecoy++;
 

@@ -110,7 +110,7 @@ public class MainConsoleController implements UpdateListener {
                     startMatching();
 
                     ImportExport exp = new ImportExport(result, configData);
-                    exp.saveResult_CL(1);
+                    exp.saveResult_CL(2);
                 }
 
             }
