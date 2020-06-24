@@ -11,4 +11,7 @@ package com.compomics.coss.controller.rescoring;
  */
 public class Report {
     
+    
+    
+    
 }

@@ -148,13 +148,13 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                                 mNumPeaks = algorithm.getNumMatchedPeaks();
                             }
                             scores.add(score);
-
                         }
+                        
                         double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
                         finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
-
                         MatchedLibSpectra mSpec = new MatchedLibSpectra();
-                        mSpec.setScore(finalScore);//(Collections.max(scores));
+                        
+                        mSpec.setScore(finalScore);
                         mSpec.setSequence(sp2.getSequence());
                         if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")) {
                             mSpec.setSource(0);
@@ -204,13 +204,9 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         compResult.setTopScore(tempMatch.get(0).getScore());
                         simResult.add(compResult);  
 
-//                        oos.writeObject(compResult);
-//                        oos.flush();
-
                         tempMatch.clear();
                         specResult.clear();
                         compResult=null;
-
                     }
                 }
 

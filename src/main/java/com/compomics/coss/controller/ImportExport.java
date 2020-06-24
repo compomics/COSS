@@ -208,7 +208,6 @@ public class ImportExport {
             Spectrum spec;
             Spectrum matchedSpec;
 
-            int rank = 0;
             String protein = "";
             String specFilename = "";
             for (ComparisonResult res : result) {
@@ -233,7 +232,7 @@ public class ImportExport {
                     row.createCell(7).setCellValue(spec.getPCMass());
                     row.createCell(8).setCellValue(spec.getCharge_asStr());
                     row.createCell(9).setCellValue(matchedSpec.getCharge_asStr());
-                    row.createCell(10).setCellValue(res.getTopScore());
+                    row.createCell(10).setCellValue(mSpec.get(s).getScore());
                     if (configData.isDecoyAvailable() && s == 0) {
                         row.createCell(11).setCellValue(res.getFDR());
 
@@ -252,7 +251,7 @@ public class ImportExport {
                     row.createCell(19).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
                     row.createCell(20).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
                     rowNum++;
-                    rank++;
+                 
                 }
 
                 //}
@@ -321,7 +320,7 @@ public class ImportExport {
 
                 fileOut.write(matechedSpec.getCharge_asStr() + delm);
 
-                fileOut.write(Double.toString(res.getTopScore()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getScore()) + delm);
 
                 if (configData.isDecoyAvailable() && s == 0) {
                     fileOut.write(Double.toString(res.getFDR()) + delm);
