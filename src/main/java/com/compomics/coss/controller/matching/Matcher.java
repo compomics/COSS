@@ -149,7 +149,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             }
                             scores.add(score);
                         }
-                        
                         double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
                         finalScore = (double) Math.round(finalScore * 1000d) / 1000d;
                         MatchedLibSpectra mSpec = new MatchedLibSpectra();
@@ -204,9 +203,13 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         compResult.setTopScore(tempMatch.get(0).getScore());
                         simResult.add(compResult);  
 
+//                        oos.writeObject(compResult);
+//                        oos.flush();
+
                         tempMatch.clear();
                         specResult.clear();
                         compResult=null;
+
                     }
                 }
 

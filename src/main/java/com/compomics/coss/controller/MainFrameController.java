@@ -470,6 +470,7 @@ public class MainFrameController implements UpdateListener {
      * Displays the comparison result visually on the result panel
      */
     private void displayResult() {
+        int c = 0;
 
         try {
             if (result != null && !result.isEmpty() && result.get(targSpectrumNum).getMatchedLibSpec() != null && !result.get(targSpectrumNum).getMatchedLibSpec().isEmpty()) {
@@ -479,15 +480,7 @@ public class MainFrameController implements UpdateListener {
                 if (this.resultNumber < 0) {
                     this.resultNumber = 0;
                 }
-                Spectrum matchedSpec = res.getMatchedLibSpec().get(resultNumber).getSpectrum();
-
-                int sizeTarget = targSpec.getNumPeaks();
-                int sizeMatched = matchedSpec.getNumPeaks();
-                double[] mz_tar = new double[sizeTarget];
-                double[] int_tar = new double[sizeTarget];
-                double[] mz_matched = new double[sizeMatched];
-                double[] int_matched = new double[sizeMatched];
-                ArrayList<Peak> peaks = targSpec.getPeakList();
+                Spectrum matchedSpec = res.getMatchedLibSpec().get(resultNumber).getSpectrum();               
                 double precMass_tar = targSpec.getPCMass();
                 double precMass_match = matchedSpec.getPCMass();
                 String targCharge = targSpec.getCharge_asStr();
@@ -495,13 +488,20 @@ public class MainFrameController implements UpdateListener {
                 String tarName = targSpec.getTitle();
                 String matchedName = matchedSpec.getTitle();
 
-                int c = 0;
+                ArrayList<Peak> peaks = targSpec.getPeakList();
+                double[] mz_tar = new double[peaks.size()];
+                double[] int_tar = new double[peaks.size()];
+                c = 0;
                 for (Peak p : peaks) {
                     mz_tar[c] = p.getMz();
                     int_tar[c] = p.getIntensity();
                     c++;
                 }
+                
+                
                 peaks = matchedSpec.getPeakList();
+                double[] mz_matched = new double[peaks.size()];
+                double[] int_matched = new double[peaks.size()];
                 c = 0;
                 for (Peak p : peaks) {
                     mz_matched[c] = p.getMz();
@@ -519,7 +519,7 @@ public class MainFrameController implements UpdateListener {
             }
 
         } catch (Exception exception) {
-            LOG.error(exception + " target spectrum number: " + Integer.toString(this.resultNumber));
+            LOG.error(exception + " target spectrum number: " + Integer.toString(this.resultNumber+c));
         }
 
         resultPnl.pnlVisualSpectrum.revalidate();

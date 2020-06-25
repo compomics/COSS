@@ -99,10 +99,10 @@ public class DataProducer implements Runnable { //procucer thread
                     double da_error = mass * this.precTolerance;
 
                     libSpec = confData.getLibSpecReader().readPart(mass, da_error);
-                    synchronized (data) {
+                   // synchronized (data) {
                         data.putExpSpec(expSpec);
                         data.putLibSpec(libSpec);
-                    }
+                   // }
 
                     if (cancelled) {
                         break;
