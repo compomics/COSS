@@ -1,7 +1,6 @@
 package com.compomics.coss.controller.rescoring;
 
 import com.compomics.coss.model.ComparisonResult;
-import com.compomics.coss.model.ConfigData;
 import com.compomics.coss.model.MatchedLibSpectra;
 import com.compomics.ms2io.model.Spectrum;
 import java.io.File;
@@ -21,15 +20,15 @@ public class GenerateFeatures {
 
     }
 
-    private File setFeatures(List<ComparisonResult> result) throws IOException {
+    public void generate(List<ComparisonResult> result, File feature_file ) throws IOException {
         Spectrum spec;
         Spectrum matechedSpec;
-        String delm = "  ";
+        String delm = "\t";
 
         MatchedLibSpectra matchedLib;
         String protein = "";
         String[] columns = {"id", "label", "ScanNr", "RetentionT", "precMass", "ChargeQuery", "Score", "#MatchedPeaks", "MatchedIntQuery", "Peptide", "Proteins"};
-        File feature_file = new File("");
+        
         FileWriter fileOut = new FileWriter(feature_file);
 
         //writing the column name
@@ -69,8 +68,9 @@ public class GenerateFeatures {
             fileOut.write(matechedSpec.getSequence() + delm);//peptide
             
             protein = matechedSpec.getProtein(); //proteins
-            if(protein.endsWith("")){
-                protein="P54652";
+            if(protein.isEmpty()){
+                //this field is need by percolator.
+                protein="P54652"; //random protein assignment for percolator if it is not given. this doesn't affect the result.
             }
             protein.replaceAll("^\"|\"$", "");
             fileOut.write(protein + delm);
@@ -81,7 +81,6 @@ public class GenerateFeatures {
         fileOut.flush();
         fileOut.close();
 
-        return null;
 
     }
 }

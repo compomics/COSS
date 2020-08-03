@@ -1,6 +1,6 @@
 package com.compomics.coss.controller;
 
-import com.compomics.coss.view.MainGUI;
+import com.compomics.coss.view.MainFrame;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.WriterAppender;
 import org.apache.log4j.spi.LoggingEvent;
@@ -15,9 +15,9 @@ public class LogTextAreaAppender extends WriterAppender {
     /**
      * The dialog to log to.
      */
-    private MainGUI frm;
+    private MainFrame frm;
 
-    public void setLogArea(MainGUI frame) {
+    public void setLogArea(MainFrame frame) {
         this.frm = frame;
         this.frm.txtlog.setText("");
     }
