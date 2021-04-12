@@ -2,6 +2,7 @@ package com.compomics.coss.controller.decoyGeneration;
 
 import com.compomics.ms2io.controller.Indexer;
 import com.compomics.ms2io.controller.MgfReader;
+import com.compomics.ms2io.controller.MgfWriter;
 import com.compomics.ms2io.controller.MspReader;
 import com.compomics.ms2io.controller.MspWriter;
 import com.compomics.ms2io.model.IndexKey;
@@ -17,6 +18,7 @@ import com.compomics.ms2io.model.Peak;
 import com.compomics.ms2io.controller.SpectraReader;
 import com.compomics.ms2io.controller.SpectraWriter;
 import java.io.IOException;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -32,38 +34,41 @@ public abstract class GenerateDecoy {
     protected List<IndexKey> indxList;
     protected org.apache.log4j.Logger log;
 
-    public GenerateDecoy(File f,  org.apache.log4j.Logger lg) throws IOException {
+    public GenerateDecoy(File f, org.apache.log4j.Logger lg) throws IOException {
         this.log = lg;
         this.file = f;
         set_spectrum_ReadWrite();
         // this.lstnr=lr;
     }
-    
-    private void set_spectrum_ReadWrite() throws IOException{
-        
+
+    private void set_spectrum_ReadWrite() throws IOException {
+
         specReader = null;
-        specWriter=null;
-        
+        specWriter = null;
+        String filename = FilenameUtils.removeExtension(file.getName());
+
         Indexer giExp = new Indexer(this.file);
         indxList = giExp.generate();
-      
+
         if (this.file.getName().endsWith("mgf")) {
             specReader = new MgfReader(this.file, indxList);
+            
+            decoyFile = new File(this.file.getParent(), filename + "_decoy.mgf");
+            if (decoyFile.exists()) {
+                decoyFile.delete();
+            }
+            specWriter = new MgfWriter(decoyFile);
 
         } else if (this.file.getName().endsWith("msp") || this.file.getName().endsWith("sptxt")) {
             specReader = new MspReader(this.file, indxList);
 
+            decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
+            if (decoyFile.exists()) {
+                decoyFile.delete();
+            }
+            specWriter = new MspWriter(decoyFile);
         }
-        String filename = file.getName().substring(0, file.getName().lastIndexOf("."));
-        
-        decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
-        if(decoyFile.exists()){
-            decoyFile.delete();
-        }
-        
-        decoyFile = new File(this.file.getParent(), filename + "_decoy.msp");
-        specWriter = new MspWriter(decoyFile);
-        
+
     }
 
     public abstract void generate();
@@ -82,7 +87,7 @@ public abstract class GenerateDecoy {
         Map<Double, Double> shuffleMap = new LinkedHashMap<>();
         list.forEach(k -> shuffleMap.put(k, spectrum.get(k)));
         return shuffleMap;
-        
+
     }
 
     /**
@@ -145,5 +150,4 @@ public abstract class GenerateDecoy {
 
     }
 
-  
 }

@@ -48,7 +48,16 @@ public class GetDecoySpectrum_RandomPeaks implements Callable<Spectrum> {
         }
 
         this.spectrum.setPeakList(peaks_d);
-        spectrum.setComment(spectrum.getComment() + " _Decoy");
+        //for mgf format
+        if(!spectrum.getTitle().equals("") && spectrum.getComment().equals("")){
+            spectrum.setTitle(spectrum.getTitle() + " _Decoy");
+        }
+        //for msp format
+        if(spectrum.getTitle().equals("") && !spectrum.getComment().equals("")){
+            spectrum.setComment(spectrum.getComment() + " _Decoy");
+        }
+        
+        
         return this.spectrum;
 
     }

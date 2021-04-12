@@ -19,7 +19,6 @@ public class MergeFiles {
     private final File fileTobeApended;
     
        public MergeFiles(File file1, File file2) {
-
        this.fileOriginal=file1;
        this.fileTobeApended=file2;
        
@@ -41,8 +40,7 @@ public class MergeFiles {
            isFormatSame=true;
        }
     
-       if(isFormatSame && isFormatCorrect){
-           
+       if(isFormatSame && isFormatCorrect){           
     
         try {
             // configureReadWriter();
@@ -51,9 +49,8 @@ public class MergeFiles {
 
             String line = br.readLine();
             int count=1;
-            bw.write("\n");
-            while (line != null) {   
-                
+           // bw.write("\n");
+            while (line != null) {                   
                 bw.write(line); //wr.write(spectrum, bw);  
                 bw.write("\n");
                 line = br.readLine();

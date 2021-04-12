@@ -33,10 +33,9 @@ public class FixedPeakShift extends GenerateDecoy {
      
         for (int i = 0; i < len_index ; i++) {
             try {
-                spectrum = specReader.readAt(indxList.get(i).getPos());              
+                spectrum = specReader.readAt(indxList.get(i).getPos());       
                 
-                getDecoy = new GetDecoySpectrum_PeakShift(spectrum);
-                
+                getDecoy = new GetDecoySpectrum_PeakShift(spectrum);                
                 future = executor.submit(getDecoy);                
                 spectrum = future.get();    
                 synchronized(this){

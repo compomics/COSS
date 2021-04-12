@@ -2,9 +2,7 @@ package com.compomics.coss.controller.matching;
 
 import com.compomics.coss.model.ConfigData;
 import com.compomics.ms2io.model.Peak;
-import com.compomics.ms2io.model.Spectrum;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**

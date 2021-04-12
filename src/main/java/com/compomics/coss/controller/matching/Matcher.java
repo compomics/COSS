@@ -111,7 +111,8 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
                     try {
                         Spectrum sp2 = (Spectrum) iteratorSpectra.iter.next();
-                        if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY") || sp2.getComment().contains("DECOY")) {
+                        if (sp2.getComment().contains("Decoy") || sp2.getComment().contains("DECOY") || sp2.getComment().contains("decoy")
+                                || sp2.getTitle().contains("Decoy") || sp2.getTitle().contains("DECOY") || sp2.getTitle().contains("decoy")) {
                             numDecoy++;
                         }
 
@@ -155,7 +156,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         
                         mSpec.setScore(finalScore);
                         mSpec.setSequence(sp2.getSequence());
-                        if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")) {
+                        if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY") || sp2.getTitle().contains("decoy")|| sp2.getTitle().contains("Decoy")) {
                             mSpec.setSource(0);
                         } else {
                             mSpec.setSource(1);
@@ -202,10 +203,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         compResult.setMatchedLibSpec(new ArrayList<>(tempMatch));
                         compResult.setTopScore(tempMatch.get(0).getScore());
                         simResult.add(compResult);  
-
-//                        oos.writeObject(compResult);
-//                        oos.flush();
-
                         tempMatch.clear();
                         specResult.clear();
                         compResult=null;
@@ -222,19 +219,6 @@ public class Matcher implements Callable<List<ComparisonResult>> {
 
         }
 
-//        try {
-//            if (oos != null) {
-//                oos.close();
-//            }
-//            if (fos != null) {
-//                fos.close();
-//            }
-//
-//        } catch (IOException ex) {
-//            Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "closing file writing" + ex);
-//        }
-//
-//        List<ComparisonResult> simResult = null;
         if (!cancelled && !this.producer.isCancelled()) {
             System.out.print("\b\b\b\b\b\b search completed \n");
 
@@ -243,59 +227,11 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                 confData.setDecoyAvailability(true);
             }
 
-//            if (confData.getExpSpectraIndex() != null) {
-//                simResult = new ArrayList<>(confData.getExpSpectraIndex().size());
-//            } else if (confData.getEbiReader() != null) {
-//                simResult = new ArrayList<>(confData.getEbiReader().getSpectraCount());
-//            }
-            //  listener.updateprogress(confData.getExpSpectraIndex().size());
-
-//            log.info("Getting results.");
-//
-//            FileInputStream fis = null;
-//            ObjectInputStream ois = null;
-//
-//            try {
-//                fis = new FileInputStream("temp.txt");
-//                ois = new ObjectInputStream(fis);
-//                ComparisonResult r = (ComparisonResult) ois.readObject();
-//                while (r != null) {
-//                    r = (ComparisonResult) ois.readObject();
-//                    simResult.add(r);
-//                }
-//            } catch (FileNotFoundException | ClassNotFoundException ex) {
-//                Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, "opening file for reading result" + ex);
-//            } catch (EOFException ex) {
-//                // System.out.println("End of file reached");
-//
-//            } catch (IOException ex) {
-//                Logger.getLogger(Matcher.class.getName()).log(Level.SEVERE, null, ex);
-//            } finally {
-//                try {
-//                    if (ois != null) {
-//                        ois.close();
-//                    }
-//                    if (fis != null) {
-//                        fis.close();
-//                    }
-//
-//                    File file = new File("temp.txt");
-//                    if (file.exists()) {
-//                        file.delete();
-//                    }
-//                } catch (IOException ex) {
-//                    Logger.getLogger(Dispatcher.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
+       
         } else if (cancelled || this.producer.isCancelled()) {
 
             log.info("Process cancelled.");
         }
-//        File fis = new File("temp.txt");
-//        if (fis.exists()) {
-//            fis.delete();
-//
-//        }
 
         return simResult;
     }

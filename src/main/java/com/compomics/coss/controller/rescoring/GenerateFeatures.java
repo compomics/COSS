@@ -34,6 +34,7 @@ public class GenerateFeatures {
         //writing the column name
         fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(delm)));
         fileOut.write("\n");
+        int result_index=0;
 
         for (ComparisonResult res : result) {
             int s = 0;//only the first rank is taken for rescoring
@@ -43,7 +44,7 @@ public class GenerateFeatures {
             matechedSpec = matchedLib.getSpectrum();
 
             
-            fileOut.write(spec.getTitle() + delm); // id
+            fileOut.write(spec.getTitle()+" Index="+ Integer.toString(result_index) + delm); // id
 
             int label = matchedLib.getSource();
             if(label==0){
@@ -76,6 +77,7 @@ public class GenerateFeatures {
             fileOut.write(protein + delm);
 
             fileOut.write("\n");
+            result_index++;
 
         }
         fileOut.flush();

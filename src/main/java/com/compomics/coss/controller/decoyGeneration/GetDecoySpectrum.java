@@ -1,5 +1,6 @@
 package com.compomics.coss.controller.decoyGeneration;
 
+import com.compomics.ms2io.controller.SpectraWriter;
 import com.compomics.ms2io.model.Modification;
 import com.compomics.ms2io.model.Peak;
 import com.compomics.ms2io.model.Spectrum;
@@ -15,20 +16,23 @@ import java.util.concurrent.Callable;
  *
  * @author Genet
  */
-public class GetDecoySpectrum implements Callable<Spectrum> {
+public class GetDecoySpectrum implements Runnable {
 
     Spectrum spectrum;
     String sequence;
     int[] newSequenceIndex;
+    final SpectraWriter spectraWriter;
 
-    public GetDecoySpectrum(Spectrum spec, String sequence, int[] newIndex) {
+    public GetDecoySpectrum(Spectrum spec, String sequence, int[] newIndex, SpectraWriter spw) {
         this.spectrum = spec;
         this.sequence = sequence;
         this.newSequenceIndex = newIndex;
+        this.spectraWriter = spw;
     }
 
     @Override
-    public Spectrum call() throws Exception {
+    public void run(){
+        
         ArrayList<Peak> peaks_d;
         Map<Integer, Modification> modifications = new HashMap<>();
         for (Modification m : this.spectrum.getModifications()) {
@@ -57,7 +61,32 @@ public class GetDecoySpectrum implements Callable<Spectrum> {
 
         this.spectrum.setSequence(this.sequence);
         this.spectrum.setComment(spectrum.getComment() + " _Decoy");
-        return this.spectrum;
+
+        String comments = "";
+        //if (file.getName().endsWith("msp")) {
+        spectrum.setTitle(sequence + "/" + spectrum.getCharge().getCharge());
+
+        if (!spectrum.getModifications().isEmpty()) {
+            comments = spectrum.getComment();
+            String[] splitcomm = comments.split(" ");
+            int ln = splitcomm.length;
+            for (int k = 0; k < ln; k++) {
+                if (splitcomm[k].contains("Mods")) {
+                    splitcomm[k] = "Mods=" + spectrum.getModifications_asStr();
+                    break;
+                }
+
+            }
+            String newcomments = String.join(" ", splitcomm);
+            spectrum.setComment(newcomments);
+        }
+
+        //}
+        synchronized (this) {
+            this.spectraWriter.write(spectrum);
+            //System.out.print("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b" + Integer.toString(i));
+        }
+        //return this.spectrum;
 
     }
 
