@@ -81,6 +81,7 @@ public class Rescore {
                     id=title.substring(title.indexOf("Index")).split("=")[1];
                     int index=Integer.parseInt(id);
                     rescored_result.put(index, sb.toString());
+                    sb.setLength(0);
                     
                     
                 }else if(line.contains("percolator finished")){

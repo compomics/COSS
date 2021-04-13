@@ -535,7 +535,7 @@ public class MainFrameController implements UpdateListener {
             int resultSize = 0;
             resultSize = result.size();// configData.getExpSpectraIndex().size();
             Spectrum expSpec;
-            Object[] row = new Object[13];
+            Object[] row = new Object[15];
             ComparisonResult res;
             MatchedLibSpectra matchedSpec;
             int row_index;
@@ -616,6 +616,9 @@ public class MainFrameController implements UpdateListener {
                 row[11] = Double.toString(mSpec.getSumMatchedInt_Lib());
                 row[12] = Double.toString(mSpec.getNumMatchedPeaks());
                 tblModelResult.addRow(row);
+                if(mainView.chkboxPercolator.isSelected()){
+                    break;
+                }
 
             }
 
@@ -971,22 +974,31 @@ public class MainFrameController implements UpdateListener {
                                 }
                             } catch (IOException ex) {
                                 java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                            }finally{
-                                
+                            }finally{ 
                                 List<ComparisonResult> temp = new ArrayList<>();                                
                                 List<Integer> newIndex= new ArrayList<Integer>(rescore.rescored_result.keySet()) ;
                                 double rescored_score;
                                 double q_val;
                                 String[] splits;
-                                for(int i=0;i<newIndex.size();i++){
-                                    
+                                for(int i=0;i<newIndex.size();i++){                                    
                                     temp.add(i, result.get(newIndex.get(i)));
                                     splits = rescore.rescored_result.get(newIndex.get(i)).split(",");
-                                    rescored_score = Double.parseDouble(splits[0]);
-                                    q_val = Double.parseDouble(splits[1]);
+                                    try{
+                                        rescored_score = Double.parseDouble(splits[0]);
+                                    }catch(NumberFormatException ex){
+                                        rescored_score = 0.0;
+                                    }
+                                    try{
+                                        q_val = Double.parseDouble(splits[1]);
+                                        
+                                    }catch(NumberFormatException ex){
+                                        
+                                        q_val = 0.0;
+                                    }                                   
                                     
                                     temp.get(i).setTopScore(rescored_score);
                                     temp.get(i).setQval(q_val);
+                                    temp.get(i).getMatchedLibSpec().get(0).setScore(rescored_score);
                                 }
                                 
                                 result=temp;

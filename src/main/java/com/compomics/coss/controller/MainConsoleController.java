@@ -2,6 +2,7 @@ package com.compomics.coss.controller;
 
 import com.compomics.coss.controller.decoyGeneration.*;
 import com.compomics.coss.controller.SpectrumAnnotation.Annotation;
+import com.compomics.coss.controller.rescoring.Rescore;
 import com.compomics.coss.model.ComparisonResult;
 import com.compomics.coss.model.ConfigHolder;
 import java.io.File;
@@ -39,6 +40,8 @@ public class MainConsoleController implements UpdateListener {
     public void startRunning(String[] args) {
         try {
 
+            System.out.println("Starting COSS-V2");
+            System.out.println("Rescoring with Percolator is set on by default in this version");
             int lenArgs = args.length;
             String arg1 = args[0];
             if (lenArgs <= 1 || lenArgs > 5) {
@@ -75,14 +78,13 @@ public class MainConsoleController implements UpdateListener {
             } else if (lenArgs == 3 && (arg1.startsWith("-a"))) {
 
                 System.out.println("Annotating spectral library file...");
-                double fragTol=0.5;
-                try{
-                    fragTol= Double.parseDouble(args[2]);
-                }catch(NumberFormatException ex){
+                double fragTol = 0.5;
+                try {
+                    fragTol = Double.parseDouble(args[2]);
+                } catch (NumberFormatException ex) {
                     LOG.info("check the fragment tolearnce input: " + ex.toString());
                 }
-                
-                
+
                 annotateLibrary(fragTol, args[1]);
                 Runtime.getRuntime().exit(0);
 
@@ -109,8 +111,8 @@ public class MainConsoleController implements UpdateListener {
 
                     startMatching();
 
-                    ImportExport exp = new ImportExport(result, configData);
-                    exp.saveResult_CL(2);
+//                    ImportExport exp = new ImportExport(result, configData);
+//                    exp.saveResult_CL(2);
                 }
 
             }
@@ -227,9 +229,27 @@ public class MainConsoleController implements UpdateListener {
 
         dispatcher = new Dispatcher(this.configData, this, LOG);
         result = dispatcher.dispatch();
+        
         if (configData.isDecoyAvailable() && result != null) {
             validateResult();
-            LOG.info("Number of validated identified spectra: " + Integer.toString(result.size()));
+            LOG.info("Number of validated identified spectra by COSS: " + Integer.toString(result.size()));
+
+            LOG.info("starting rescoring the result with Percolator ... ");
+            Rescore rescore = new Rescore(result);
+            try {
+                boolean finished = rescore.start_rescoring(configData.getExperimentalSpecFile().toString());
+                if (finished) {
+                    LOG.info("Percolator finishes scoring and result is stored in the directory of input file ");
+                } else {
+                    LOG.info("Percolator exits with error. Result not rescored ");
+                    if (!rescore.error_msg.isEmpty()) {
+                        LOG.info(rescore.error_msg);
+                    }
+                }
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+
         } else {
             LOG.info("No decoy spectra found in library");
         }
