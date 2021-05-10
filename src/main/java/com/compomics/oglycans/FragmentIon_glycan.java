@@ -43,7 +43,7 @@ public class FragmentIon_glycan {
             String y_ion = sequence.substring(last_index - i, len_seq);
 
             int len_chars = i + 1;
-            String suffix = Integer.toString(len_chars); //number to append to the ion type
+            //String suffix = Integer.toString(len_chars); //number to append to the ion type
             
             double b_mass = 0;           
             double a_mass = 0;
@@ -59,6 +59,9 @@ public class FragmentIon_glycan {
                 b_mass += AA_Mass.getAA_mass(bionAA);
                 y_mass += AA_Mass.getAA_mass(yionAA);
 
+                //check if the aa from N term and aa from C term modified
+                //modification not applied on b and y ion, but keep track if it exists 
+                //mass of c and z ions then shifted if modification exists
                 if (true){ //modification is possible for all s and t aa
                     if (bionAA == 'T' || bionAA == 'S') {
                         //b_mass += 503.3;
