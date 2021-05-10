@@ -2,46 +2,91 @@ package com.compomics.oglycans;
 
 import com.compomics.util.experiment.biology.enzymes.Enzyme;
 import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
+import com.compomics.util.experiment.identification.protein_sequences.SingleProteinSequenceProvider;
 import com.compomics.util.experiment.identification.protein_sequences.digestion.ExtendedPeptide;
 import com.compomics.util.experiment.identification.protein_sequences.digestion.ProteinIteratorUtils;
 import com.compomics.util.experiment.identification.protein_sequences.digestion.SequenceIterator;
 import com.compomics.util.experiment.identification.protein_sequences.digestion.iterators.SpecificSingleEnzymeIterator;
+import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
 import com.compomics.util.experiment.io.biology.protein.iterators.FastaIterator;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FastaReader {
 
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
+    private ProteinIteratorUtils proteinIteratorUtils = new ProteinIteratorUtils(new ArrayList<>(), 1);
 
-    public FastaReader() {
-        ArrayList<Enzyme> enzymes = enzymeFactory.getEnzymes();
-    }
+    /**
+     * Return a list of peptides from the given peptide FASTA file.
+     *
+     * @param fastaFile the FASTA file
+     * @return a list of {@link Peptide} objects
+     * @throws FileNotFoundException
+     */
+    public List<Peptide> readPeptideFasta(File fastaFile) throws FileNotFoundException {
+        List<Peptide> peptides = new ArrayList<>();
 
-    public void readFasta(File fastaFile) throws FileNotFoundException, InterruptedException {
         FastaIterator fastaIterator = new FastaIterator(fastaFile);
-        ProteinIteratorUtils proteinIteratorUtils = new ProteinIteratorUtils(new ArrayList<>(), 1);
-
         Protein protein;
-        while((protein = fastaIterator.getNextProtein()) != null){
-            System.out.println("protein: " + protein.getAccession());
 
-            SequenceIterator sequenceIterator = new SpecificSingleEnzymeIterator(proteinIteratorUtils, protein.getSequence(), enzymeFactory.getEnzyme("Trypsin"), 2, 0.0, 10000.0);
-            ExtendedPeptide extendedPeptide;
-            while((extendedPeptide = sequenceIterator.getNextPeptide()) != null){
-                System.out.println("peptide: " + extendedPeptide.peptide.getSequence());
-            }
+        ModificationParameters modificationParameters = new ModificationParameters();
 
-            //int[] observableAminoAcids = protein.getObservableAminoAcids(enzymes, 20);
+        while ((protein = fastaIterator.getNextProtein()) != null) {
+            // I'm not sure if this is important
+            SequenceProvider sequenceProvider = new SingleProteinSequenceProvider(protein);
 
-            System.out.println();
+            // create a Peptide object because we're dealing with peptides
+            Peptide peptide = new Peptide(protein.getSequence());
+
+            System.out.println(peptide.getMass(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching()));
+
+            peptides.add(peptide);
         }
 
-        System.out.println("");
+        return peptides;
+    }
 
+    /**
+     * Return a Map (key: proteins, value: list of digested peptides) from the given protein FASTA file.
+     *
+     * @param fastaFile the FASTA file
+     * @return a map of protein and associated digested peptides
+     * @throws FileNotFoundException
+     */
+    public Map<Protein, List<ExtendedPeptide>> readProteinFasta(File fastaFile) throws FileNotFoundException, InterruptedException {
+        Map<Protein, List<ExtendedPeptide>> proteins = new HashMap<>();
+
+        FastaIterator fastaIterator = new FastaIterator(fastaFile);
+        Protein protein;
+        while ((protein = fastaIterator.getNextProtein()) != null) {
+            List<ExtendedPeptide> extendedPeptides = digestProtein(protein);
+            proteins.put(protein, extendedPeptides);
+        }
+
+        return proteins;
+    }
+
+    private List<ExtendedPeptide> digestProtein(Protein protein) throws InterruptedException {
+        List<ExtendedPeptide> extendedPeptides = new ArrayList<>();
+
+        SequenceIterator sequenceIterator = new SpecificSingleEnzymeIterator(proteinIteratorUtils, protein.getSequence(), enzymeFactory.getEnzyme("Trypsin"), 0, 800.0, 10000.0);
+        ExtendedPeptide extendedPeptide;
+        while ((extendedPeptide = sequenceIterator.getNextPeptide()) != null) {
+            System.out.println("peptide: " + extendedPeptide.peptide.getSequence());
+            extendedPeptides.add(extendedPeptide);
+        }
+
+        return extendedPeptides;
     }
 
 }

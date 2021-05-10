@@ -1,8 +1,15 @@
 package com.compomics.oglycans;
 
+import com.compomics.coss.model.ResourceUtils;
+import com.compomics.util.experiment.biology.proteins.Peptide;
+import com.compomics.util.experiment.biology.proteins.Protein;
+import com.compomics.util.experiment.identification.protein_sequences.digestion.ExtendedPeptide;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 public class Playground {
 
@@ -10,8 +17,14 @@ public class Playground {
 
         try {
             FastaReader fastaReader = new FastaReader();
-            fastaReader.readFasta(new File("/home/niels/Desktop/fastas/contaminants.fasta"));
+            List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
+
+            Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
+
+            System.out.println("");
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
