@@ -71,8 +71,7 @@ public class Rescore {
                 }else if(line.startsWith("PSMId")){
                     started=true;
                     ended=false;
-                }else if(started && !ended){
-                    
+                }else if(started && !ended){                    
                     String[] psm_split=line.split("\t");
                     sb.append(psm_split[1]);
                     sb.append(",");
@@ -87,8 +86,7 @@ public class Rescore {
                 }else if(line.contains("percolator finished")){
                     ended=true;
                     started=false;
-                }
-                
+                }               
                 
                 System.out.println(line);
             }  

@@ -52,11 +52,11 @@ public class MainConsoleController implements UpdateListener {
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
                 System.out.println("OR\n");
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge \n");
+                
                 System.out.println("OR decoy spectra can be generated and appended to the given library file using the command below\n");
                 System.out.println("java -jar COSS-X.Y.jar -d librarySpectraFile \n");
                 System.out.println("OR spectra library file can be annotated using the command below\n");
                 System.out.println("java -jar COSS-X.Y.jar -a librarySpectraFile \n");
-
                 Runtime.getRuntime().exit(0);
 
             }
