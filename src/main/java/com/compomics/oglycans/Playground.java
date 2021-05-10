@@ -27,7 +27,7 @@ public class Playground {
             
             
             Generate_spectra gen = new Generate_spectra();
-            gen.start(peptides, mgf_file);
+            gen.start(peptides, output_file);
             
             
 

@@ -22,7 +22,7 @@ public class Generate_spectra {
        
         
         ArrayList<Peptide> digested_peptides = (ArrayList)peptides;      
-        double pcmass=0;
+      
         FragmentIon_glycan frag;
         FragmentIon_glycan frag_decoy;
         Spectrum spec=new Spectrum();
@@ -66,20 +66,20 @@ public class Generate_spectra {
                 peaks_d.add(pk_d);                
             }
             
-            spec.setComment("Comment: " + "Parent="+pcmass + " " + "Mods=o_glycan, S&T");
+            spec.setComment("Comment: " + "Parent="+peptide.getMass() + " " + "Mods=o_glycan, S&T");
             spec.setMW(0);;
             spec.setSequence(peptide.getSequence());
-            spec.setPCMass(pcmass);
-            spec.setTitle("Name: " + peptide);
+            spec.setPCMass(peptide.getMass());
+            spec.setTitle(peptide.getSequence());
             spec.setNumPeaks(mz_values.size());
             spec.setPeakList(peaks);            
             spw.write(spec);   
             
-            spec_decoy.setComment("Comment: " + "Parent="+pcmass + " " + "Mods=o_glycan, S&T");
+            spec_decoy.setComment("Comment: " + "Parent="+peptide.getMass() + " " + "Mods=o_glycan, S&T" + " _decoy");
             spec_decoy.setMW(0);;
             spec_decoy.setSequence(rev_sequence);
-            spec_decoy.setPCMass(pcmass);
-            spec_decoy.setTitle("Name: " + rev_sequence);
+            spec_decoy.setPCMass(peptide.getMass());
+            spec_decoy.setTitle(rev_sequence);
             spec_decoy.setNumPeaks(mz_values_decoy.size());
             spec_decoy.setPeakList(peaks_d);            
             spw.write(spec_decoy);  
