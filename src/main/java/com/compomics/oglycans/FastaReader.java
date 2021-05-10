@@ -2,6 +2,10 @@ package com.compomics.oglycans;
 
 import com.compomics.util.experiment.biology.enzymes.Enzyme;
 import com.compomics.util.experiment.biology.enzymes.EnzymeFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationCategory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationType;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
 import com.compomics.util.experiment.identification.protein_sequences.SingleProteinSequenceProvider;
@@ -16,15 +20,22 @@ import com.compomics.util.parameters.identification.search.ModificationParameter
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class FastaReader {
 
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
     private ProteinIteratorUtils proteinIteratorUtils = new ProteinIteratorUtils(new ArrayList<>(), 1);
+    ModificationFactory modificationFactory = ModificationFactory.getInstance();
+    Modification oglycan;
+
+    public FastaReader(){
+        ArrayList<String> residues = new ArrayList<>();
+        residues.add("S");
+        residues.add("T");
+        oglycan = new Modification(ModificationType.modaa, "oglycans", 503.3, residues, ModificationCategory.Common);
+        modificationFactory.addUserModification(oglycan);
+    }
 
     /**
      * Return a list of peptides from the given peptide FASTA file.
@@ -40,6 +51,7 @@ public class FastaReader {
         Protein protein;
 
         ModificationParameters modificationParameters = new ModificationParameters();
+        modificationParameters.addFixedModification(oglycan);
 
         while ((protein = fastaIterator.getNextProtein()) != null) {
             // I'm not sure if this is important
@@ -47,8 +59,8 @@ public class FastaReader {
 
             // create a Peptide object because we're dealing with peptides
             Peptide peptide = new Peptide(protein.getSequence());
-
-            System.out.println(peptide.getMass(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching()));
+            
+            System.out.println(peptide.getSequence() + " " + peptide.getMass(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching()));
 
             peptides.add(peptide);
         }
