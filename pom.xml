@@ -245,7 +245,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>4.11.18</version>
+            <version>5.0.9</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-math</artifactId>
@@ -381,6 +381,12 @@
             <groupId>com.compomics</groupId>
             <artifactId>MS2IO</artifactId>
             <version>1.1</version>
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.compomics</groupId>-->
+<!--                    <artifactId>utilities</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
         
         <dependency>
