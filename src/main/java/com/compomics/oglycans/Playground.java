@@ -17,10 +17,10 @@ public class Playground {
 
         try {
             FastaReader fastaReader = new FastaReader();
-<<<<<<< HEAD
+
             File output_file=new File("test.msp");
             
-            File mgf_file = ResourceUtils.getResourceByRelativePath("CMB-763_EThcD_export.mgf").getFile(); 
+//            File mgf_file = ResourceUtils.getResourceByRelativePath("CMB-763_EThcD_export.mgf").getFile(); 
             
             List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());            
             Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());    
@@ -29,17 +29,17 @@ public class Playground {
             
             Generate_spectra gen = new Generate_spectra();
             gen.start(peptides, output_file);
-=======
-            File mgf_file = ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile();
-     
-            List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
 
-            
-            Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
-            
-            Generate_spectra gen = new Generate_spectra();
-            gen.start(peptides, mgf_file);
->>>>>>> 7ee749529081451e9dde7c419ca50d97e590c141
+//            File mgf_file = ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile();
+//     
+//            List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
+//
+//            
+//            Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
+//            
+//            Generate_spectra gen = new Generate_spectra();
+//            gen.start(peptides, mgf_file);
+
             
             
 

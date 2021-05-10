@@ -22,11 +22,7 @@ public class Generate_spectra {
        
         
         ArrayList<Peptide> digested_peptides = (ArrayList)peptides;      
-<<<<<<< HEAD
-      
-=======
-        double pcmass=0;
->>>>>>> 7ee749529081451e9dde7c419ca50d97e590c141
+
         FragmentIon_glycan frag;
         FragmentIon_glycan frag_decoy;
         Spectrum spec=new Spectrum();
@@ -70,36 +66,22 @@ public class Generate_spectra {
                 peaks_d.add(pk_d);                
             }
             
-<<<<<<< HEAD
+
             spec.setComment("Comment: " + "Parent="+peptide.getMass() + " " + "Mods=o_glycan, S&T");
-            spec.setMW(0);;
+            spec.setMW(0);
             spec.setSequence(peptide.getSequence());
             spec.setPCMass(peptide.getMass());
-            spec.setTitle(peptide.getSequence());
-=======
-            spec.setComment("Comment: " + "Parent="+pcmass + " " + "Mods=o_glycan, S&T");
-            spec.setMW(0);;
-            spec.setSequence(peptide.getSequence());
-            spec.setPCMass(pcmass);
-            spec.setTitle("Name: " + peptide);
->>>>>>> 7ee749529081451e9dde7c419ca50d97e590c141
+            spec.setTitle(peptide.getSequence());  
             spec.setNumPeaks(mz_values.size());
             spec.setPeakList(peaks);            
             spw.write(spec);   
             
-<<<<<<< HEAD
+
             spec_decoy.setComment("Comment: " + "Parent="+peptide.getMass() + " " + "Mods=o_glycan, S&T" + " _decoy");
-            spec_decoy.setMW(0);;
+            spec_decoy.setMW(0);
             spec_decoy.setSequence(rev_sequence);
             spec_decoy.setPCMass(peptide.getMass());
             spec_decoy.setTitle(rev_sequence);
-=======
-            spec_decoy.setComment("Comment: " + "Parent="+pcmass + " " + "Mods=o_glycan, S&T");
-            spec_decoy.setMW(0);;
-            spec_decoy.setSequence(rev_sequence);
-            spec_decoy.setPCMass(pcmass);
-            spec_decoy.setTitle("Name: " + rev_sequence);
->>>>>>> 7ee749529081451e9dde7c419ca50d97e590c141
             spec_decoy.setNumPeaks(mz_values_decoy.size());
             spec_decoy.setPeakList(peaks_d);            
             spw.write(spec_decoy);  

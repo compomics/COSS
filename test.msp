@@ -1,6 +1,6 @@
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -15,7 +15,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -90,7 +90,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -105,7 +105,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -155,7 +155,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -170,7 +170,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -245,7 +245,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -260,7 +260,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -310,7 +310,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -325,7 +325,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -400,7 +400,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -415,7 +415,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -465,7 +465,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -480,7 +480,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -555,7 +555,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -570,7 +570,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -620,7 +620,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -635,7 +635,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -710,7 +710,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -725,7 +725,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -775,7 +775,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -790,7 +790,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -865,7 +865,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -880,7 +880,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -930,7 +930,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -945,7 +945,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1020,7 +1020,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1035,7 +1035,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -1085,7 +1085,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1100,7 +1100,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1175,7 +1175,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1190,7 +1190,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -1240,7 +1240,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1255,7 +1255,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1330,7 +1330,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1345,7 +1345,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -1395,7 +1395,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1410,7 +1410,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1485,7 +1485,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1500,7 +1500,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -1550,7 +1550,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1565,7 +1565,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1640,7 +1640,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1655,7 +1655,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -1705,7 +1705,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1720,7 +1720,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1795,7 +1795,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1810,7 +1810,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -1860,7 +1860,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1875,7 +1875,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -1950,7 +1950,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -1965,7 +1965,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2015,7 +2015,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2030,7 +2030,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -2105,7 +2105,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2120,7 +2120,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2170,7 +2170,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2185,7 +2185,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -2260,7 +2260,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2275,7 +2275,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2325,7 +2325,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2340,7 +2340,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -2415,7 +2415,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2430,7 +2430,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2480,7 +2480,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2495,7 +2495,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -2570,7 +2570,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2585,7 +2585,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2635,7 +2635,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2650,7 +2650,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -2725,7 +2725,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2740,7 +2740,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2790,7 +2790,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2805,7 +2805,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -2880,7 +2880,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2895,7 +2895,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -2945,7 +2945,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -2960,7 +2960,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3035,7 +3035,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3050,7 +3050,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -3100,7 +3100,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3115,7 +3115,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3190,7 +3190,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3205,7 +3205,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -3255,7 +3255,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3270,7 +3270,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3345,7 +3345,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3360,7 +3360,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -3410,7 +3410,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3425,7 +3425,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3500,7 +3500,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3515,7 +3515,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -3565,7 +3565,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3580,7 +3580,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3655,7 +3655,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3670,7 +3670,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -3720,7 +3720,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3735,7 +3735,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3810,7 +3810,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3825,7 +3825,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -3875,7 +3875,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3890,7 +3890,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -3965,7 +3965,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -3980,7 +3980,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4030,7 +4030,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4045,7 +4045,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -4120,7 +4120,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4135,7 +4135,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4185,7 +4185,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4200,7 +4200,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -4275,7 +4275,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4290,7 +4290,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4340,7 +4340,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4355,7 +4355,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -4430,7 +4430,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4445,7 +4445,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4495,7 +4495,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4510,7 +4510,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -4585,7 +4585,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4600,7 +4600,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4650,7 +4650,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4665,7 +4665,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -4740,7 +4740,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4755,7 +4755,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4805,7 +4805,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4820,7 +4820,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -4895,7 +4895,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4910,7 +4910,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -4960,7 +4960,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -4975,7 +4975,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5050,7 +5050,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5065,7 +5065,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -5115,7 +5115,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5130,7 +5130,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5205,7 +5205,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5220,7 +5220,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -5270,7 +5270,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5285,7 +5285,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5360,7 +5360,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5375,7 +5375,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -5425,7 +5425,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5440,7 +5440,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5515,7 +5515,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5530,7 +5530,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -5580,7 +5580,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5595,7 +5595,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5670,7 +5670,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5685,7 +5685,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -5735,7 +5735,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5750,7 +5750,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5825,7 +5825,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5840,7 +5840,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -5890,7 +5890,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5905,7 +5905,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -5980,7 +5980,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -5995,7 +5995,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6045,7 +6045,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6060,7 +6060,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -6135,7 +6135,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6150,7 +6150,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6200,7 +6200,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6215,7 +6215,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -6290,7 +6290,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6305,7 +6305,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6355,7 +6355,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6370,7 +6370,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -6445,7 +6445,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6460,7 +6460,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6510,7 +6510,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6525,7 +6525,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -6600,7 +6600,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6615,7 +6615,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6665,7 +6665,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6680,7 +6680,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -6755,7 +6755,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6770,7 +6770,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6820,7 +6820,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6835,7 +6835,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -6910,7 +6910,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6925,7 +6925,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -6975,7 +6975,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -6990,7 +6990,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -7065,7 +7065,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7080,7 +7080,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -7130,7 +7130,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7145,7 +7145,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -7220,7 +7220,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7235,7 +7235,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -7285,7 +7285,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7300,7 +7300,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -7375,7 +7375,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7390,7 +7390,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -7440,7 +7440,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7455,7 +7455,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -7530,7 +7530,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7545,7 +7545,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
@@ -7595,7 +7595,7 @@ Num peaks: 45
 
 Name: AMSEVTSLHEDDWR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7610,7 +7610,7 @@ Num peaks: 10
 
 Name: WDDEHLSTVESMAR
 MW: 0.0
-Comment: Parent=1674.73078460398 Mods=o_glycan, S&T _decoy
+Comment: Parent=3184.63078460398 Mods=o_glycan, S&T _decoy
 Num peaks: 70
 174.111675	600.0	
 186.07931	600.0	
@@ -7685,7 +7685,7 @@ Num peaks: 70
 
 Name: APIISGVTK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T
 Num peaks: 10
 18.010565	600.0	
 0.0	600.0	
@@ -7700,7 +7700,7 @@ Num peaks: 10
 
 Name: TVGSIIPAK
 MW: 0.0
-Comment: Parent=884.53311779176 Mods=o_glycan, S&T _decoy
+Comment: Parent=1891.13311779176 Mods=o_glycan, S&T _decoy
 Num peaks: 45
 146.105525	600.0	
 101.04768	600.0	
