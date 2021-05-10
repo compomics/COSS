@@ -25,16 +25,19 @@ import java.util.*;
 public class FastaReader {
 
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
-    private ProteinIteratorUtils proteinIteratorUtils = new ProteinIteratorUtils(new ArrayList<>(), 1);
+    private ProteinIteratorUtils proteinIteratorUtils;
     ModificationFactory modificationFactory = ModificationFactory.getInstance();
     Modification oglycan;
 
-    public FastaReader(){
+    public FastaReader() {
         ArrayList<String> residues = new ArrayList<>();
         residues.add("S");
         residues.add("T");
         oglycan = new Modification(ModificationType.modaa, "oglycans", 503.3, residues, ModificationCategory.Common);
         modificationFactory.addUserModification(oglycan);
+        ArrayList<String> modifications = new ArrayList<>();
+        modifications.add("oglycans");
+        proteinIteratorUtils = new ProteinIteratorUtils(modifications, 1);
     }
 
     /**
@@ -59,8 +62,7 @@ public class FastaReader {
 
             // create a Peptide object because we're dealing with peptides
             Peptide peptide = new Peptide(protein.getSequence());
-            
-            System.out.println(peptide.getSequence() + " " + peptide.getMass(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching()));
+            peptide.estimateTheoreticMass(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
 
             peptides.add(peptide);
         }
@@ -94,7 +96,6 @@ public class FastaReader {
         SequenceIterator sequenceIterator = new SpecificSingleEnzymeIterator(proteinIteratorUtils, protein.getSequence(), enzymeFactory.getEnzyme("Trypsin"), 0, 800.0, 10000.0);
         ExtendedPeptide extendedPeptide;
         while ((extendedPeptide = sequenceIterator.getNextPeptide()) != null) {
-            System.out.println("peptide: " + extendedPeptide.peptide.getSequence());
             extendedPeptides.add(extendedPeptide);
         }
 

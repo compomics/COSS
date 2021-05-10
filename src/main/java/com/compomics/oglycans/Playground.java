@@ -20,7 +20,6 @@ public class Playground {
             File mgf_file = ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile();
      
             List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
-
             
             Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
             
