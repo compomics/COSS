@@ -33,8 +33,6 @@ public class FastaReader {
             ExtendedPeptide extendedPeptide;
             while((extendedPeptide = sequenceIterator.getNextPeptide()) != null){
                 System.out.println("peptide: " + extendedPeptide.peptide.getSequence());
-
-                pe
             }
 
             //int[] observableAminoAcids = protein.getObservableAminoAcids(enzymes, 20);
