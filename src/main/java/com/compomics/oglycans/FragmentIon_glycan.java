@@ -1,7 +1,5 @@
 package com.compomics.oglycans;
 
-import java.util.HashMap;
-import java.util.Map;
 import com.compomics.util.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -16,7 +14,7 @@ public class FragmentIon_glycan {
     private ArrayList<Double> frag_ion;
 
     /**
-     * constructor of this class, instantiating map to frag_ion and fragment seq
+     * constructor of this class, instantiating frag_ion and fragment seq
      *
      * @param aa_sequence amino acid sequence to be fragment
      * @param modifications any modification on the peptide: Key: modified amino
@@ -62,6 +60,8 @@ public class FragmentIon_glycan {
                 //check if the aa from N term and aa from C term modified
                 //modification not applied on b and y ion, but keep track if it exists 
                 //mass of c and z ions then shifted if modification exists
+                //??? is there posibility for multiple modifications?
+                
                 if (true){ //modification is possible for all s and t aa
                     if (bionAA == 'T' || bionAA == 'S') {
                         //b_mass += 503.3;
