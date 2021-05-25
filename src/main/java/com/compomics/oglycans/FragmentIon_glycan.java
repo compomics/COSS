@@ -1,7 +1,9 @@
 package com.compomics.oglycans;
 
+import com.compomics.ms2io.model.Modification;
 import com.compomics.util.*;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -12,6 +14,7 @@ public class FragmentIon_glycan {
 
     private String sequence = "";
     private ArrayList<Double> frag_ion;
+    private Map<Integer, Modification> modifications;
 
     /**
      * constructor of this class, instantiating frag_ion and fragment seq
@@ -20,84 +23,93 @@ public class FragmentIon_glycan {
      * @param modifications any modification on the peptide: Key: modified amino
      * acid position & value: modification type
      */
-    public FragmentIon_glycan(String aa_sequence) {
-        frag_ion = new ArrayList<>();        
+    public FragmentIon_glycan(String aa_sequence, Map<Integer, Modification> modifications) {
+        frag_ion = new ArrayList<>();
         this.sequence = aa_sequence;
+        this.modifications=modifications;
         fragment();
     }
 
     private void fragment() {
 
-        this.sequence=this.sequence.replaceAll("\\s+","");
+        this.sequence = this.sequence.replaceAll("\\s+", "");
         int len_seq = sequence.length();
         int last_index = len_seq - 1;
-        char bionAA;
-        char yionAA;
-
-        boolean b_modified=false;
-        boolean y_modified=false;
+ ;
         for (int i = 0; i < len_seq; i++) {
-            String b_ion = sequence.substring(0, i+1);
+            String b_ion = sequence.substring(0, i + 1);
             String y_ion = sequence.substring(last_index - i, len_seq);
 
             int len_chars = i + 1;
-            //String suffix = Integer.toString(len_chars); //number to append to the ion type
-            
-            double b_mass = 0;           
-            double a_mass = 0;
-            double c_mass = 0;
+            double b_mass = 0;
+            double a_mass;
+            double c_mass;
             double y_mass = 0;
-            double z_mass = 0;
+            double z_mass;
+            int bion_oglycans=0;
+            int yion_oglycans=0;
 
-            for (int j = 0; j < len_chars; j++) {
+            for (int j = 0; j < len_chars; j++) {            
 
-                bionAA=b_ion.charAt(j);
-                yionAA=y_ion.charAt(j);
-                
-                b_mass += AA_Mass.getAA_mass(bionAA);
-                y_mass += AA_Mass.getAA_mass(yionAA);
+                //String suffix = Integer.toString(len_chars); //number to append to the ion type
 
-                //check if the aa from N term and aa from C term modified
-                //modification not applied on b and y ion, but keep track if it exists 
-                //mass of c and z ions then shifted if modification exists
-                //??? is there posibility for multiple modifications?
-                
-                if (true){ //modification is possible for all s and t aa
-                    if (bionAA == 'T' || bionAA == 'S') {
-                        //b_mass += 503.3;
-                        b_modified=true;
+                int y_index_track = last_index - i;
+                Modification mods;
+                b_mass += AA_Mass.getAA_mass(b_ion.charAt(j));
+                y_mass += AA_Mass.getAA_mass(y_ion.charAt(j));
+
+                if (!modifications.isEmpty()) {
+                    if (modifications.containsKey(j)) {
+                        //iterate over list of modification at this AA position
+                        
+                        mods = modifications.get(j);
+                        double mod = mods.getModificationMassShift();
+
+//                        for (int k = 0; k < mods.size(); k++) {
+//                            mod += Modification_Mass.getMassShift(mods.get(k));
+//
+//                        }
+                        b_mass += mod;
+                        if(mod==503.3){
+                            bion_oglycans++;
+                        }
                     }
-                    if (yionAA == 'T' || yionAA == 'S') {
-                        //y_mass += 503.3;
-                        y_modified=true;
+                    if (modifications.containsKey(y_index_track + j)) {
+                        //iterate over list of modification at this AA position
+                        mods = modifications.get(y_index_track + j);
+                        double mod = mods.getModificationMassShift();
+//                        for (int k = 0; k < mods.size(); k++) {
+//                            mod += Modification_Mass.getMassShift(mods.get(k));
+//                        }
+                        y_mass += mod;
+                        
+                        if(mod==503.3){
+                            yion_oglycans++;
+                        }
                     }
+                    
                 }
 
             }
-            
-            
-            y_mass += AtomMass.getAtomMass("H1") * 2 + AtomMass.getAtomMass("O16");
+
+            y_mass += AtomMass.getAtomMass("H1") * 2 + AtomMass.getAtomMass("O16");//water loss??            
             a_mass = b_mass - (AtomMass.getAtomMass("C12") + AtomMass.getAtomMass("O16"));
+            //fragments added for glycan fragments
+            c_mass = b_mass + (AtomMass.getAtomMass("N15") + AtomMass.getAtomMass("H1"));
+            z_mass = y_mass - (AtomMass.getAtomMass("N15") + AtomMass.getAtomMass("H1"));
+
+            //remove the oglycan mass shift from b and y ions, if it is already added(yion_oglycan!=0)            
+            y_mass=y_mass - yion_oglycans*503.3;
+            b_mass=b_mass- bion_oglycans*503.3;
+
+            
             frag_ion.add(y_mass);
             frag_ion.add(b_mass);
             frag_ion.add(a_mass);
-            
-            //fragments added for glycan fragments
-            c_mass = b_mass + (AtomMass.getAtomMass("C12") + AtomMass.getAtomMass("O16"));
-            z_mass = y_mass - (AtomMass.getAtomMass("N15") + AtomMass.getAtomMass("H1"));
-            
-            //in the case of ETD fragmentation mass shift due to modification is possible, if the aa is S or T
-            //and applied on c and z ions
-            if(b_modified){
-                c_mass+=503.3;
-            }
-            if(y_modified){
-                z_mass+=503.3;
-            }
             frag_ion.add(c_mass);
-            frag_ion.add(z_mass);                        
+            frag_ion.add(z_mass);
         }
-        frag_ion = (ArrayList)frag_ion.stream().distinct().collect(Collectors.toList());
+        frag_ion = (ArrayList) frag_ion.stream().distinct().collect(Collectors.toList());
     }
 
     /**

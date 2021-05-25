@@ -48,7 +48,6 @@ public class FragmentIon {
             int y_index_track =last_index - i;
             Modification mods;
             for (int j = 0; j < len_chars; j++) {
-
                 b_mass += AA_Mass.getAA_mass(b_ion.charAt(j));
                 y_mass += AA_Mass.getAA_mass(y_ion.charAt(j));
 

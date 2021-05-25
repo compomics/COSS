@@ -89,15 +89,14 @@ public class FastaReader {
     }
 
     private List<ExtendedPeptide> digestProtein(Protein protein) throws InterruptedException {
+        
         List<ExtendedPeptide> extendedPeptides = new ArrayList<>();
-
         SequenceIterator sequenceIterator = new SpecificSingleEnzymeIterator(proteinIteratorUtils, protein.getSequence(), enzymeFactory.getEnzyme("Trypsin"), 0, 800.0, 10000.0);
         ExtendedPeptide extendedPeptide;
         while ((extendedPeptide = sequenceIterator.getNextPeptide()) != null) {
             System.out.println("peptide: " + extendedPeptide.peptide.getSequence());
             extendedPeptides.add(extendedPeptide);
         }
-
         return extendedPeptides;
     }
 

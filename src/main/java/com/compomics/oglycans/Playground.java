@@ -8,6 +8,7 @@ import com.compomics.util.experiment.identification.protein_sequences.digestion.
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,10 @@ public class Playground {
             Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());    
             
             
-            
+            ArrayList<String> pep_string = new ArrayList<>();
+            for (Peptide p : peptides) {
+                pep_string.add(p.getSequence());
+            }
             Generate_spectra gen = new Generate_spectra();
             gen.start(peptides, output_file);
 

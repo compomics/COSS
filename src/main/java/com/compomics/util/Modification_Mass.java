@@ -11,6 +11,7 @@ package com.compomics.util;
  */
 public final class Modification_Mass {
 
+    private static final double OGlycan = 503.3;
     private static final double CAM = 57.021464;
     private static final double Oxidation = 15.994915;
     private static final double Pyro_glu_E = -18.010565;	// Pyro-glu from E (Glu -> pyro-Glu) //modified
@@ -59,6 +60,9 @@ public final class Modification_Mass {
         
         double mass=0.0;
         switch(mod_name){
+         
+            case "OGlycan": mass = 503.3;
+            break;            
             case "CAM": mass = 57.021464;
             break;
             case "Oxidation": mass = 15.994915;
