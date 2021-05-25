@@ -25,7 +25,7 @@ public class Playground {
             List<Peptide> peptides = peptideGenerator.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
             //peptides.forEach(peptide -> System.out.println(peptide.getSequence() + " " + peptide.getMass()));
 
-            Map<Protein, List<Peptide>> proteins = peptideGenerator.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
+            //Map<Protein, List<Peptide>> proteins = peptideGenerator.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
             //proteins.forEach((protein, extendedPeptides) -> extendedPeptides.forEach(extendedPeptide -> System.out.println(extendedPeptide.peptide.getSequence() + " " + extendedPeptide.peptide.getMass())));
 
             Generate_spectra gen = new Generate_spectra();

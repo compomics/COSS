@@ -34,6 +34,7 @@ public class PeptideGenerator {
     private ModificationParameters modificationParameters = new ModificationParameters();
 
     public PeptideGenerator() {
+        // TODO provide modifications as input
         ArrayList<String> modifications = new ArrayList<>();
         modifications.add("oglycans");
         proteinIteratorUtils = new ProteinIteratorUtils(new ArrayList<>(), 1);
@@ -109,7 +110,7 @@ public class PeptideGenerator {
     private List<ExtendedPeptide> digestProtein(Protein protein) throws InterruptedException {
         List<ExtendedPeptide> extendedPeptides = new ArrayList<>();
 
-        SequenceIterator sequenceIterator = new SpecificSingleEnzymeIterator(proteinIteratorUtils, protein.getSequence(), enzymeFactory.getEnzyme("Trypsin"), 1, 800.0, 10000.0);
+        SequenceIterator sequenceIterator = new SpecificSingleEnzymeIterator(proteinIteratorUtils, protein.getSequence(), enzymeFactory.getEnzyme("Trypsin"), 0, 800.0, 10000.0);
         ExtendedPeptide extendedPeptide;
         while ((extendedPeptide = sequenceIterator.getNextPeptide()) != null) {
             extendedPeptides.add(extendedPeptide);
@@ -141,7 +142,7 @@ public class PeptideGenerator {
             newCombinations.forEach(newCombination -> CombinationUtils.addArrayToList(uniqueModificationCombinations, newCombination));
         }
         for (String[] uniqueModificationCombination : uniqueModificationCombinations) {
-            Peptide peptide = new Peptide(protein.getSequence());
+            Peptide peptide = new Peptide(peptideSequence);
             for (int i = 0; i < peptide.getSequence().length(); i++) {
                 if (uniqueModificationCombination[i] != null) {
                     // check for pyroGlu
