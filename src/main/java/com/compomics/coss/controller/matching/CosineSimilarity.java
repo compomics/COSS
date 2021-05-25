@@ -61,11 +61,14 @@ public class CosineSimilarity extends Score {
         double intScore=-1;
         try{
             intScore=cosineScore(mPeaksExp, mPeaksLib);// * (mPeaksExp.size()/(double)lenA);
+            
         }catch(ArithmeticException ex){
             System.out.println(ex.toString());
         }
         
-        double finalScore=intScore*matchedNumPeaks;        
+       
+        //double finalScore=intScore*matchedNumPeaks;        
+        double finalScore= matchedNumPeaks;   //removed intscore for glycan
         return finalScore;
     }
 
@@ -89,5 +92,7 @@ public class CosineSimilarity extends Score {
         }
         return score;
     }
+
+   
 
 }
