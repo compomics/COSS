@@ -16,17 +16,31 @@ public class Playground {
     public static void main(String[] args) {
 
         try {
-            FastaReader fastaReader = new FastaReader();
-            File mgf_file = ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile();
-     
-            List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
-            
-            Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
-            
+            PeptideGenerator peptideGenerator = new PeptideGenerator();
+
+            File output_file = new File("test.msp");
+
+//            File mgf_file = ResourceUtils.getResourceByRelativePath("CMB-763_EThcD_export.mgf").getFile();
+
+            List<Peptide> peptides = peptideGenerator.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
+            //peptides.forEach(peptide -> System.out.println(peptide.getSequence() + " " + peptide.getMass()));
+
+            Map<Protein, List<Peptide>> proteins = peptideGenerator.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
+            //proteins.forEach((protein, extendedPeptides) -> extendedPeptides.forEach(extendedPeptide -> System.out.println(extendedPeptide.peptide.getSequence() + " " + extendedPeptide.peptide.getMass())));
+
             Generate_spectra gen = new Generate_spectra();
-            gen.start(peptides, mgf_file);
-            
-            
+            //gen.start(peptides, output_file);
+
+//            File mgf_file = ResourceUtils.getResourceByRelativePath("oglycans_test_1.fasta").getFile();
+//
+//            List<Peptide> peptides = fastaReader.readPeptideFasta(ResourceUtils.getResourceByRelativePath("oglycans_test_1.fasta").getFile());
+//
+//
+//            Map<Protein, List<ExtendedPeptide>> proteins = fastaReader.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
+//
+//            Generate_spectra gen = new Generate_spectra();
+//            gen.start(peptides, mgf_file);
+
 
             System.out.println("");
         } catch (FileNotFoundException e) {
