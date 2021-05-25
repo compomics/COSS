@@ -8,6 +8,10 @@ import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.biology.modifications.ModificationType;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
+import com.compomics.util.experiment.identification.protein_sequences.SingleProteinSequenceProvider;
+import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,6 +31,15 @@ public class PeptideGeneratorTest {
         List<Peptide> peptides = peptideGenerator.readPeptideFasta(new File("src/test/resources/oglycans_test_1.fasta"));
 
         Assert.assertEquals(7, peptides.size());
+
+        // check the if a fixed modification is taken into account as well
+        ModificationParameters modificationParameters = new ModificationParameters();
+        Modification carbo = ModificationFactory.getInstance().getModification("Carbamidomethylation of C");
+        modificationParameters.addFixedModification(carbo);
+        Peptide peptide = peptides.get(0);
+        SequenceProvider sequenceProvider = new SingleProteinSequenceProvider(new Protein("TESTACCESSION", peptide.getSequence()));
+        String[] fixedModifications = peptide.getFixedModifications(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
+        Assert.assertEquals("Carbamidomethylation of C", fixedModifications[4]);
     }
 
     @Test
