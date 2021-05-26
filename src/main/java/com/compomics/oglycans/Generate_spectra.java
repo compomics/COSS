@@ -3,24 +3,24 @@ package com.compomics.oglycans;
 import com.compomics.ms2io.model.*;
 import com.compomics.ms2io.controller.*;
 import com.compomics.util.experiment.biology.proteins.Peptide;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- *
  * @author Genet
  */
 public class Generate_spectra {
 
     public Generate_spectra() {
-
     }
 
     public void start(List<Peptide> peptides, File mgf_file) throws IOException {
-
         FragmentIon_glycan frag;
         FragmentIon_glycan frag_decoy;
         Spectrum spec = new Spectrum();
@@ -28,16 +28,13 @@ public class Generate_spectra {
         SpectraWriter spw = new MspWriter(mgf_file);
         Peak pk;
         ArrayList<Peak> peaks = new ArrayList<>();
-        
-        
-
 
         Peak pk_d;
         ArrayList<Peak> peaks_d = new ArrayList<>();
         for (Peptide peptide : peptides) {
             //get fragment ion of the peptide
-            frag = new FragmentIon_glycan(peptide.toString());
-            String temps=peptide.getSequence();
+            frag = new FragmentIon_glycan(peptide);
+            String temps = peptide.getSequence();
 
             //Generatin decoy fragment ions from reverse sequence
             //reverse sequence except the last aa             
@@ -46,7 +43,8 @@ public class Generate_spectra {
             String rev_sequence = new String(tempseq);
             //add last aa to reversed sequence
             rev_sequence += peptide.getSequence().charAt(peptide.getSequence().length() - 1);
-            frag_decoy = new FragmentIon_glycan(rev_sequence);
+            // TODO ask Genet how to do this
+            frag_decoy = new FragmentIon_glycan(rev_sequence, new HashMap<>());
 
             ArrayList<Double> mz_values = frag.getFragmentIon();
             ArrayList<Double> mz_values_decoy = frag_decoy.getFragmentIon();

@@ -13,6 +13,7 @@ import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
 import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
 import com.compomics.util.parameters.identification.search.ModificationParameters;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -24,7 +25,27 @@ import java.util.List;
 
 public class PeptideGeneratorTest {
 
-    private PeptideGenerator peptideGenerator = new PeptideGenerator();
+    private PeptideGenerator peptideGenerator;
+
+    @Before
+    public void initialize() {
+        List<Modification> variableModifications = new ArrayList<>();
+
+        Modification oxidation = ModificationFactory.getInstance().getModification("Oxidation of M");
+        Modification pyroGly = ModificationFactory.getInstance().getModification("Pyrolidone from E");
+        // add O-glycans mod with TMT label to ModificationFactory
+        ArrayList<String> residues = new ArrayList<>();
+        residues.add("S");
+        residues.add("T");
+        Modification oglycan = new Modification(ModificationType.modaa, "oglycans", 503.3, residues, ModificationCategory.Common);
+        ModificationFactory.getInstance().addUserModification(oglycan);
+
+        variableModifications.add(oglycan);
+        variableModifications.add(oxidation);
+        variableModifications.add(pyroGly);
+
+        peptideGenerator = new PeptideGenerator(variableModifications);
+    }
 
     @Test
     public void testReadPeptideFasta1() throws FileNotFoundException {

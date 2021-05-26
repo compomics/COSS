@@ -29,36 +29,11 @@ public class PeptideGenerator {
 
     private EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
     private ProteinIteratorUtils proteinIteratorUtils;
-    private ModificationFactory modificationFactory = ModificationFactory.getInstance();
     private List<Modification> variableModifications;
-    private ModificationParameters modificationParameters = new ModificationParameters();
 
-    public PeptideGenerator() {
-        // TODO provide modifications as input
-        ArrayList<String> modifications = new ArrayList<>();
-        modifications.add("oglycans");
-        proteinIteratorUtils = new ProteinIteratorUtils(new ArrayList<>(), 1);
-        //proteinIteratorUtils = new ProteinIteratorUtils(modifications, 1);
-
-        Modification oxidation = modificationFactory.getModification("Oxidation of M");
-        Modification pyroGly = modificationFactory.getModification("Pyrolidone from E");
-        // add O-glycans mod with TMT label to ModificationFactory
-        ArrayList<String> residues = new ArrayList<>();
-        residues.add("S");
-        residues.add("T");
-        Modification oglycan = new Modification(ModificationType.modaa, "oglycans", 503.3, residues, ModificationCategory.Common);
-        modificationFactory.addUserModification(oglycan);
-
-        variableModifications = new ArrayList<>();
-        variableModifications.add(oglycan);
-        variableModifications.add(oxidation);
-        variableModifications.add(pyroGly);
-
-        Modification carbo = modificationFactory.getModification("Carbamidomethylation of C");
-        modificationParameters.addFixedModification(carbo);
-        modificationParameters.addVariableModification(oglycan);
-        modificationParameters.addVariableModification(oxidation);
-        modificationParameters.addVariableModification(pyroGly);
+    public PeptideGenerator(List<Modification> variableModifications) {
+        proteinIteratorUtils = new ProteinIteratorUtils(Playground.modificationParameters.getFixedModifications(), 1);
+        this.variableModifications = variableModifications;
     }
 
     /**
@@ -147,14 +122,15 @@ public class PeptideGenerator {
                 if (uniqueModificationCombination[i] != null) {
                     // check for pyroGlu
                     // TODO right now pyroGlu is on index 0 of the peptide because it's an N-terminal modification, check if this is OK
-                    if (!uniqueModificationCombination[i].equals("Pyrolidone from E")) {
-                        peptide.addVariableModification(new ModificationMatch(uniqueModificationCombination[i], i + 1));
-                    } else {
+                    //if(ModificationFactory.getInstance().getModification(uniqueModificationCombination[i]).getModificationType() == ModificationType.modnaa_peptide){
+                    if (uniqueModificationCombination[i].equals(Playground.pyroGly.getName())) {
                         peptide.addVariableModification(new ModificationMatch(uniqueModificationCombination[i], i));
+                    } else {
+                        peptide.addVariableModification(new ModificationMatch(uniqueModificationCombination[i], i + 1));
                     }
                 }
             }
-            peptide.estimateTheoreticMass(modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
+            peptide.estimateTheoreticMass(Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
             //System.out.print(peptide.getSequence() + " " + peptide.getMass() + " -> ");
             //System.out.println(Arrays.toString(peptide.getIndexedVariableModifications()));
             peptides.add(peptide);
