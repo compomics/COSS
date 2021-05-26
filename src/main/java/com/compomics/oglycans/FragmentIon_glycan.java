@@ -2,6 +2,8 @@ package com.compomics.oglycans;
 
 import com.compomics.ms2io.model.Modification;
 import com.compomics.util.*;
+import com.compomics.util.experiment.biology.ions.Ion;
+import com.compomics.util.experiment.biology.ions.IonFactory;
 import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
@@ -23,7 +25,13 @@ public class FragmentIon_glycan {
     private String sequence = "";
     private ArrayList<Double> frag_ion;
     private Map<Integer, Modification> modifications;
+    private HashMap<Integer, HashMap<Integer, ArrayList<Ion>>> fragmentIons;
 
+    /**
+     * Constructor that takes a utilities {@link Peptide} object.
+     *
+     * @param peptide the peptide object
+     */
     public FragmentIon_glycan(Peptide peptide) {
         modifications = new HashMap<>();
         frag_ion = new ArrayList<>();
@@ -31,8 +39,9 @@ public class FragmentIon_glycan {
         SequenceProvider sequenceProvider = new SingleProteinSequenceProvider(new Protein("DUMMY_ACCESSION", peptide.getSequence()));
         String[] variableModifications = peptide.getIndexedVariableModifications();
         String[] fixedModifications = peptide.getFixedModifications(Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
-        System.out.println(Arrays.toString(variableModifications));
-        System.out.println(Arrays.toString(fixedModifications));
+        //System.out.println(Arrays.toString(variableModifications));
+        //System.out.println(Arrays.toString(fixedModifications));
+        this.fragmentIons = IonFactory.getInstance().getFragmentIons(peptide, Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
         for (int i = 0; i < variableModifications.length; i++) {
             if (variableModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(variableModifications[i]);
@@ -71,11 +80,9 @@ public class FragmentIon_glycan {
     }
 
     private void fragment() {
-
         this.sequence = this.sequence.replaceAll("\\s+", "");
         int len_seq = sequence.length();
         int last_index = len_seq - 1;
-        ;
         for (int i = 0; i < len_seq; i++) {
             String b_ion = sequence.substring(0, i + 1);
             String y_ion = sequence.substring(last_index - i, len_seq);
