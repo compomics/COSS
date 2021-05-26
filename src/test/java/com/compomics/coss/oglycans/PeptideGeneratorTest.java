@@ -1,6 +1,5 @@
 package com.compomics.coss.oglycans;
 
-import com.compomics.oglycans.CombinationUtils;
 import com.compomics.oglycans.PeptideGenerator;
 import com.compomics.util.experiment.biology.modifications.Modification;
 import com.compomics.util.experiment.biology.modifications.ModificationCategory;
@@ -14,13 +13,11 @@ import com.compomics.util.parameters.identification.advanced.SequenceMatchingPar
 import com.compomics.util.parameters.identification.search.ModificationParameters;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PeptideGeneratorTest {

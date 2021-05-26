@@ -6,9 +6,6 @@ import com.compomics.util.experiment.biology.modifications.ModificationCategory;
 import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.biology.modifications.ModificationType;
 import com.compomics.util.experiment.biology.proteins.Peptide;
-import com.compomics.util.experiment.biology.proteins.Protein;
-import com.compomics.util.experiment.identification.protein_sequences.digestion.ExtendedPeptide;
-import com.compomics.util.experiment.identification.protein_sequences.digestion.ProteinIteratorUtils;
 import com.compomics.util.parameters.identification.search.ModificationParameters;
 
 import java.io.File;
@@ -59,12 +56,10 @@ public class Playground {
     public static void main(String[] args) {
 
         try {
-            FastaReader fastaReader = new FastaReader();
             File output_file = new File("test.msp");
             //File mgf_file = ResourceUtils.getResourceByRelativePath("CMB-763_EThcD_export.mgf").getFile();
 
             PeptideGenerator peptideGenerator = new PeptideGenerator(variableModifications);
-
             List<Peptide> peptides = peptideGenerator.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePoolSmall.fasta").getFile());
             //Map<Protein, List<Peptide>> proteins = peptideGenerator.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
 

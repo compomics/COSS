@@ -1,10 +1,10 @@
 package com.compomics.oglycans;
 
 import com.compomics.ms2io.model.Modification;
-import com.compomics.util.*;
+import com.compomics.util.AA_Mass;
+import com.compomics.util.AtomMass;
 import com.compomics.util.experiment.biology.ions.Ion;
 import com.compomics.util.experiment.biology.ions.IonFactory;
-import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
 import com.compomics.util.experiment.identification.protein_sequences.SingleProteinSequenceProvider;
@@ -12,7 +12,6 @@ import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
 import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
