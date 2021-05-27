@@ -4,10 +4,11 @@ import com.compomics.ms2io.model.Modification;
 import com.compomics.util.AA_Mass;
 import com.compomics.util.AtomMass;
 import com.compomics.util.experiment.biology.ions.Ion;
-import com.compomics.util.experiment.biology.ions.IonFactory;
+import com.compomics.util.experiment.biology.ions.impl.PeptideFragmentIon;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
 import com.compomics.util.experiment.identification.protein_sequences.SingleProteinSequenceProvider;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationParameters;
 import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
 import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
 
@@ -40,7 +41,10 @@ public class FragmentIon_glycan {
         String[] fixedModifications = peptide.getFixedModifications(Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
         //System.out.println(Arrays.toString(variableModifications));
         //System.out.println(Arrays.toString(fixedModifications));
+        //SpecificAnnotationParameters specificAnnotationParameters = new SpecificAnnotationParameters();
+        //specificAnnotationParameters.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION);
         this.fragmentIons = IonFactory.getInstance().getFragmentIons(peptide, Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
+        printUtilitiesFragmentation();
         for (int i = 0; i < variableModifications.length; i++) {
             if (variableModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(variableModifications[i]);
@@ -57,8 +61,8 @@ public class FragmentIon_glycan {
         for (int i = 0; i < fixedModifications.length; i++) {
             if (fixedModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(fixedModifications[i]);
-                Modification modification = new Modification(i, peptide.getSequence().charAt(i - 1), utilitiesModification.getMass(), utilitiesModification.getName());
-                modifications.put(i, modification);
+                Modification modification = new Modification(i - 1, peptide.getSequence().charAt(i - 1), utilitiesModification.getMass(), utilitiesModification.getName());
+                modifications.put(i - 1, modification);
             }
         }
         fragment();
@@ -156,6 +160,48 @@ public class FragmentIon_glycan {
             frag_ion.add(z_mass);
         }
         frag_ion = (ArrayList) frag_ion.stream().distinct().collect(Collectors.toList());
+    }
+
+    public void printUtilitiesFragmentation() {
+        // get the peptide fragment ions
+        HashMap<Integer, ArrayList<Ion>> integerArrayListHashMap = fragmentIons.get(Ion.IonType.PEPTIDE_FRAGMENT_ION.index);
+        ArrayList<Ion> bIons = integerArrayListHashMap.get(PeptideFragmentIon.B_ION);
+        ArrayList<Ion> yIons = integerArrayListHashMap.get(PeptideFragmentIon.Y_ION);
+        ArrayList<Ion> aIons = integerArrayListHashMap.get(PeptideFragmentIon.A_ION);
+        ArrayList<Ion> xIons = integerArrayListHashMap.get(PeptideFragmentIon.X_ION);
+        ArrayList<Ion> cIons = integerArrayListHashMap.get(PeptideFragmentIon.C_ION);
+        ArrayList<Ion> zIons = integerArrayListHashMap.get(PeptideFragmentIon.Z_ION);
+        for (Ion ion : bIons) {
+            if (ion.getName().equals("b")) {
+                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            }
+        }
+        for (Ion ion : yIons) {
+            if (ion.getName().equals("y")) {
+                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            }
+        }
+        for (Ion ion : aIons) {
+            if (ion.getName().equals("a")) {
+                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            }
+        }
+        for (Ion ion : xIons) {
+            if (ion.getName().equals("x")) {
+                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            }
+        }
+        for (Ion ion : cIons) {
+            //if (ion.getName().equals("a")) {
+                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            //}
+        }
+        for (Ion ion : zIons) {
+            //if (ion.getName().equals("x")) {
+                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            //}
+        }
+        System.out.println("");
     }
 
     /**
