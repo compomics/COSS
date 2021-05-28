@@ -32,7 +32,7 @@ public class FragmentIon_glycan {
      *
      * @param peptide the peptide object
      */
-    public FragmentIon_glycan(Peptide peptide) {
+    public FragmentIon_glycan(Peptide peptide, boolean decoy) {
         modifications = new HashMap<>();
         frag_ion = new ArrayList<>();
         this.sequence = peptide.getSequence();
@@ -45,24 +45,33 @@ public class FragmentIon_glycan {
         //specificAnnotationParameters.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION);
         this.fragmentIons = IonFactory.getInstance().getFragmentIons(peptide, Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
         printUtilitiesFragmentation();
+        int index;
         for (int i = 0; i < variableModifications.length; i++) {
             if (variableModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(variableModifications[i]);
-                int index;
                 if (variableModifications[i].equals(Playground.pyroGly.getName())) {
                     index = i;
                 } else {
                     index = i - 1;
                 }
+
+                if (decoy) {
+                    if (index != this.sequence.length() - 1) {
+                        index = this.sequence.length() - 2 - index;
+                    }
+                }
+
                 Modification modification = new Modification(index, peptide.getSequence().charAt(index), utilitiesModification.getMass(), utilitiesModification.getName());
                 modifications.put(index, modification);
             }
         }
+
         for (int i = 0; i < fixedModifications.length; i++) {
             if (fixedModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(fixedModifications[i]);
-                Modification modification = new Modification(i - 1, peptide.getSequence().charAt(i - 1), utilitiesModification.getMass(), utilitiesModification.getName());
-                modifications.put(i - 1, modification);
+                index = i - 1;
+                Modification modification = new Modification(index, peptide.getSequence().charAt(index), utilitiesModification.getMass(), utilitiesModification.getName());
+                modifications.put(index, modification);
             }
         }
         fragment();
@@ -120,7 +129,7 @@ public class FragmentIon_glycan {
 //
 //                        }
                         b_mass += mod;
-                        if (mod == 503.3) {
+                        if (Math.abs(mod - 503.3) < 0.001) {
                             bion_oglycans++;
                         }
                     }
@@ -133,7 +142,7 @@ public class FragmentIon_glycan {
 //                        }
                         y_mass += mod;
 
-                        if (mod == 503.3) {
+                        if (Math.abs(mod - 503.3) < 0.001) {
                             yion_oglycans++;
                         }
                     }
@@ -158,6 +167,8 @@ public class FragmentIon_glycan {
             frag_ion.add(a_mass);
             frag_ion.add(c_mass);
             frag_ion.add(z_mass);
+            frag_ion.add(z_mass + 1);
+            frag_ion.add(z_mass + 2);
         }
         frag_ion = (ArrayList) frag_ion.stream().distinct().collect(Collectors.toList());
     }
@@ -193,12 +204,12 @@ public class FragmentIon_glycan {
         }
         for (Ion ion : cIons) {
             //if (ion.getName().equals("a")) {
-                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
             //}
         }
         for (Ion ion : zIons) {
             //if (ion.getName().equals("x")) {
-                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
+            System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
             //}
         }
         System.out.println("");
@@ -213,4 +224,12 @@ public class FragmentIon_glycan {
         return frag_ion;
     }
 
+    /**
+     * return modification
+     *
+     * @return
+     */
+    public Map<Integer, Modification> getModification() {
+        return this.modifications;
+    }
 }

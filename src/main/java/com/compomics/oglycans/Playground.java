@@ -57,6 +57,9 @@ public class Playground {
 
         try {
             File output_file = new File("test.msp");
+            if(output_file.exists()){
+                output_file.delete();
+            }
             //File mgf_file = ResourceUtils.getResourceByRelativePath("CMB-763_EThcD_export.mgf").getFile();
 
             PeptideGenerator peptideGenerator = new PeptideGenerator(variableModifications);
