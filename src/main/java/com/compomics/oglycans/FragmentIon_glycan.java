@@ -166,12 +166,36 @@ public class FragmentIon_glycan {
 
 
             frag_ion.add(y_mass);
+            frag_ion.add(y_mass/2);
+
             frag_ion.add(b_mass);
+            frag_ion.add(b_mass/2);
             frag_ion.add(a_mass);
+            frag_ion.add(a_mass/2);
             frag_ion.add(c_mass);
+            frag_ion.add(c_mass/2);
             frag_ion.add(z_mass);
-            frag_ion.add(z_mass+1);
-            frag_ion.add(z_mass+2);
+            frag_ion.add(z_mass/2);
+            frag_ion.add(z_mass/3);
+            frag_ion.add(z_mass/4);
+
+
+
+
+ 
+//            frag_ion.add(Math.roung(y_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(y_mass*10000)/20000.0d);
+//
+//            frag_ion.add(Math.roung(b_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(b_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(a_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(a_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(c_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(c_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/30000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/40000.0d);
         }
         frag_ion = (ArrayList) frag_ion.stream().distinct().collect(Collectors.toList());
     }

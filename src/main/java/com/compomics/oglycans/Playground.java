@@ -63,15 +63,20 @@ public class Playground {
             //File mgf_file = ResourceUtils.getResourceByRelativePath("CMB-763_EThcD_export.mgf").getFile();
 
             PeptideGenerator peptideGenerator = new PeptideGenerator(variableModifications);
-            List<Peptide> peptides = peptideGenerator.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePoolSmall.fasta").getFile());
+            List<Peptide> peptides = peptideGenerator.readPeptideFasta(ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile());
             //Map<Protein, List<Peptide>> proteins = peptideGenerator.readProteinFasta(ResourceUtils.getResourceByRelativePath("PeptidePoolContatenated.fasta").getFile());
 
             ArrayList<String> pep_string = new ArrayList<>();
             for (Peptide p : peptides) {
                 pep_string.add(p.getSequence());
+
             }
             Generate_spectra gen = new Generate_spectra();
             gen.start(peptides, output_file);
+ 
+ 
+
+
 
 //            File mgf_file = ResourceUtils.getResourceByRelativePath("GlycopeptidePool.fasta").getFile();
 //     
