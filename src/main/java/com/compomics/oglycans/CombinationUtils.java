@@ -32,7 +32,8 @@ public class CombinationUtils {
 
         ArrayList<Integer> potentialModificationSitesNoCombination = peptide.getPotentialModificationSitesNoCombination(modification, protein.getSequence(), 0);
         int[] possibleModificationSites = potentialModificationSitesNoCombination.stream().mapToInt(i -> i).toArray();
-        for (int i = 1; i <= potentialModificationSitesNoCombination.size(); i++) {
+        // start from 0 because a variable modification could also not occur
+        for (int i = 0; i <= potentialModificationSitesNoCombination.size(); i++) {
             List<String[]> possibleModificationSiteCombinations = getCombinationsForModificationOccurrence(peptide.getSequence().length(), modification.getName(), possibleModificationSites, i);
             modificationSiteCombinations.addAll(possibleModificationSiteCombinations);
         }

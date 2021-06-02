@@ -326,12 +326,14 @@ public class IonFactory {
         }
 
         double forwardMass = 0;
+        double bForwardMass = 0;
 
         Modification modification = fixedModifications[0];
 
         if (modification != null) {
 
             forwardMass += modification.getMass();
+            bForwardMass += modification.getMass();
 
         }
 
@@ -340,17 +342,21 @@ public class IonFactory {
         if (modification != null) {
 
             forwardMass += modification.getMass();
+            if(!modification.getName().equals("oglycans")){
+                bForwardMass += modification.getMass();
+            }
 
         }
 
         double rewindMass = Atom.O.getMonoisotopicMass();
+        double yRewindMass = rewindMass;
 
         modification = fixedModifications[sequence.length() + 1];
 
         if (modification != null) {
 
             rewindMass += modification.getMass();
-
+            yRewindMass += modification.getMass();
         }
 
         modification = variableModifications[sequence.length() + 1];
@@ -358,6 +364,9 @@ public class IonFactory {
         if (modification != null) {
 
             rewindMass += modification.getMass();
+            if(!modification.getName().equals("oglycans")){
+                yRewindMass += modification.getMass();
+            }
 
         }
 
@@ -428,6 +437,7 @@ public class IonFactory {
             int faa = aa + 1;
             AminoAcid currentAA = AminoAcid.getAminoAcid(aaName);
             forwardMass += currentAA.getMonoisotopicMass();
+            bForwardMass += currentAA.getMonoisotopicMass();
 
             modification = fixedModifications[faa];
 
@@ -442,7 +452,9 @@ public class IonFactory {
             if (modification != null) {
 
                 forwardMass += modification.getMass();
-
+                if(!modification.getName().equals("oglycans")){
+                    bForwardMass += modification.getMass();
+                }
             }
 
             HashMap<Integer, ArrayList<Ion>> ionsMap = result.get(Ion.IonType.PEPTIDE_FRAGMENT_ION.index);
@@ -516,12 +528,12 @@ public class IonFactory {
 
                     for (NeutralLossCombination losses : neutralLossesCombinations) {
 
-                        ions.add(new PeptideFragmentIon(subType, faa, forwardMass - losses.getMass(), losses.getNeutralLossCombination()));
+                        ions.add(new PeptideFragmentIon(subType, faa, bForwardMass - losses.getMass(), losses.getNeutralLossCombination()));
 
                     }
                 } else {
 
-                    ions.add(new PeptideFragmentIon(subType, faa, forwardMass, null));
+                    ions.add(new PeptideFragmentIon(subType, faa, bForwardMass, null));
 
                 }
             }
@@ -566,13 +578,14 @@ public class IonFactory {
             int raa = sequence.length() - aa - 1;
             currentAA = AminoAcid.getAminoAcid(sequence.charAt(raa));
             rewindMass += currentAA.getMonoisotopicMass();
+            yRewindMass += currentAA.getMonoisotopicMass();
 
             modification = fixedModifications[raa + 1];
 
             if (modification != null) {
 
                 rewindMass += modification.getMass();
-
+                yRewindMass += modification.getMass();
             }
 
             modification = variableModifications[raa + 1];
@@ -580,7 +593,9 @@ public class IonFactory {
             if (modification != null) {
 
                 rewindMass += modification.getMass();
-
+                if(!modification.getName().equals("oglycans")){
+                    yRewindMass += modification.getMass();
+                }
             }
 
             if (specificAnnotationSettings == null || selectedIonTypes.keySet().contains(Ion.IonType.PEPTIDE_FRAGMENT_ION) && specificAnnotationSettings.getFragmentIonTypes().contains(PeptideFragmentIon.X_ION)) {
@@ -645,13 +660,13 @@ public class IonFactory {
 
                     for (NeutralLossCombination losses : neutralLossesCombinations) {
 
-                        ions.add(new PeptideFragmentIon(subType, faa, rewindMass + h2 - losses.getMass(), losses.getNeutralLossCombination()));
+                        ions.add(new PeptideFragmentIon(subType, faa, yRewindMass + h2 - losses.getMass(), losses.getNeutralLossCombination()));
 
                     }
 
                 } else {
 
-                    ions.add(new PeptideFragmentIon(subType, faa, rewindMass + h2, null));
+                    ions.add(new PeptideFragmentIon(subType, faa, yRewindMass + h2, null));
 
                 }
             }
@@ -685,6 +700,11 @@ public class IonFactory {
                         ions.add(new PeptideFragmentIon(subType, faa, rewindMass - Atom.N.getMonoisotopicMass() - losses.getMass(), losses.getNeutralLossCombination()));
 
                     }
+
+                    // add the z + 1 and z + 2 fragment ions
+                    ions.add(new PeptideFragmentIon(subType, faa, rewindMass - Atom.N.getMonoisotopicMass() + Atom.H.getMonoisotopicMass(), null));
+                    ions.add(new PeptideFragmentIon(subType, faa, rewindMass - Atom.N.getMonoisotopicMass() + 2 * Atom.H.getMonoisotopicMass(), null));
+
 
                 } else {
 
@@ -767,6 +787,13 @@ public class IonFactory {
                     ions.add(new PrecursorIon(forwardMass + h2o - losses.getMass(), losses.getNeutralLossCombination()));
 
                 }
+
+                // Add the precursor peak - oglycans
+                ions.add(new PrecursorIon(forwardMass + h2o - Playground.oglycan.getMass(), null));
+                // Add the precursor peak + 1
+                ions.add(new PrecursorIon(forwardMass + h2o + Atom.H.getMonoisotopicMass(), null));
+                // Add the precursor peak - oglycans
+                ions.add(new PrecursorIon(forwardMass + h2o + 2 * Atom.H.getMonoisotopicMass(), null));
 
             } else {
 

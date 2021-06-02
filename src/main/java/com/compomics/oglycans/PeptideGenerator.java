@@ -106,7 +106,7 @@ public class PeptideGenerator {
         for (Modification variableModification : variableModifications) {
             List<String[]> modificationSiteCombinations = CombinationUtils.getModificationSiteCombinations(variableModification, protein, peptideSequence);
             singleModificationCombinations.add(modificationSiteCombinations);
-            uniqueModificationCombinations.addAll(modificationSiteCombinations);
+            modificationSiteCombinations.forEach(combination -> CombinationUtils.addArrayToList(uniqueModificationCombinations, combination));
         }
 
         // for each variable modification, combine the possible modifications with the other modification combinations

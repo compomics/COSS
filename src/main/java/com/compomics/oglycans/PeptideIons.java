@@ -8,47 +8,42 @@ import com.compomics.util.experiment.biology.ions.impl.PeptideFragmentIon;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.biology.proteins.Protein;
 import com.compomics.util.experiment.identification.protein_sequences.SingleProteinSequenceProvider;
-import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationParameters;
 import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
 import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author Genet
  */
-public class FragmentIon_glycan {
+public class PeptideIons {
 
     private String sequence = "";
-    private ArrayList<Double> frag_ion;
+    private ArrayList<Double> ions;
+    private Map<Integer, Double> fragmentIons;
     private Map<Integer, Modification> modifications;
-    private HashMap<Integer, HashMap<Integer, ArrayList<Ion>>> fragmentIons;
+    private HashMap<Integer, HashMap<Integer, ArrayList<Ion>>> utlitiesFragmentIons;
 
     /**
      * Constructor that takes a utilities {@link Peptide} object.
      *
      * @param peptide the peptide object
      */
-    public FragmentIon_glycan(Peptide peptide, boolean decoy) {
+    public PeptideIons(Peptide peptide, boolean decoy) {
         modifications = new HashMap<>();
-        frag_ion = new ArrayList<>();
+        ions = new ArrayList<>();
         this.sequence = peptide.getSequence();
         SequenceProvider sequenceProvider = new SingleProteinSequenceProvider(new Protein("DUMMY_ACCESSION", peptide.getSequence()));
         String[] variableModifications = peptide.getIndexedVariableModifications();
         String[] fixedModifications = peptide.getFixedModifications(Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
-        //System.out.println(Arrays.toString(variableModifications));
-        //System.out.println(Arrays.toString(fixedModifications));
-        //SpecificAnnotationParameters specificAnnotationParameters = new SpecificAnnotationParameters();
-        //specificAnnotationParameters.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION);
-        this.fragmentIons = IonFactory.getInstance().getFragmentIons(peptide, Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
-        printUtilitiesFragmentation();
         int index;
+        this.utlitiesFragmentIons = IonFactory.getInstance().getFragmentIons(peptide, Playground.modificationParameters, sequenceProvider, SequenceMatchingParameters.getDefaultSequenceMatching());
+        //printUtilitiesFragmentIons();
         for (int i = 0; i < variableModifications.length; i++) {
             if (variableModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(variableModifications[i]);
+
                 if (variableModifications[i].equals(Playground.pyroGly.getName())) {
                     index = i;
                 } else {
@@ -67,6 +62,7 @@ public class FragmentIon_glycan {
         }
 
         for (int i = 0; i < fixedModifications.length; i++) {
+
             if (fixedModifications[i] != null) {
                 com.compomics.util.experiment.biology.modifications.Modification utilitiesModification = Playground.utilitiesModifications.get(fixedModifications[i]);
                 index = i - 1;
@@ -74,21 +70,37 @@ public class FragmentIon_glycan {
                 modifications.put(index, modification);
             }
         }
-        fragment();
+        //fragment();
     }
 
     /**
-     * constructor of this class, instantiating frag_ion and fragment seq
+     * Generate the (fragment, precursor) ions for the given peptide.
      *
-     * @param aa_sequence   amino acid sequence to be fragment
-     * @param modifications any modification on the peptide: Key: modified amino
-     *                      acid position & value: modification type
+     * @param fragmentIonCharges the fragment ion charges to consider
+     * @return the list of ions
      */
-    public FragmentIon_glycan(String aa_sequence, Map<Integer, Modification> modifications) {
-        frag_ion = new ArrayList<>();
-        this.sequence = aa_sequence;
-        this.modifications = modifications;
-        fragment();
+    public List<Double> generateIons(List<Integer> fragmentIonCharges) {
+        HashMap<Integer, ArrayList<Ion>> peptideFragmentIons = utlitiesFragmentIons.get(Ion.IonType.PEPTIDE_FRAGMENT_ION.index);
+        for (Integer charge : fragmentIonCharges) {
+            // y ions
+            ArrayList<Ion> ions = peptideFragmentIons.get(PeptideFragmentIon.Y_ION);
+            this.ions.addAll(ions.stream().filter(ion -> ion.getName().equals("y")).map(ion -> ion.getTheoreticMz(charge)).collect(Collectors.toList()));
+            // b ions
+            ions = peptideFragmentIons.get(PeptideFragmentIon.B_ION);
+            this.ions.addAll(ions.stream().filter(ion -> ion.getName().equals("b")).map(ion -> ion.getTheoreticMz(charge)).collect(Collectors.toList()));
+            // z ions
+            ions = peptideFragmentIons.get(PeptideFragmentIon.Z_ION);
+            this.ions.addAll(ions.stream().filter(ion -> ion.getName().equals("z")).map(ion -> ion.getTheoreticMz(charge)).collect(Collectors.toList()));
+            // c ions
+            ions = peptideFragmentIons.get(PeptideFragmentIon.C_ION);
+            this.ions.addAll(ions.stream().filter(ion -> ion.getName().equals("c")).map(ion -> ion.getTheoreticMz(charge)).collect(Collectors.toList()));
+
+            HashMap<Integer, ArrayList<Ion>> precursorIons = utlitiesFragmentIons.get(Ion.IonType.PRECURSOR_ION.index);
+            this.ions.addAll(precursorIons.get(0).stream().map(ion -> ion.getTheoreticMz(charge)).collect(Collectors.toList()));
+        }
+
+        Collections.sort(ions);
+        return ions;
     }
 
     private void fragment() {
@@ -162,57 +174,51 @@ public class FragmentIon_glycan {
             b_mass = b_mass - bion_oglycans * 503.3;
 
 
-            frag_ion.add(y_mass);
-            frag_ion.add(b_mass);
-            frag_ion.add(a_mass);
-            frag_ion.add(c_mass);
-            frag_ion.add(z_mass);
-            frag_ion.add(z_mass + 1);
-            frag_ion.add(z_mass + 2);
+            ions.add(y_mass);
+//            frag_ion.add(y_mass / 2);
+//
+//            frag_ion.add(b_mass);
+//            frag_ion.add(b_mass / 2);
+//            frag_ion.add(a_mass);
+//            frag_ion.add(a_mass / 2);
+//            frag_ion.add(c_mass);
+//            frag_ion.add(c_mass / 2);
+//            frag_ion.add(z_mass);
+//            frag_ion.add(z_mass + 1);
+//            frag_ion.add(z_mass + 1);
+//            frag_ion.add(z_mass / 2);
+//            frag_ion.add(z_mass / 3);
+//            frag_ion.add(z_mass / 4);
+
+
+//            frag_ion.add(Math.roung(y_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(y_mass*10000)/20000.0d);
+//
+//            frag_ion.add(Math.roung(b_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(b_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(a_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(a_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(c_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(c_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/10000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/20000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/30000.0d);
+//            frag_ion.add(Math.roung(z_mass*10000)/40000.0d);
         }
-        frag_ion = (ArrayList) frag_ion.stream().distinct().collect(Collectors.toList());
+        ions = (ArrayList) ions.stream().distinct().collect(Collectors.toList());
     }
 
-    public void printUtilitiesFragmentation() {
-        // get the peptide fragment ions
-        HashMap<Integer, ArrayList<Ion>> integerArrayListHashMap = fragmentIons.get(Ion.IonType.PEPTIDE_FRAGMENT_ION.index);
-        ArrayList<Ion> bIons = integerArrayListHashMap.get(PeptideFragmentIon.B_ION);
-        ArrayList<Ion> yIons = integerArrayListHashMap.get(PeptideFragmentIon.Y_ION);
-        ArrayList<Ion> aIons = integerArrayListHashMap.get(PeptideFragmentIon.A_ION);
-        ArrayList<Ion> xIons = integerArrayListHashMap.get(PeptideFragmentIon.X_ION);
-        ArrayList<Ion> cIons = integerArrayListHashMap.get(PeptideFragmentIon.C_ION);
-        ArrayList<Ion> zIons = integerArrayListHashMap.get(PeptideFragmentIon.Z_ION);
-        for (Ion ion : bIons) {
-            if (ion.getName().equals("b")) {
-                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
-            }
-        }
-        for (Ion ion : yIons) {
-            if (ion.getName().equals("y")) {
-                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
-            }
-        }
-        for (Ion ion : aIons) {
-            if (ion.getName().equals("a")) {
-                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
-            }
-        }
-        for (Ion ion : xIons) {
-            if (ion.getName().equals("x")) {
-                System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
-            }
-        }
-        for (Ion ion : cIons) {
-            //if (ion.getName().equals("a")) {
-            System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
-            //}
-        }
-        for (Ion ion : zIons) {
-            //if (ion.getName().equals("x")) {
-            System.out.println(ion.getName() + " " + ion.getTheoreticMz(1));
-            //}
-        }
+    private void printUtilitiesFragmentIons() {
+        HashMap<Integer, ArrayList<Ion>> peptideFragments = utlitiesFragmentIons.get(Ion.IonType.PEPTIDE_FRAGMENT_ION.index);
+        ArrayList<Ion> ions = peptideFragments.get(PeptideFragmentIon.Y_ION);
+        HashMap<Integer, ArrayList<Ion>> precursor = utlitiesFragmentIons.get(Ion.IonType.PRECURSOR_ION.index);
         System.out.println("");
+        for (int i = 0; i < ions.size(); i++) {
+            if (ions.get(i).getName().equals("y")) {
+                System.out.println(ions.get(i).getName() + "   " + ions.get(i).getTheoreticMass() + "    " + ions.get(i).getTheoreticMz(1));
+            }
+        }
+
     }
 
     /**
@@ -221,7 +227,7 @@ public class FragmentIon_glycan {
      * @return
      */
     public ArrayList getFragmentIon() {
-        return frag_ion;
+        return ions;
     }
 
     /**

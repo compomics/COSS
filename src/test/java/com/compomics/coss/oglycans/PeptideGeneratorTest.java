@@ -48,7 +48,7 @@ public class PeptideGeneratorTest {
     public void testReadPeptideFasta1() throws FileNotFoundException {
         List<Peptide> peptides = peptideGenerator.readPeptideFasta(new File("src/test/resources/oglycans_test_1.fasta"));
 
-        Assert.assertEquals(7, peptides.size());
+        Assert.assertEquals(8, peptides.size());
 
         // check the if a fixed modification is taken into account as well
         ModificationParameters modificationParameters = new ModificationParameters();
@@ -64,7 +64,7 @@ public class PeptideGeneratorTest {
     public void testReadPeptideFasta2() throws FileNotFoundException {
         List<Peptide> peptides = peptideGenerator.readPeptideFasta(new File("src/test/resources/oglycans_test_2.fasta"));
 
-        Assert.assertEquals(7, peptides.size());
+        Assert.assertEquals(8, peptides.size());
     }
 
 }

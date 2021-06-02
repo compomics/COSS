@@ -45,7 +45,11 @@ public class CombinationUtilsTest {
 
     @Test
     public void testGetCombinationsForModificationOccurrence() {
-        List<String[]> possibleModificationSiteCombinations = CombinationUtils.getCombinationsForModificationOccurrence(8, "mod", new int[]{2, 4, 6}, 1);
+        List<String[]> possibleModificationSiteCombinations = CombinationUtils.getCombinationsForModificationOccurrence(8, "mod", new int[]{2, 4, 6}, 0);
+        Assert.assertEquals(1, possibleModificationSiteCombinations.size());
+        Assert.assertTrue(possibleModificationSiteCombinations.stream().anyMatch(a -> Arrays.equals(a, new String[]{null, null, null, null, null, null, null, null})));
+
+        possibleModificationSiteCombinations = CombinationUtils.getCombinationsForModificationOccurrence(8, "mod", new int[]{2, 4, 6}, 1);
 
         Assert.assertEquals(3, possibleModificationSiteCombinations.size());
         Assert.assertTrue(possibleModificationSiteCombinations.stream().anyMatch(a -> Arrays.equals(a, new String[]{null, "mod", null, null, null, null, null, null})));
@@ -67,14 +71,10 @@ public class CombinationUtilsTest {
 
     @Test
     public void testGetModificationSiteCombinations() {
-        List<String[]> modificationCombinations = new ArrayList<>();
-        modificationCombinations.add(new String[]{"mod1", null, null});
-        modificationCombinations.add(new String[]{null, "mod2", null});
-        modificationCombinations.add(new String[]{null, null, "mod3"});
-
         Protein protein = new Protein("TEST", "TEST");
         List<String[]> combinations = CombinationUtils.getModificationSiteCombinations(modificationFactory.getModification("oglycans"), protein, "TEST");
-        Assert.assertEquals(7, combinations.size());
+        Assert.assertEquals(8, combinations.size());
+        Assert.assertTrue(combinations.stream().anyMatch(a -> Arrays.equals(a, new String[]{null, null, null, null})));
         Assert.assertTrue(combinations.stream().anyMatch(a -> Arrays.equals(a, new String[]{"oglycans", null, null, null})));
         Assert.assertTrue(combinations.stream().anyMatch(a -> Arrays.equals(a, new String[]{null, null, "oglycans", null})));
         Assert.assertTrue(combinations.stream().anyMatch(a -> Arrays.equals(a, new String[]{null, null, null, "oglycans"})));
