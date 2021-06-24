@@ -25,12 +25,12 @@ public class SpectrumGenerator {
     public SpectrumGenerator() {
         precursorCharges = new ArrayList<>();
         precursorCharges.add(2);
+        precursorCharges.add(3);
         precursorCharges.add(4);
-        precursorCharges.add(5);
 
         fragmentIonCharges = new ArrayList<>();
         fragmentIonCharges.add(1);
-        fragmentIonCharges.add(2);
+//        fragmentIonCharges.add(2);
     }
 
     public void generateSpectra(List<Peptide> peptides, File mgf_file) throws IOException {
@@ -63,7 +63,7 @@ public class SpectrumGenerator {
             // make a spectrum for each precursor charge
             for (Integer precursorCharge : precursorCharges) {
                 Spectrum spectrum = new Spectrum();
-                spectrum.setComment("Comment: " + "Parent=" + ((peptide.getMass() / precursorCharge) + precursorCharge * AtomMass.getAtomMass("H1")) + " " + "Mods=" + mod_str);
+                spectrum.setComment("Comment: " + "Parent=" + ((peptide.getMass() + precursorCharge * AtomMass.getAtomMass("H1")) / precursorCharge) + " " + "Mods=" + mod_str);
                 spectrum.setMW(0);
                 spectrum.setSequence(peptide.getSequence());
                 spectrum.setPCMass(peptide.getMass());
@@ -112,7 +112,7 @@ public class SpectrumGenerator {
             }
 
             for (Integer precursorCharge : precursorCharges) {
-                decoySpectrum.setComment("Comment: " + "Parent=" + ((peptide.getMass() / precursorCharge) + precursorCharge * AtomMass.getAtomMass("H1")) + " " + "Mods=" + mod_str + " _decoy");
+                decoySpectrum.setComment("Comment: " + "Parent=" + ((peptide.getMass() + precursorCharge * AtomMass.getAtomMass("H1")) / precursorCharge) + " " + "Mods=" + mod_str + " _decoy");
                 decoySpectrum.setMW(0);
                 decoySpectrum.setSequence(reverseSequence);
                 decoySpectrum.setPCMass(peptide.getMass());

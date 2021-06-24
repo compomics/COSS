@@ -96,7 +96,8 @@ public class DataProducer implements Runnable { //procucer thread
                     expSpec = confData.getExpSpecReader().readAt(confData.getExpSpectraIndex().get(a).getPos());
                     double mass = expSpec.getPCMass();
 
-                    double da_error = mass * this.precTolerance;
+                    //double da_error = mass * this.precTolerance;
+                    double da_error = this.precTolerance;
 
                     libSpec = confData.getLibSpecReader().readPart(mass, da_error);
                    // synchronized (data) {

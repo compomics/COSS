@@ -14,7 +14,8 @@ import org.apache.log4j.Logger;
 public class DivideAndTopNPeaks implements Features {
 
    // private int topN;
-    private int windowMassSize = 100;
+    private int windowMassSize = 10;
+//    private int windowMassSize = 100;
     private final Logger LOGGER;
 //    ArrayList<Peak> cPeaks;
 //    ArrayList<Peak> filteredPeaks;

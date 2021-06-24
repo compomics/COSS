@@ -64,7 +64,8 @@ public class MatchedPeaks {
         for (int i = 0; i < filteredExpMS2_1.size(); i++) {
             Peak p1 = filteredExpMS2_1.get(i);
             double mz_p1 = p1.getMz();
-            double diff = fragTolerance;// Based on Da.. not ppm...
+//            double diff = fragTolerance;// Based on Da.. not ppm...
+            double diff = mz_p1 * fragTolerance;// Based on PPM!
             boolean found = false;
             Peak matchedPeak_2 = null;
             for (Peak peak_expMS2_2 : filteredExpMS2_2) {
