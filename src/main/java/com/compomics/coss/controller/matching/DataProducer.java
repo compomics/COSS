@@ -108,6 +108,7 @@ public class DataProducer implements Runnable { //procucer thread
                         break;
                     }
 
+                 currPos++;
                 }
             }
         } catch (Exception e) {

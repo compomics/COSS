@@ -35,6 +35,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
     private final Score algorithm;
     private final UpdateListener listener;
     private boolean cancelled;
+ 
 
     public Matcher(Score al, DataProducer dp, TheDataUnderComparison dt, ConfigData cfd, UpdateListener lsr, org.apache.log4j.Logger lg) {
         this.algorithm = al;
