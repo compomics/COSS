@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  *
  * @author Genet
@@ -28,33 +26,25 @@ public class DotProduct extends Score{
 
     /**
      *
-     * @param lenA number of peaks in experimental spectrum
-     * @param lenB number of peaks in library spectrum
      * @param topN Top intense peaks selected from each spectrum
      * @return returns score of the comparison
      */
     @Override
-    public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenA, int lenB, int topN) {
+    public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec,int topN, int transform) {
 
         double score = 0;
-        double probability = (double) topN / (double) confData.getMassWindow();
-
+        
         synchronized (this) {
-            int totalN = 0;
-            if (lenB < lenA) {
+            
+            if (libSpec.size() < expSpec.size()) {
                 map = prepareData(expSpec, libSpec);
                 mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
                 mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
-                totalN = lenA;
+               
 
             } else {
-
-                double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
-                sumTotalIntExp = sumTotalIntLib;
-                sumTotalIntLib = temp;
-
                 map = prepareData(libSpec, expSpec);
-                totalN = lenB;
+               
                 mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
                 mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks1");
 
@@ -63,14 +53,12 @@ public class DotProduct extends Score{
             matchedNumPeaks = mPeaksExp.size();
             sumMatchedIntExp = getSumIntensity(mPeaksExp);
             sumMatchedIntLib = getSumIntensity(mPeaksLib);
-
-            mPeaksExp = normalizeSpectrum(mPeaksExp);
-            mPeaksLib = normalizeSpectrum(mPeaksLib);
+            mPeaksExp = normalizePeaks(mPeaksExp);
+            mPeaksLib = normalizePeaks(mPeaksLib);    
             
-            score = dotProduct(mPeaksExp, mPeaksLib);
+            score = dotProduct(normalizePeaks(mPeaksExp), normalizePeaks(mPeaksLib));
 
         }
-
         return score;
     }
 
@@ -81,12 +69,8 @@ public class DotProduct extends Score{
             for (int a = 0; a < matchedNumPeaks; a++) {
                 productSum += v1.get(a).getIntensity() * v2.get(a).getIntensity(); //summation(vector1*vector2)             
             }
-
         }
         return productSum;
     }
     
- 
-
-  
 }

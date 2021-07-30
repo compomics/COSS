@@ -131,7 +131,7 @@ public class ImportExport {
                 saveAsText(path + "\\" + fname, ",", ".csv");
                 break;
             case 3:// save as tab delimited text file
-                saveAsText(path + "\\" + fname, "\t", ".txt");
+                saveAsText(path + "\\" + fname, "\t", ".tab");
                 break;
             default:
                 saveResultExcel(path + "\\" + fname);
@@ -174,13 +174,14 @@ public class ImportExport {
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib", "Score", "Validation(FDR)", "Mods", "Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
             Workbook workbook = new XSSFWorkbook(); // new HSSFWorkbook() for generating `.xls` file
             /* CreationHelper helps us create instances of various things like DataFormat,
             Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
+            
             CreationHelper createHelper = workbook.getCreationHelper();
             // Create a Sheet
             Sheet sheet = workbook.createSheet("Coss_Result");
@@ -210,50 +211,81 @@ public class ImportExport {
 
             String protein = "";
             String specFilename = "";
+            double score2;
+            double score3;
+            int cell_index;
+
             for (ComparisonResult res : result) {
                 List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
 
                 int lenMSpecs = mSpec.size();
+                score2 = 0;
+                score3 = 0;
 
-                for (int s = 0; s < lenMSpecs; s++) {
-                    //                int s = 0;
-                    Row row = sheet.createRow(rowNum);
-                    spec = res.getEspSpectrum();
-                    matchedSpec = mSpec.get(s).getSpectrum();
+//                for (int s = 0; s < lenMSpecs; s++) {
+                //                int s = 0;
+                int s=0;
+                Row row = sheet.createRow(rowNum);
+                spec = res.getEspSpectrum();
+                matchedSpec = mSpec.get(0).getSpectrum();//mSpec.get(s).getSpectrum();
 
-                    specFilename = this.configData.getExperimentalSpecFile().getName().toString();
-                    row.createCell(0).setCellValue(specFilename.substring(0, specFilename.indexOf(".")));
-                    row.createCell(1).setCellValue(spec.getTitle());
-                    row.createCell(2).setCellValue(s + 1);
-                    row.createCell(3).setCellValue(mSpec.get(s).getSource());
-                    row.createCell(4).setCellValue(spec.getScanNumber());
-                    row.createCell(5).setCellValue(spec.getRtTime());
-                    row.createCell(6).setCellValue(mSpec.get(s).getSequence());
-                    row.createCell(7).setCellValue(spec.getPCMass());
-                    row.createCell(8).setCellValue(spec.getCharge_asStr());
-                    row.createCell(9).setCellValue(matchedSpec.getCharge_asStr());
-                    row.createCell(10).setCellValue(mSpec.get(s).getScore());
-                    if (configData.isDecoyAvailable() && s == 0) {
-                        row.createCell(11).setCellValue(res.getFDR());
+                specFilename = this.configData.getExperimentalSpecFile().getName();
+                
+                cell_index=0;
+                row.createCell(cell_index++).setCellValue(specFilename.substring(0, specFilename.indexOf(".")));
+                row.createCell(cell_index++).setCellValue(spec.getTitle());
+                row.createCell(cell_index++).setCellValue(s + 1);
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSource());
+                row.createCell(cell_index++).setCellValue(spec.getScanNumber());
+                row.createCell(cell_index++).setCellValue(spec.getRtTime());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSequence());
+                row.createCell(cell_index++).setCellValue(spec.getPCMass());
+                row.createCell(cell_index++).setCellValue(spec.getCharge_asStr());
+                
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore());
+                
+                //additional scores
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_cosinesim());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_mse_int());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_mse_mz());
+                
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_spearman());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson_log2());
+                
+                
 
-                    } else {
-                        row.createCell(11).setCellValue("NA");
-                    }
-                    row.createCell(12).setCellValue(matchedSpec.getModifications_asStr());
-                    protein = matchedSpec.getProtein();
-                    protein.replaceAll("^\"|\"$", "");
-                    row.createCell(13).setCellValue(protein);//.substring(1, -1));
-                    row.createCell(14).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Exp());
-                    row.createCell(15).setCellValue(mSpec.get(s).getTotalFilteredNumPeaks_Lib());
-                    row.createCell(16).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
-                    row.createCell(17).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
-                    row.createCell(18).setCellValue(mSpec.get(s).getNumMatchedPeaks());
-                    row.createCell(19).setCellValue(mSpec.get(s).getSumMatchedInt_Exp());
-                    row.createCell(20).setCellValue(mSpec.get(s).getSumMatchedInt_Lib());
-                    rowNum++;
-                 
+                if (lenMSpecs > 1) { //if second match exists
+                    score2 = mSpec.get(1).getScore();
+                }
+                if (lenMSpecs > 2) { //if there is third matching spectrum
+                    score3 = mSpec.get(2).getScore();
                 }
 
+                row.createCell(cell_index++).setCellValue(score2);
+                row.createCell(cell_index++).setCellValue(score3);
+
+                if (configData.isDecoyAvailable() && s == 0) {
+                    row.createCell(cell_index++).setCellValue(res.getFDR());
+
+                } else {
+                    row.createCell(cell_index++).setCellValue("NA");
+                }
+                
+                row.createCell(cell_index++).setCellValue(matchedSpec.getModifications_asStr());
+                protein = matchedSpec.getProtein();
+                protein.replaceAll("^\"|\"$", "");
+                row.createCell(cell_index++).setCellValue(protein);//.substring(1, -1));
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getNumMatchedPeaks()/(double)mSpec.get(s).getTotalFilteredNumPeaks_Exp());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getNumMatchedPeaks()/(double)mSpec.get(s).getTotalFilteredNumPeaks_Lib());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getNumMatchedPeaks());
+                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSumMatchedInt_Exp()/mSpec.get(s).getSumFilteredIntensity_Exp());
+                row.createCell(cell_index).setCellValue(mSpec.get(s).getSumMatchedInt_Lib()/mSpec.get(s).getSumFilteredIntensity_Lib());
+                rowNum++;
+
+//                }
                 //}
             }   // Resize all columns to fit the content size
             for (int i = 0; i < columns.length; i++) {
@@ -283,19 +315,27 @@ public class ImportExport {
         Spectrum matechedSpec;
 
         String protein = "";
-        String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "ChargeLib", "Score", "Validation(FDR)", "Mods", "Protein", "#filteredQueryPeaks", "#filteredLibraryPeaks", "SumIntQuery", "SumIntLib", "#MatchedPeaks", "MatchedIntQuery", "MatchedIntLib"};
+        String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
+        
         FileWriter fileOut = new FileWriter(filename + extsn);
 
         //writing the column name
         fileOut.write(Arrays.asList(columns).stream().collect(Collectors.joining(delm)));
         fileOut.write("\n");
         String specFilename = "";
+        int lenMspec;
+        double score2;
+        double score3;
 
         for (ComparisonResult res : result) {
             List<MatchedLibSpectra> mSpec = res.getMatchedLibSpec();
-            int lenMspec = mSpec.size();
+            lenMspec = mSpec.size();
+            score2 = 0;
+            score3 = 0;
+            
             spec = res.getEspSpectrum();
-            for (int s = 0; s < lenMspec; s++) {
+            //for (int s = 0; s < lenMspec; s++) {
+            int s=0;
 
                 matechedSpec = res.getMatchedLibSpec().get(s).getSpectrum();
 
@@ -318,10 +358,30 @@ public class ImportExport {
 
                 fileOut.write(spec.getCharge_asStr() + delm);
 
-                fileOut.write(matechedSpec.getCharge_asStr() + delm);
+//                fileOut.write(matechedSpec.getCharge_asStr() + delm);
 
                 fileOut.write(Double.toString(mSpec.get(s).getScore()) + delm);
+                
+                 //additional scores
+                fileOut.write(Double.toString(mSpec.get(s).getScore_cosinesim()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getScore_mse_int()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getScore_mse_mz()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_spearman()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_pearson()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_pearson_log2()) + delm);
+               
+                if (lenMspec > 1) { //if second match exists
+                    score2 = mSpec.get(1).getScore();
+                }
+                if (lenMspec > 2) { //if there is third matching spectrum
+                    score3 = mSpec.get(2).getScore();
+                }
+                
+                fileOut.write(Double.toString(score2) + delm);
+                
+                fileOut.write(Double.toString(score3) + delm);
 
+                
                 if (configData.isDecoyAvailable() && s == 0) {
                     fileOut.write(Double.toString(res.getFDR()) + delm);
 
@@ -331,25 +391,28 @@ public class ImportExport {
                 }
                 fileOut.write(matechedSpec.getModifications_asStr());
                 protein = matechedSpec.getProtein();
-                protein.replaceAll("^\"|\"$", "");
+                if(protein!=""){
+                    protein.replaceAll("^\"|\"$", "");
+                }
                 fileOut.write(protein + delm);
 
-                fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Exp()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getNumMatchedPeaks()/(double)mSpec.get(s).getTotalFilteredNumPeaks_Exp()) + delm);
 
-                fileOut.write(Integer.toString(mSpec.get(s).getTotalFilteredNumPeaks_Lib()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getNumMatchedPeaks()/(double)mSpec.get(s).getTotalFilteredNumPeaks_Lib()) + delm);
 
-                fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()) + delm);
+//                fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Exp()) + delm);
+//
+//                fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()) + delm);
 
-                fileOut.write(Double.toString(mSpec.get(s).getSumFilteredIntensity_Lib()) + delm);
+//                fileOut.write(Integer.toString(mSpec.get(s).getNumMatchedPeaks()) + delm);
 
-                fileOut.write(Integer.toString(mSpec.get(s).getNumMatchedPeaks()) + delm);
+                fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()/mSpec.get(s).getSumFilteredIntensity_Exp()) + delm);
 
-                fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Exp()) + delm);
-
-                fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()) + delm);
-
+                fileOut.write(Double.toString(mSpec.get(s).getSumMatchedInt_Lib()/mSpec.get(s).getSumFilteredIntensity_Lib()) + delm);
+                
+                           
                 fileOut.write("\n");
-            }
+            //}
 
         }
         fileOut.flush();

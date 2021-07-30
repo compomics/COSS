@@ -34,12 +34,10 @@ public abstract class Score {
      *
      * @param expSpec
      * @param libSpec
-     * @param lenExp
-     * @param lenLib
      * @param topN
      * @return score
      */
-    public abstract double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenExp, int lenLib, int topN);
+    public abstract double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int topN, int transform);
 
     protected Map prepareData(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2) {
 
@@ -48,7 +46,7 @@ public abstract class Score {
     }
     
     
-    protected ArrayList<Peak> normalizeSpectrum(ArrayList<Peak> spec){
+    protected ArrayList<Peak> normalizePeaks(ArrayList<Peak> spec){
         double max=0;
         ArrayList<Peak> normalizedPeak=new ArrayList<>();
         for(Peak p : spec){
@@ -66,10 +64,11 @@ public abstract class Score {
            Peak np= new Peak(p.getMz(), intensity, p.getPeakAnnotation());
            normalizedPeak.add(np);
         }
-        return normalizedPeak;
-        
+        return normalizedPeak;        
         
     }
+    
+    
     
     /**
      * calculate and return sum of intensities of the peaks in the given spectrum

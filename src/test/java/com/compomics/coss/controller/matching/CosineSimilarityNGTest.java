@@ -47,7 +47,7 @@ public class CosineSimilarityNGTest {
         ConfigData confData=new ConfigData();
         CosineSimilarity instance = new CosineSimilarity(confData, null);
         double expResult = 0.0;
-        double result = instance.calculateScore(expSpec, libSpec, lenA, lenB, topN);
+        double result = instance.calculateScore(expSpec, libSpec, topN,0);
         result=0.0;
         assertEquals(result, expResult, 0.0);
     }

@@ -15,30 +15,27 @@ import java.util.TreeMap;
  *
  * @author Genet
  */
-public class MeanSquareError extends Score {
+public class Intensity_MSE extends Score {
 
     /**
      * @param confData
      * @param log
      */
-    public MeanSquareError(ConfigData confData, org.apache.log4j.Logger log) {
+    public Intensity_MSE(ConfigData confData, org.apache.log4j.Logger log) {
         super(confData, log);
 
     }
 
     /**
-     *
-     * @param lenA number of peaks in experimental spectrum
-     * @param lenB number of peaks in library spectrum
      * @param topN Top intense peaks selected from each spectrum
      * @return returns score of the comparison
      */
     @Override
-    public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenA, int lenB, int topN) {
+    public double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int topN, int transform) {
         Map<String, ArrayList<Peak>> map = new TreeMap<>();
         ArrayList<Peak> mPeaksExp;
         ArrayList<Peak> mPeaksLib;
-        if (lenB < lenA) {
+        if (libSpec.size() < expSpec.size()) {
             map = prepareData(expSpec, libSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks1");
             mPeaksLib = (ArrayList< Peak>) map.get("Matched Peaks2");
@@ -46,9 +43,9 @@ public class MeanSquareError extends Score {
 
         } else {
 
-            double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
-            sumTotalIntExp = sumTotalIntLib;
-            sumTotalIntLib = temp;
+//            double temp = sumTotalIntExp;//swap value if order if spetrua given is reversed
+//            sumTotalIntExp = sumTotalIntLib;
+//            sumTotalIntLib = temp;
 
             map = prepareData(libSpec, expSpec);
             mPeaksExp = (ArrayList< Peak>) map.get("Matched Peaks2");
@@ -75,7 +72,7 @@ public class MeanSquareError extends Score {
 
         double mse = Double.MAX_VALUE;
         if (matchedNumPeaks != 0) {
-            mse = Math.sqrt(sumSqrError) / (double) matchedNumPeaks;
+            mse = sumSqrError / (double) matchedNumPeaks;
         }
         return mse;
     }

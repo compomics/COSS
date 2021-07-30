@@ -9,18 +9,14 @@ import com.compomics.coss.controller.matching.DataProducer;
 import com.compomics.coss.controller.matching.DotProduct;
 import com.compomics.coss.controller.matching.MSRobin;
 import com.compomics.coss.controller.matching.Matcher;
-import com.compomics.coss.controller.matching.MeanSquareError;
+import com.compomics.coss.controller.matching.Intensity_MSE;
 import com.compomics.coss.controller.matching.Score;
-import com.compomics.coss.controller.matching.TestScore;
 import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.ms2io.model.Spectrum;
 import com.compomics.coss.model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.model.ConfigData;
-import java.util.Collection;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -60,6 +56,7 @@ public class Dispatcher {
     /**
      * dispatch the work of reading and matching to the algorithm selected
      *
+     * @return 
      * @return:returns the comparison result computed
      */
     public List<ComparisonResult> dispatch() {
@@ -67,7 +64,7 @@ public class Dispatcher {
         List<ComparisonResult> simResult = new ArrayList<>();
         try {
 
-            Score scoreObj = null;
+            Score scoreObj;
             switch (confData.getScoringFunction()) {
                 case 0:
                     scoreObj = new MSRobin(this.confData, this.log);
@@ -77,7 +74,7 @@ public class Dispatcher {
                     scoreObj = new CosineSimilarity(this.confData, this.log);
                     break;
                 case 2:
-                    scoreObj = new MeanSquareError(this.confData, this.log);
+                    scoreObj = new Intensity_MSE(this.confData, this.log);
                     break;
 
                 case 3:
@@ -103,42 +100,7 @@ public class Dispatcher {
                  future1.get();
                 simResult = future.get();
                 executor.shutdown();
-//                ExecutorService producerThread = Executors.newFixedThreadPool(1);
-//                ExecutorService consumerThread = Executors.newFixedThreadPool(5);
-//
-//                List<ComparisonResult> simResult1 = new ArrayList<>();
-//                List<ComparisonResult> simResult2 = new ArrayList<>();
-//                List<ComparisonResult> simResult3 = new ArrayList<>();
-//                List<ComparisonResult> simResult4 = new ArrayList<>();
-//                List<ComparisonResult> simResult5 = new ArrayList<>();
-//                
-//                Future<List<ComparisonResult>> future1 = null;
-//                Future<List<ComparisonResult>> future2 = null;
-//                Future<List<ComparisonResult>> future3 = null;
-//                Future<List<ComparisonResult>> future4 = null;
-//                Future<List<ComparisonResult>> future5 = null;
-//                
-//                Future futureP = producerThread.submit(producer);
-//                
-//                for (int i = 0; i < 5; i++) {
-//
-//                    future1=consumerThread.submit(match);
-//                    future2=consumerThread.submit(match);
-//                    future3=consumerThread.submit(match);
-//                    future4=consumerThread.submit(match);
-//                    future5=consumerThread.submit(match);
-//                }
-//
-//                futureP.get();
-//                simResult1 = future1.get();
-//                simResult2 = future2.get();
-//                simResult3 = future3.get();
-//                simResult4 = future4.get();
-//                simResult5 = future5.get();
-//                
-//                simResult = Stream.of(simResult1, simResult2, simResult3,simResult4, simResult5)
-//                                      .flatMap(Collection::stream)
-//                                      .collect(Collectors.toList()); 
+                
                 if (simResult != null) {
                     Collections.sort(simResult);
                     Collections.reverse(simResult);
