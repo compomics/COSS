@@ -17,10 +17,10 @@ import javax.swing.ListSelectionModel;
  */
 public class ResultPanel extends JPanel {
 
-    private JPanel pnlTargetSpectra;
+    private JPanel pnlQuerySpectra;
     private JPanel pnlBestMatchs;
     public JPanel pnlVisualSpectrum;
-    public JTable tblTargetSpectra;
+    public JTable tblQuerySpectra;
     public JTable tblBestMatch;
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
@@ -41,19 +41,19 @@ public class ResultPanel extends JPanel {
 
         //tables
         tblBestMatch = new JTable();
-        tblTargetSpectra = new JTable();
+        tblQuerySpectra = new JTable();
         tblBestMatch.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        tblTargetSpectra.setRowSelectionAllowed(true);
-        tblTargetSpectra.setColumnSelectionAllowed(false);
-        tblTargetSpectra.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblQuerySpectra.setRowSelectionAllowed(true);
+        tblQuerySpectra.setColumnSelectionAllowed(false);
+        tblQuerySpectra.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         tblBestMatch.setRowSelectionAllowed(true);
         tblBestMatch.setColumnSelectionAllowed(false);
         tblBestMatch.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         jScrollPane1 = new JScrollPane();
-        jScrollPane1.setViewportView(tblTargetSpectra);
+        jScrollPane1.setViewportView(tblQuerySpectra);
 
         jScrollPane2 = new JScrollPane();
         jScrollPane2.setViewportView(tblBestMatch);
@@ -78,10 +78,10 @@ public class ResultPanel extends JPanel {
                         .addContainerGap())
         );
 
-        pnlTargetSpectra = new JPanel();
-        pnlTargetSpectra.setBorder(javax.swing.BorderFactory.createTitledBorder("Target Spectra"));
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(pnlTargetSpectra);
-        pnlTargetSpectra.setLayout(jPanel1Layout);
+        pnlQuerySpectra = new JPanel();
+        pnlQuerySpectra.setBorder(javax.swing.BorderFactory.createTitledBorder("Query Spectra"));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(pnlQuerySpectra);
+        pnlQuerySpectra.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
                 jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -101,7 +101,7 @@ public class ResultPanel extends JPanel {
         pnlVisualSpectrum.setLayout(new BorderLayout());
 
         setLayout(new GridLayout(3, 1));
-        add(pnlTargetSpectra);
+        add(pnlQuerySpectra);
         add(pnlBestMatchs);
         add(pnlVisualSpectrum);
 
@@ -121,9 +121,9 @@ public class ResultPanel extends JPanel {
             }
         });
 
-        tblTargetSpectra.getSelectionModel().addListSelectionListener((ListSelectionEvent lse) -> {
+        tblQuerySpectra.getSelectionModel().addListSelectionListener((ListSelectionEvent lse) -> {
             if (!lse.getValueIsAdjusting()) {
-                int targSpectrumIndex = tblTargetSpectra.getSelectedRow();
+                int targSpectrumIndex = tblQuerySpectra.getSelectedRow();
                 if(targSpectrumIndex >= 0){
                     control.fillBestmatchTable(targSpectrumIndex);
                 }

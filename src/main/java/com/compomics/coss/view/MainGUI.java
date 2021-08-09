@@ -31,23 +31,23 @@ public class MainGUI extends JFrame {
     SettingPanel settings;
     ResultPanel result;
     MainFrameController control;
-    TargetDB_View pnlTargView;
+    querySpectum_View pnlTargView;
 
     /**
      * constructor of the class
      *
      * @param settings setting panel to be added on the main GUI
      * @param result result panel to be added on the main GUI
-     * @param targetView
+     * @param queryView
      * @param controler controller class responsible for coordinating the
      * process
      */
-    public MainGUI(SettingPanel settings, ResultPanel result, TargetDB_View targetView, MainFrameController controler) {
+    public MainGUI(SettingPanel settings, ResultPanel result, querySpectum_View queryView, MainFrameController controler) {
         super("COSS");
         this.control = controler;
         this.settings = settings;
         this.result = result;
-        this.pnlTargView = targetView;
+        this.pnlTargView = queryView;
         initComponents();
     }
 

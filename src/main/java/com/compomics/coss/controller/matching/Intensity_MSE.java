@@ -57,7 +57,7 @@ public class Intensity_MSE extends Score {
         matchedNumPeaks = mPeaksExp.size();
         sumMatchedIntExp = getSumIntensity(mPeaksExp);
         sumMatchedIntLib = getSumIntensity(mPeaksLib);
-        double intScore = meanSquareError(mPeaksExp, mPeaksLib);  
+        double intScore = meanSquareError(normalizePeaks(mPeaksExp), normalizePeaks(mPeaksLib));  
         return (intScore);
     }
 

@@ -174,7 +174,8 @@ public class ImportExport {
         FileOutputStream fileOut = null;
         try {
 
-            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
+//            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
+            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
             //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
@@ -244,26 +245,28 @@ public class ImportExport {
                 
                 row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore());
                 
-                //additional scores
-                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_cosinesim());
-                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_mse_int());
-                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_mse_mz());
-                
-                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_spearman());
-                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson());
-                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson_log2());
-                
-                
+//                //additional scores
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_cosinesim());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_mse_int());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getScore_mse_mz());
+//                
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_spearman());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson());
+//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson_log2());
+//                
+//                
+//
+//                if (lenMSpecs > 1) { //if second match exists
+//                    score2 = mSpec.get(1).getScore();
+//                }
+//                if (lenMSpecs > 2) { //if there is third matching spectrum
+//                    score3 = mSpec.get(2).getScore();
+//                }
+//                row.createCell(cell_index++).setCellValue(score2);
+//                row.createCell(cell_index++).setCellValue(score3);
+//                //end of additional scores
 
-                if (lenMSpecs > 1) { //if second match exists
-                    score2 = mSpec.get(1).getScore();
-                }
-                if (lenMSpecs > 2) { //if there is third matching spectrum
-                    score3 = mSpec.get(2).getScore();
-                }
 
-                row.createCell(cell_index++).setCellValue(score2);
-                row.createCell(cell_index++).setCellValue(score3);
 
                 if (configData.isDecoyAvailable() && s == 0) {
                     row.createCell(cell_index++).setCellValue(res.getFDR());
@@ -315,7 +318,8 @@ public class ImportExport {
         Spectrum matechedSpec;
 
         String protein = "";
-        String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
+        //String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
+        String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score","Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
         
         FileWriter fileOut = new FileWriter(filename + extsn);
 
@@ -362,25 +366,24 @@ public class ImportExport {
 
                 fileOut.write(Double.toString(mSpec.get(s).getScore()) + delm);
                 
-                 //additional scores
-                fileOut.write(Double.toString(mSpec.get(s).getScore_cosinesim()) + delm);
-                fileOut.write(Double.toString(mSpec.get(s).getScore_mse_int()) + delm);
-                fileOut.write(Double.toString(mSpec.get(s).getScore_mse_mz()) + delm);
-                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_spearman()) + delm);
-                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_pearson()) + delm);
-                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_pearson_log2()) + delm);
-               
-                if (lenMspec > 1) { //if second match exists
-                    score2 = mSpec.get(1).getScore();
-                }
-                if (lenMspec > 2) { //if there is third matching spectrum
-                    score3 = mSpec.get(2).getScore();
-                }
-                
-                fileOut.write(Double.toString(score2) + delm);
-                
-                fileOut.write(Double.toString(score3) + delm);
-
+//                 //additional scores
+//                fileOut.write(Double.toString(mSpec.get(s).getScore_cosinesim()) + delm);
+//                fileOut.write(Double.toString(mSpec.get(s).getScore_mse_int()) + delm);
+//                fileOut.write(Double.toString(mSpec.get(s).getScore_mse_mz()) + delm);
+//                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_spearman()) + delm);
+//                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_pearson()) + delm);
+//                fileOut.write(Double.toString(mSpec.get(s).getCorrelation_pearson_log2()) + delm);
+//               
+//                if (lenMspec > 1) { //if second match exists
+//                    score2 = mSpec.get(1).getScore();
+//                }
+//                if (lenMspec > 2) { //if there is third matching spectrum
+//                    score3 = mSpec.get(2).getScore();
+//                }
+//                
+//                fileOut.write(Double.toString(score2) + delm);                
+//                fileOut.write(Double.toString(score3) + delm);
+//                //end of additional scores
                 
                 if (configData.isDecoyAvailable() && s == 0) {
                     fileOut.write(Double.toString(res.getFDR()) + delm);

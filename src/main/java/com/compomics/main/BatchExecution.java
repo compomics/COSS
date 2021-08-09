@@ -20,8 +20,8 @@ public class BatchExecution {
     private static final Logger LOG = Logger.getLogger(MainFrameController.class);
 
     public static void main(String[] args) {
-        File dir = new File("D:/kusterDS/batch/temp"); //"C:/human_hcd/batch");
-        String lib_file="C:/human_hcd/MassIVE_realNsynthetic_Annotated_TargetDecoy.msp";
+        File dir = new File("D:/"); //"C:/human_hcd/batch");
+        String lib_file="C:/";
         File[] directoryListing = dir.listFiles();
 
         if (directoryListing != null) {

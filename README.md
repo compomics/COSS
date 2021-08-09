@@ -95,15 +95,15 @@ Make sure Java is installed on your machine.*
 ### CLI
 Command line searching is possible in COSS with the following commands:
 ```
-java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity)   
+java -jar COSS-X.Y.jar QuerySpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity)   
 ```
 or                    
 ```
-java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) 
+java -jar COSS-X.Y.jar QuerySpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) 
 ```
 or
 ```
-java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+java -jar COSS-X.Y.jar QuerySpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
 ```
 Decoy spectra can be generated and appended with the following command: dV- reverse, dR- random
 ```

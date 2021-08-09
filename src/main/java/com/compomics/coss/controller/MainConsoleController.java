@@ -42,13 +42,13 @@ public class MainConsoleController implements UpdateListener {
             int lenArgs = args.length;
             String arg1 = args[0];
             if (lenArgs <= 1 || lenArgs > 5) {
-                System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
+                System.out.println("At least two prameters has to be provided: query spectrum and Library file \n max. number of argument is five");
                 System.out.println("\n\nUsage: \n");
-                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile \n");
+                System.out.println("java -jar COSS-X.Y.jar querySpectraFile librarySpectraFile \n");
                 System.out.println("OR\n");
-                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
+                System.out.println("java -jar COSS-X.Y.jar querySpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
                 System.out.println("OR\n");
-                System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge \n");
+                System.out.println("java -jar COSS-X.Y.jar querySpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge \n");
                 System.out.println("OR decoy spectra can be generated and appended to the given library file using the command below\n");
                 System.out.println("java -jar COSS-X.Y.jar -d librarySpectraFile \n");
                 System.out.println("OR spectra library file can be annotated using the command below\n");
@@ -62,13 +62,14 @@ public class MainConsoleController implements UpdateListener {
                 //Generate decoy library and exit
 
                 if (arg1.equals("-dV")) {// reverse sequence decoy generateion
-                    System.out.println("Generating decoy library with fixed mz value shift");
+                    System.out.println("Generating decoy library using random sequence");
                     generateDeoy(0, args[1]);
                     Runtime.getRuntime().exit(0);
 
                 } else if (arg1.equals("-dR")) { //random sequence 
                     System.out.println("Generating decoy library with shuffle mz value and random intensity");
                     generateDeoy(1, args[1]);
+                    
                     Runtime.getRuntime().exit(0);
                 }
 
@@ -86,6 +87,7 @@ public class MainConsoleController implements UpdateListener {
                 annotateLibrary(fragTol, args[1]);
                 Runtime.getRuntime().exit(0);
 
+
             }
 
             configData = new ConfigData();
@@ -102,7 +104,7 @@ public class MainConsoleController implements UpdateListener {
                 }
                 LOG.info("Validation errors" + message.toString());
             } else {
-                //Read spectral configData both target and db spectra
+                //Read spectral configData both query and library spectra
                 configReader();
 
                 if ((configData.getExpSpectraIndex() != null || configData.getEbiReader() != null) && configData.getSpectraLibraryIndex() != null) {
@@ -261,15 +263,15 @@ public class MainConsoleController implements UpdateListener {
         String fileExtnDB = configData.getSpecLibraryFile().getName();
 
         if (!configData.getSpecLibraryFile().exists()) {
-            validationMessages.add("Database spectra file not found");
+            validationMessages.add("Library spectra file not found");
         } else if (!fileExtnDB.endsWith(".mgf") && !fileExtnDB.endsWith(".msp") && !fileExtnDB.endsWith(".sptxt")) {
-            validationMessages.add(" Database Spectra file typenot valid");
+            validationMessages.add(" Library Spectra file type not valid");
         }
         if (!configData.getExperimentalSpecFile().exists()) {
-            validationMessages.add("Target spectra file not found");
+            validationMessages.add("query spectra file not found");
         } else if (!fileExtnTar.endsWith(".mgf") && !fileExtnTar.endsWith(".msp") && !fileExtnTar.endsWith(".mzML")
                 && !fileExtnTar.endsWith(".mzXML") && !fileExtnTar.endsWith(".ms2")) {
-            validationMessages.add(" Targer Spectra file type not valid");
+            validationMessages.add(" query Spectra file type not valid");
         }
 
         if (configData.getPrecTol() < 0.0) {
@@ -306,7 +308,6 @@ public class MainConsoleController implements UpdateListener {
         } else if (!library.endsWith(".mgf") && !library.endsWith(".msp")) {
             System.out.println("Validation errors: given spectral library file format is not supported");
         } else {
-
             File libFile = new File(library);
             GenerateDecoy gn;
             if (i == 0) {

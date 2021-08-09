@@ -20,7 +20,7 @@ import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
  *
  * @author Genet
  */
-public class TargetDB_View extends JPanel {
+public class querySpectum_View extends JPanel {
     
 
     
@@ -37,7 +37,7 @@ public class TargetDB_View extends JPanel {
     
     MainFrameController contrl;
     
-    public TargetDB_View(MainFrameController control){
+    public querySpectum_View(MainFrameController control){
         this.contrl=control;
         initComponent();
     }
@@ -95,7 +95,6 @@ public class TargetDB_View extends JPanel {
         pnlVizSpectrum.setLayout(new BorderLayout());
         
         JPanel pnlSpecInfo = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        //pnlSpecInfo.setBorder(BorderFactory.createTitledBorder("Target Spectra Info"));
         
                 
         javax.swing.GroupLayout pnlInfoLayout = new javax.swing.GroupLayout(pnlSpecInfo);
@@ -173,13 +172,13 @@ public class TargetDB_View extends JPanel {
                 try {
                     contrl.updateInputInfo();
                 } catch (JMzReaderException ex) {
-                    Logger.getLogger(TargetDB_View.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(querySpectum_View.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
             }
         });
         
-         setBorder(BorderFactory.createTitledBorder("Target Spectra Information"));
+         setBorder(BorderFactory.createTitledBorder("Query Spectra Information"));
          setLayout(new GridLayout(3, 1));
          add(pnlSpecInfo);
          add(pnlVizSpectrum);

@@ -61,7 +61,7 @@ public class SettingPanel extends JPanel {
         filter[1] = " ";
 
         //Buttons
-        JButton btntargetspec = new JButton("...");
+        JButton btnqueryspec = new JButton("...");
         JButton btnLibspec = new JButton("...");
         JButton btnApplyPreprocess = new JButton("Apply preprocessing");
         JButton btnSave = new JButton("Save My Settings");
@@ -71,7 +71,7 @@ public class SettingPanel extends JPanel {
 
         //Labels
         JLabel lbldblib = new JLabel("Spectral Library");
-        JLabel lbltargetspec = new JLabel("Target Spectra");
+        JLabel lblqueryspec = new JLabel("Query Spectra");
         JLabel lblAlgorithmType = new JLabel("Scoring Function");
         JLabel lblCutOff = new JLabel("CutOff");
         JLabel lblMassWindow=new JLabel("Filter WindowSize");
@@ -89,7 +89,7 @@ public class SettingPanel extends JPanel {
         cmbFragTolUnit.setSelectedIndex(0);
         //Text field
         //txtdbspec = new JTextField();
-        txttargetspec = new JTextField();
+        txtqueryspec = new JTextField();
         txtMassWindow=new JTextField();
         //txtMassWindow.setEnabled(false);
         txtCutOff = new JTextField();
@@ -154,8 +154,7 @@ public class SettingPanel extends JPanel {
 
         GroupLayout jPanel1Layout = new javax.swing.GroupLayout(pnlInputParam);
         pnlInputParam.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,16 +167,16 @@ public class SettingPanel extends JPanel {
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                 .addComponent(lbldblib, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addComponent(lbltargetspec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                                .addComponent(lblqueryspec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                         .addGap(18, 18, 18)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(txttargetspec, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                                                .addComponent(txtqueryspec, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
                                                 .addComponent(txtLibrary))
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                .addComponent(btntargetspec, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(btnqueryspec, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(btnLibspec, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                //.addComponent(btntargetspec, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                //.addComponent(btnqueryspec, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
 
                                 )
                                 .addGroup(jPanel1Layout.createSequentialGroup()
@@ -189,14 +188,13 @@ public class SettingPanel extends JPanel {
                                 )
                         .addContainerGap(75, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(27, 27, 27)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lbltargetspec)
-                                .addComponent(txttargetspec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btntargetspec))
+                                .addComponent(lblqueryspec)
+                                .addComponent(txtqueryspec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnqueryspec))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(lbldblib)
@@ -362,11 +360,11 @@ public class SettingPanel extends JPanel {
 
         txtCutOff.setEnabled(false);
         chkFilter.setEnabled(false);
-        btntargetspec.addActionListener(new ActionListener() {
+        btnqueryspec.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                control.chooseTargetFile("target");
+                control.chooseFile("query");
 
             }
         }
@@ -376,7 +374,7 @@ public class SettingPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                control.chooseTargetFile("library");
+                control.chooseFile("library");
 
             }
         }
@@ -417,7 +415,7 @@ public class SettingPanel extends JPanel {
      * Clear the values of GUI control values
      */
     private void clearSettings() {
-        txttargetspec.setText("");
+        txtqueryspec.setText("");
         //cboSpectraLibrary.setSelectedIndex(0);
         cmbScoringFun.setSelectedIndex(0);
         txtPrecursorTolerance.setText("");
@@ -427,7 +425,7 @@ public class SettingPanel extends JPanel {
 
     //Component Declaration
     //Text field
-    public JTextField txttargetspec;
+    public JTextField txtqueryspec;
     public JTextField txtLibrary;
     public JTextField txtCutOff;
     public JTextField txtMassWindow;

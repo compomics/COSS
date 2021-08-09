@@ -30,7 +30,7 @@ public class ReverseSequence extends GenerateDecoy {
         GetDecoySpectrum getDecoy;
 
         Future<Spectrum> future;
-        ExecutorService executor = Executors.newFixedThreadPool(8);
+        ExecutorService executor = Executors.newFixedThreadPool(100);
         String sequence = "";
         String rev_sequence = "";
 

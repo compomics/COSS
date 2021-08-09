@@ -6,7 +6,7 @@ import com.compomics.ms2io.model.Peak;
 import com.compomics.coss.controller.decoyGeneration.*;
 import com.compomics.coss.view.ResultPanel;
 import com.compomics.coss.view.RasterPanel;
-import com.compomics.coss.view.TargetDB_View;
+import com.compomics.coss.view.querySpectum_View;
 import com.compomics.coss.view.SettingPanel;
 import com.compomics.coss.view.MainGUI;
 import com.compomics.coss.model.ConfigData;
@@ -56,7 +56,7 @@ public class MainFrameController implements UpdateListener {
     private MainGUI mainView;
     private SettingPanel settingsPnl;
     private ResultPanel resultPnl;
-    private TargetDB_View targetView;
+    private querySpectum_View quryspecView;
 
     // private ConfigHolder config = new ConfigHolder();
     Dispatcher dispatcher;
@@ -69,7 +69,7 @@ public class MainFrameController implements UpdateListener {
     boolean isSettingSame;
 
     public DefaultTableModel tblModelResult;
-    public DefaultTableModel tblModelTarget;
+    public DefaultTableModel tblModelQuery;
     public SpinnerNumberModel spnModel;
     public DefaultComboBoxModel cmbModel;
 
@@ -90,9 +90,9 @@ public class MainFrameController implements UpdateListener {
         String libPath = ConfigHolder.getInstance().getString("spectra.library.path");
         settingsPnl = new SettingPanel(this, new File(libPath));
         resultPnl = new ResultPanel(this);
-        targetView = new TargetDB_View(this);
+        quryspecView = new querySpectum_View(this);
 
-        mainView = new MainGUI(settingsPnl, resultPnl, targetView, this);
+        mainView = new MainGUI(settingsPnl, resultPnl, quryspecView, this);
         mainView.pnlCommands.setLayout(new BorderLayout());
 
         // add gui appender
@@ -115,7 +115,7 @@ public class MainFrameController implements UpdateListener {
                 return false;
             }
         };
-        tblModelTarget = new DefaultTableModel(colNamesExperimental, 0) {
+        tblModelQuery = new DefaultTableModel(colNamesExperimental, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -123,9 +123,9 @@ public class MainFrameController implements UpdateListener {
         };
 
         spnModel = new SpinnerNumberModel(1, 1, 1, 1);
-        targetView.spnSpectrum.setModel(spnModel);
+        quryspecView.spnSpectrum.setModel(spnModel);
 
-        resultPnl.tblTargetSpectra.setModel(tblModelTarget);
+        resultPnl.tblQuerySpectra.setModel(tblModelQuery);
         resultPnl.tblBestMatch.setModel(tblModelResult);
 
         //cleaning display area
@@ -301,7 +301,7 @@ public class MainFrameController implements UpdateListener {
     public void LoadData() {
 
         //spectral data inputs
-        settingsPnl.txttargetspec.setText(ConfigHolder.getInstance().getString("target.spectra.path"));
+        settingsPnl.txtqueryspec.setText(ConfigHolder.getInstance().getString("query.spectra.path"));
         settingsPnl.txtLibrary.setText(ConfigHolder.getInstance().getString("spectra.library.path"));
 
         //Scoring function
@@ -391,7 +391,7 @@ public class MainFrameController implements UpdateListener {
         //settingsPnl.txtLibrary.setText("C:/tempData/SpecB.msp");
         List<String> validationMessages = new ArrayList<>();
 
-        String tempS = settingsPnl.txttargetspec.getText();
+        String tempS = settingsPnl.txtqueryspec.getText();
         if ("".equals(tempS)) {
             validationMessages.add("Please provide a spectra input directory.");
         } else if (!tempS.endsWith(".mgf") && !tempS.endsWith(".msp") && !tempS.endsWith(".mzML")
@@ -519,7 +519,7 @@ public class MainFrameController implements UpdateListener {
             }
 
         } catch (Exception exception) {
-            LOG.error(exception + " target spectrum number: " + Integer.toString(this.resultNumber+c));
+            LOG.error(exception + "spectrum number: " + Integer.toString(this.resultNumber+c));
         }
 
         resultPnl.pnlVisualSpectrum.revalidate();
@@ -527,13 +527,13 @@ public class MainFrameController implements UpdateListener {
     }
 
     /**
-     * Fill table with target spectra
+     * Fill table with query spectra
      */
     private void fillExpSpectraTable() {
 
         if (result != null) {
 
-            tblModelTarget.setRowCount(0);
+            tblModelQuery.setRowCount(0);
             int resultSize = 0;
             resultSize = result.size();// configData.getExpSpectraIndex().size();
             Spectrum expSpec;
@@ -567,7 +567,7 @@ public class MainFrameController implements UpdateListener {
                 row[11] = Double.toString(matchedSpec.getSumMatchedInt_Exp());
                 row[12] = Integer.toString(matchedSpec.getNumMatchedPeaks());
 
-                tblModelTarget.addRow(row);
+                tblModelQuery.addRow(row);
             }
         }
 
@@ -576,12 +576,12 @@ public class MainFrameController implements UpdateListener {
     /**
      * fill table with best matched spectra
      *
-     * @param target target spectrum index
+     * @param queryIndex spectrum index
      */
-    public void fillBestmatchTable(int target) {
+    public void fillBestmatchTable(int queryIndex) {
 
-        if (result != null && !result.isEmpty() && result.get(target).getMatchedLibSpec() != null && !result.get(target).getMatchedLibSpec().isEmpty()) {
-            this.targSpectrumNum = target;
+        if (result != null && !result.isEmpty() && result.get(queryIndex).getMatchedLibSpec() != null && !result.get(queryIndex).getMatchedLibSpec().isEmpty()) {
+            this.targSpectrumNum = queryIndex;
             ComparisonResult res = result.get(this.targSpectrumNum);
             tblModelResult.setRowCount(0);
 
@@ -642,7 +642,7 @@ public class MainFrameController implements UpdateListener {
     }
 
     /**
-     * update the input information area for target spectrum on GUI based on
+     * update the input information area for query spectrum on GUI based on
      * user selected spectrum
      */
     public void updateInputInfo() throws JMzReaderException {
@@ -650,11 +650,11 @@ public class MainFrameController implements UpdateListener {
         if (configData.getExpSpecReader() != null) {
             Spectrum tSpec = configData.getExpSpecReader().readAt(configData.getExpSpectraIndex().get(specNumber).getPos());
 
-            targetView.txtRtTime.setText(Double.toString(tSpec.getRtTime()));
-            targetView.txtScanno.setText(tSpec.getScanNumber());
-            targetView.txtmaxmz.setText(Double.toString(tSpec.getMaxMZ()));
-            targetView.txtminmz.setText(Double.toString(tSpec.getMinMZ()));
-            targetView.txtnumpeaks.setText(Integer.toString(tSpec.getNumPeaks()));
+            quryspecView.txtRtTime.setText(Double.toString(tSpec.getRtTime()));
+            quryspecView.txtScanno.setText(tSpec.getScanNumber());
+            quryspecView.txtmaxmz.setText(Double.toString(tSpec.getMaxMZ()));
+            quryspecView.txtminmz.setText(Double.toString(tSpec.getMinMZ()));
+            quryspecView.txtnumpeaks.setText(Integer.toString(tSpec.getNumPeaks()));
             try {
                 spectrumDisplay(specNumber);
             } catch (JMzReaderException ex) {
@@ -669,11 +669,11 @@ public class MainFrameController implements UpdateListener {
 
             Spectrum tSpec = jmzMap.getMappedSpectrum(jmzSpec);
 
-            targetView.txtRtTime.setText(Double.toString(tSpec.getRtTime()));
-            targetView.txtScanno.setText(tSpec.getScanNumber());
-            targetView.txtmaxmz.setText(Double.toString(tSpec.getMaxMZ()));
-            targetView.txtminmz.setText(Double.toString(tSpec.getMinMZ()));
-            targetView.txtnumpeaks.setText(Integer.toString(tSpec.getNumPeaks()));
+            quryspecView.txtRtTime.setText(Double.toString(tSpec.getRtTime()));
+            quryspecView.txtScanno.setText(tSpec.getScanNumber());
+            quryspecView.txtmaxmz.setText(Double.toString(tSpec.getMaxMZ()));
+            quryspecView.txtminmz.setText(Double.toString(tSpec.getMinMZ()));
+            quryspecView.txtnumpeaks.setText(Integer.toString(tSpec.getNumPeaks()));
             try {
                 spectrumDisplay(specNumber);
             } catch (JMzReaderException ex) {
@@ -690,7 +690,7 @@ public class MainFrameController implements UpdateListener {
     }
 
     /**
-     * Update the visual result panel based on the selection of the target
+     * Update the visual result panel based on the selection of the query spectrum
      * spectrum
      *
      * @param index
@@ -744,27 +744,21 @@ public class MainFrameController implements UpdateListener {
             ConfigHolder.getInstance().setProperty("fragment.tolerance", configData.getfragTol());
             ConfigHolder.getInstance().setProperty("precursor.tolerance", configData.getPrecTol());
             ConfigHolder.getInstance().setProperty("db.spectra.path", configData.getSpecLibraryFile());
-            ConfigHolder.getInstance().setProperty("target.spectra", configData.getExperimentalSpecFile());
+            ConfigHolder.getInstance().setProperty("query.spectra", configData.getExperimentalSpecFile());
         }
 
     }
 
-    /**
-     * this method changes library path
-     */
-    public void setLibraryPath() {
-
-    }
 
     /**
-     * opens dialog to choose target spectra file
+     * opens dialog to choose query or library spectra file
      *
-     * @param file the file source library or target
+     * @param file the file library or query
      */
-    public void chooseTargetFile(String file) {
+    public void chooseFile(String file) {
 
-        JFileChooser fileChooser = new JFileChooser("C:/human_hcd/");
-        fileChooser.setDialogTitle("Target Spectra File");
+        JFileChooser fileChooser = new JFileChooser("C:/");
+        fileChooser.setDialogTitle("Query Spectra File");
         fileChooser.setMultiSelectionEnabled(false);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.setAcceptAllFileFilterUsed(false);
@@ -775,8 +769,8 @@ public class MainFrameController implements UpdateListener {
             String tempfile = fileChooser.getSelectedFile().getPath();
             tempfile = tempfile.replace('\\', '/');
 
-            if (file.equals("target")) {
-                settingsPnl.txttargetspec.setText(tempfile);
+            if (file.equals("query")) {
+                settingsPnl.txtqueryspec.setText(tempfile);
             } else {
                 settingsPnl.txtLibrary.setText(tempfile);
             }
@@ -785,31 +779,31 @@ public class MainFrameController implements UpdateListener {
     }
 
     /**
-     * display color raster of the whole spectra in the target dataset
+     * display color raster of the whole spectra in the query dataset
      */
     public void rasterDisplay() {
-        targetView.pnlRaster.removeAll();
+        quryspecView.pnlRaster.removeAll();
         RasterPanel drawingPanel = null;
         if (configData.getExpSpectraIndex() != null) {
 
             drawingPanel = new RasterPanel(configData.getExpSpectraIndex(), configData.getExpSpecReader());
 
             drawingPanel.setPreferredSize(new Dimension(600, 300));
-            targetView.pnlRaster.add(drawingPanel);
-            targetView.pnlRaster.repaint();
-            targetView.pnlRaster.revalidate();
+            quryspecView.pnlRaster.add(drawingPanel);
+            quryspecView.pnlRaster.repaint();
+            quryspecView.pnlRaster.revalidate();
         }
 
     }
 
     /**
-     * visual spectrum display of a selected spectrum at the position specIndex
+     * visual spectrum display of a selected query spectrum at the position specIndex
      *
      * @param specIndex position of the spectrum to be visualized
      */
     public void spectrumDisplay(int specIndex) throws JMzReaderException {
 
-        targetView.pnlVizSpectrum.removeAll();
+        quryspecView.pnlVizSpectrum.removeAll();
         //SpecPanel spec = new SpecPanel(null);
 
         double[] mz = new double[0];
@@ -857,9 +851,9 @@ public class MainFrameController implements UpdateListener {
 
         }
 
-        targetView.pnlVizSpectrum.add(spanel);
-        targetView.pnlVizSpectrum.repaint();
-        targetView.pnlVizSpectrum.revalidate();
+        quryspecView.pnlVizSpectrum.add(spanel);
+        quryspecView.pnlVizSpectrum.repaint();
+        quryspecView.pnlVizSpectrum.revalidate();
 
     }
 
@@ -868,7 +862,7 @@ public class MainFrameController implements UpdateListener {
      */
     private void clearGraphicArea() {
         resultPnl.pnlVisualSpectrum.removeAll();
-        tblModelTarget.setRowCount(0);
+        tblModelQuery.setRowCount(0);
         tblModelResult.setRowCount(0);
     }
 
@@ -922,7 +916,7 @@ public class MainFrameController implements UpdateListener {
 
 //    public void mergeFiles() {
 //        String tempS = settingsPnl.txtLibrary.getText();
-//        String tempS2 = settingsPnl.txttargetspec.getText();
+//        String tempS2 = settingsPnl.txtqueryspec.getText();
 //
 //        if ("".equals(tempS2) || "".equals(tempS)) {
 //            LOG.info("Please give files to be merged");
@@ -1050,7 +1044,7 @@ public class MainFrameController implements UpdateListener {
                     }
 
                     spnModel.setMaximum(expSpecSize);
-                    targetView.txtTotalSpec.setText("/" + Integer.toString(expSpecSize));
+                    quryspecView.txtTotalSpec.setText("/" + Integer.toString(expSpecSize));
 
                     try {
                         updateInputInfo();
