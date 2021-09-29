@@ -16,13 +16,13 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     // private static MatchedLibSpectra this_obj;
     Spectrum spectrum;
     double score;
-//    double score_cosinesim;
-//    double score_mse_int;
-//    double score_mse_mz;
-//    double corr_spearman;
-//    double corr_pearson;
-//    double corr_pearson_log2;
-//    double score_dotproduct;
+    double score_cosinesim;
+    double score_mse_int;
+    double score_mse_mz;
+    double corr_spearman;
+    double corr_pearson;
+    double corr_pearson_log2;
+    double score_dotproduct;
     
     int source;
     String sequence;
@@ -57,55 +57,55 @@ public class MatchedLibSpectra implements Comparable<MatchedLibSpectra>, Seriali
     }
 
 //Additional scores
-//    public double getScore_cosinesim() {
-//        return this.score_cosinesim;
-//    }
-//
-//    public void setScore_cosinesim(double score) {
-//        this.score_cosinesim = score;
-//    }
-//
-//    public double getScore_mse_int() {
-//        return this.score_mse_int;
-//    }
-//
-//    public void setScore_mse_int(double score) {
-//        this.score_mse_int = score;
-//    }
-//    
-//    public double getScore_mse_mz() {
-//        return this.score_mse_mz;
-//    }
-//
-//    public void setScore_mse_mz(double score) {
-//        this.score_mse_mz = score;
-//    }
-//    
-//    public double getCorrelation_pearson() {
-//        return this.corr_pearson;
-//    }
-//
-//    public void setCorrelation_pearson(double score) {
-//        this.corr_pearson = score;
-//    }
-//    
-//    
-//    public double getCorrelation_pearson_log2() {
-//        return this.corr_pearson_log2;
-//    }
-//
-//    public void setCorrelation_pearson_log2(double score) {
-//        this.corr_pearson_log2 = score;
-//    }
+    public double getScore_cosinesim() {
+        return this.score_cosinesim;
+    }
+
+    public void setScore_cosinesim(double score) {
+        this.score_cosinesim = score;
+    }
+
+    public double getScore_mse_int() {
+        return this.score_mse_int;
+    }
+
+    public void setScore_mse_int(double score) {
+        this.score_mse_int = score;
+    }
+    
+    public double getScore_mse_mz() {
+        return this.score_mse_mz;
+    }
+
+    public void setScore_mse_mz(double score) {
+        this.score_mse_mz = score;
+    }
+    
+    public double getCorrelation_pearson() {
+        return this.corr_pearson;
+    }
+
+    public void setCorrelation_pearson(double score) {
+        this.corr_pearson = score;
+    }
     
     
-//    public double getCorrelation_spearman() {
-//        return this.corr_spearman;
-//    }
-//
-//    public void setCorrelation_spearman(double score) {
-//        this.corr_spearman = score;
-//    }
+    public double getCorrelation_pearson_log2() {
+        return this.corr_pearson_log2;
+    }
+
+    public void setCorrelation_pearson_log2(double score) {
+        this.corr_pearson_log2 = score;
+    }
+    
+    
+    public double getCorrelation_spearman() {
+        return this.corr_spearman;
+    }
+
+    public void setCorrelation_spearman(double score) {
+        this.corr_spearman = score;
+    }
 
     public int getSource() {
         return this.source;

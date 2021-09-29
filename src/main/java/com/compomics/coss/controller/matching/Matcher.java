@@ -178,14 +178,14 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                             
                             if (score_main > tempScore) { //tempScore<score for MSRobin and cosine similarity
                                 
-//                                score_cosinesim= matcher_cosinesim.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
-//                                score_mse_int=matcher_mse_intensity.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
-//                                score_mse_mz=matcher_mse_mz.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
-//                                corr_pearson=pearson_correlaion.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
-//                                corr_spearman=spearman_correlaion.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
-//                                corr_pearson_log2=pearson_correlaion.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN, 2);
-//                                
-//                                
+                                score_cosinesim= matcher_cosinesim.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
+                                score_mse_int=matcher_mse_intensity.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
+                                score_mse_mz=matcher_mse_mz.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
+                                corr_pearson=pearson_correlaion.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
+                                corr_spearman=spearman_correlaion.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN,0);
+                                corr_pearson_log2=pearson_correlaion.calculateScore(selectedPeaks_exp, selectedPeaks_lib, topN, 2);
+                                
+                                
                                 
                                 
                                 
@@ -201,12 +201,12 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         }
                         double finalScore = Collections.max(scores);//max for MSRobin and cosine similarity, min for MSE
                         finalScore = (double) Math.round(finalScore * 10000d) / 10000d;
-//                        score_cosinesim = (double) Math.round(score_cosinesim * 10000d) / 10000d;
-//                        score_mse_int = (double) Math.round(score_mse_int * 10000d) / 10000d;
-//                        score_mse_mz = (double) Math.round(score_mse_mz * 10000d) / 10000d;
-//                        corr_spearman = (double) Math.round(corr_spearman * 10000d) / 10000d;
-//                        corr_pearson = (double) Math.round(corr_pearson * 10000d) / 10000d;
-//                        corr_pearson_log2 = (double) Math.round(corr_pearson_log2 * 10000d) / 10000d;
+                        score_cosinesim = (double) Math.round(score_cosinesim * 10000d) / 10000d;
+                        score_mse_int = (double) Math.round(score_mse_int * 10000d) / 10000d;
+                        score_mse_mz = (double) Math.round(score_mse_mz * 10000d) / 10000d;
+                        corr_spearman = (double) Math.round(corr_spearman * 10000d) / 10000d;
+                        corr_pearson = (double) Math.round(corr_pearson * 10000d) / 10000d;
+                        corr_pearson_log2 = (double) Math.round(corr_pearson_log2 * 10000d) / 10000d;
                         
                         
                         MatchedLibSpectra mSpec = new MatchedLibSpectra();
@@ -214,12 +214,12 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         mSpec.setScore(finalScore);
                         
                         //additional scores added for percolator
-//                        mSpec.setScore_cosinesim(score_cosinesim);
-//                        mSpec.setScore_mse_int(score_mse_int);
-//                        mSpec.setScore_mse_mz(score_mse_mz);
-//                        mSpec.setCorrelation_spearman(corr_spearman);
-//                        mSpec.setCorrelation_pearson(corr_pearson);
-//                        mSpec.setCorrelation_pearson_log2(corr_pearson_log2);
+                        mSpec.setScore_cosinesim(score_cosinesim);
+                        mSpec.setScore_mse_int(score_mse_int);
+                        mSpec.setScore_mse_mz(score_mse_mz);
+                        mSpec.setCorrelation_spearman(corr_spearman);
+                        mSpec.setCorrelation_pearson(corr_pearson);
+                        mSpec.setCorrelation_pearson_log2(corr_pearson_log2);
                         
                         mSpec.setSequence(sp2.getSequence());
                         if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")) {

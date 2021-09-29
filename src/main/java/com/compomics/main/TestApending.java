@@ -28,8 +28,8 @@ public class TestApending {
 
       
              
-            File fileOriginal = new File("C:/human_hcd/lib/MassIVE/massive_synthetic_spectrastGeneratedFiles/MassIVE_syntheticLib_90p_random_annotated_unique_TD_modified.msp");
-            File fileModified = new File("C:/human_hcd/lib/MassIVE/massive_synthetic_spectrastGeneratedFiles/MassIVE_syntheticLib_90p_random_annotated_unique_TD_modified2.msp");
+            File fileOriginal = new File("C:/human_hcd_2020_target.msp/.msp");
+            File fileModified = new File("C:/human_hcd_2020_target.msp/human_hcdAall_2020_target_proc.msp");
             br = new BufferedReader(new FileReader(fileOriginal));
             bw = new BufferedWriter(new FileWriter(fileModified));
             String line = br.readLine();
@@ -41,7 +41,9 @@ public class TestApending {
             //int cnt = 0;
             String[] str_arr = null;
             while (line != null) {
-//
+                
+            //Adding decoy tag to Name field and correcting mz values of less than 1 to 1 for MsPepsearch library (binary) generation
+
                 if (!line.equals("") && Character.isDigit(line.charAt(0))) {
                     line.trim().replaceAll("\\s{2,}", " ");
                     
@@ -53,35 +55,35 @@ public class TestApending {
                         pm = 1;
                     }
                     pi = Math.round(pi * 10) / 10.0;
-                    annotation = "\"?\""; // str_arr[2];
+                    annotation = str_arr[2]; // "\"?\"";
+                    
                     // annotation = "\"" + "teststring"+"\"" + "\"";
 //                    annotation = annotation.replace("\"", "");
 //                    annotation = "\"" + annotation + "\"";
 
                     line = Double.toString(pm) + "\t" + Double.toString(pi) + "\t" + annotation;
-//                    bw.write(line);
-//                    bw.write("\n");
-//                    line = br.readLine();
-                } 
-                bw.write(line);
-                bw.write("\n");
-                line = br.readLine();
-                //else if (line.startsWith("Name:")) {
+                    bw.write(line);
+                    bw.write("\n");
+                    line = br.readLine();                   
+
+                }                
+
+//                else if (line.startsWith("Name:")) {
 //                    name = line;
 //                    line = br.readLine();
-//                    continue;
+//                    
 //                } 
 //                else if (line.startsWith("MW:")) {
 //                    mw = line;
 //                    line = br.readLine();
-//                    continue;
+//                    
 //                }
 //                else if (line.startsWith("Comment")) {
 //                    String newLine = name;
-//                    if (line.contains("Decoy") || line.contains("decoy")) {
+////                    if (line.contains("Decoy") || line.contains("decoy")) {
 //                        int index_isert = name.indexOf("/");
 //                        newLine = name.substring(0, index_isert - 1) + "_decoy" + name.substring(index_isert);
-//                    }
+////                    }
 //                    bw.write(newLine);
 //                    bw.write("\n");
 //                    
@@ -93,19 +95,19 @@ public class TestApending {
 //                    bw.write(line);
 //                    bw.write("\n");
 //                    line = br.readLine();
-//                } else if (line.startsWith("Num")) {
-//
-//                    line = line.replace("Peaks", "peaks");
-//                    bw.write(line);
-//                    bw.write("\n");
-//                    line = br.readLine();
-//
-//                } else {
-//                    bw.write(line);
-//                    bw.write("\n");
-//                    line = br.readLine();
 //                }
 
+                else {
+                    bw.write(line);
+                    bw.write("\n");
+                    line = br.readLine();
+                }
+
+
+
+
+
+//Library conversion for TMT
 //                if(line.startsWith("Name:")){
 //                    name=line;
 //                    line = br.readLine();
