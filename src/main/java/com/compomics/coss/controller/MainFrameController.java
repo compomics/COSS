@@ -39,6 +39,7 @@ import javax.swing.table.DefaultTableModel;
 import com.compomics.util.gui.spectrum.SpectrumPanel;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
+import javax.swing.JFrame;
 import org.apache.commons.io.FilenameUtils;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReader;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
@@ -149,6 +150,7 @@ public class MainFrameController implements UpdateListener {
         //Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         // mainView.setLocation(dim.width/2-mainView.getSize().width/2 -70, dim.height/2-mainView.getSize().height/2 -200);
         //mainView.setMinimumSize(new Dimension(1230, 1100));
+        mainView.setExtendedState(JFrame.MAXIMIZED_BOTH);
         mainView.setVisible(true);
 
     }

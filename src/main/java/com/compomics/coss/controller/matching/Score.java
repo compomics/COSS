@@ -37,52 +37,73 @@ public abstract class Score {
      * @param topN
      * @return score
      */
-    public abstract double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int lenExp, int lenLib, int topN);
+    public abstract double calculateScore(ArrayList<Peak> expSpec, ArrayList<Peak> libSpec, int topN, int transform);
 
     protected Map prepareData(ArrayList<Peak> filteredExpMS2_1, ArrayList<Peak> filteredExpMS2_2) {
 
         return (new MatchedPeaks()).getMatchedPeaks(filteredExpMS2_1, filteredExpMS2_2, confData.getfragTol());
 
     }
-    
-    
-    protected ArrayList<Peak> normalizeSpectrum(ArrayList<Peak> spec){
-        double max=0;
-        ArrayList<Peak> normalizedPeak=new ArrayList<>();
-        for(Peak p : spec){
+
+    protected ArrayList<Peak> normalizePeaks(ArrayList<Peak> spec) {
+        double max = 0;
+        ArrayList<Peak> normalizedPeak = new ArrayList<>();
+        for (Peak p : spec) {
             double intensity = p.getIntensity();
-            if(max < intensity){
-                max=intensity;
+            if (max < intensity) {
+                max = intensity;
             }
         }
-        if(max == 0){
+        if (max == 0) {
             return spec;
         }
-        
-        for(Peak p : spec){
-           double intensity = p.getIntensity()/max;
-           Peak np= new Peak(p.getMz(), intensity, p.getPeakAnnotation());
-           normalizedPeak.add(np);
+
+        for (Peak p : spec) {
+            double intensity = p.getIntensity() / max;
+            Peak np = new Peak(p.getMz(), intensity, p.getPeakAnnotation());
+            normalizedPeak.add(np);
         }
         return normalizedPeak;
-        
-        
-    }
-    
-    /**
-     * calculate and return sum of intensities of the peaks in the given spectrum
-     * @param mPeaksExp
-     * @return 
-     */
-    protected double getSumIntensity(ArrayList<Peak> mPeaksExp){
-        
-        double sum=0;
-        for(Peak p : mPeaksExp){
-            sum+=p.getIntensity();
-        }
-       return sum;        
+
     }
 
+    protected ArrayList<Peak> normalizeSpectrum(ArrayList<Peak> spec) {
+        double max = 0;
+        ArrayList<Peak> normalizedPeak = new ArrayList<>();
+        for (Peak p : spec) {
+            double intensity = p.getIntensity();
+            if (max < intensity) {
+                max = intensity;
+            }
+        }
+        if (max == 0) {
+            return spec;
+        }
+
+        for (Peak p : spec) {
+            double intensity = p.getIntensity() / max;
+            Peak np = new Peak(p.getMz(), intensity, p.getPeakAnnotation());
+            normalizedPeak.add(np);
+        }
+        return normalizedPeak;
+
+    }
+
+    /**
+     * calculate and return sum of intensities of the peaks in the given
+     * spectrum
+     *
+     * @param mPeaksExp
+     * @return
+     */
+    protected double getSumIntensity(ArrayList<Peak> mPeaksExp) {
+
+        double sum = 0;
+        for (Peak p : mPeaksExp) {
+            sum += p.getIntensity();
+        }
+        return sum;
+    }
 
     /**
      * To calculate CumulativeBinominalProbability with given n,N and p values.
@@ -102,22 +123,20 @@ public abstract class Score {
         return probability;
     }
 
-    
-    
     /**
      * To calculate Jaccard of query and library peaks
-     * 
+     *
      *
      * @return
      * @throws Exception
      */
     // @Override
-    protected double calculateJaccard(int num_matchedPeaks, int num_querySpec, int num_libSpec){
-        double jaccard=0;
-        jaccard = num_matchedPeaks/(num_libSpec+num_querySpec-num_matchedPeaks);
+    protected double calculateJaccard(int num_matchedPeaks, int num_querySpec, int num_libSpec) {
+        double jaccard = 0;
+        jaccard = num_matchedPeaks / (num_libSpec + num_querySpec - num_matchedPeaks);
         return jaccard;
     }
-    
+
     protected static long calculateCombination(int n, int r) throws Exception {
         long score = 0;
         if (r == 0) {

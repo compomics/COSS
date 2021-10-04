@@ -43,9 +43,9 @@ public class MeanSquareErrorNGTest {
         int lenB = lenA;
         int topN = 3;
         ConfigData confData=new ConfigData();
-        MeanSquareError instance = new MeanSquareError(confData, null);
+        Intensity_MSE instance = new Intensity_MSE(confData, null);
         double expResult = 0.0;
-        double result = instance.calculateScore(expSpec, libSpec, lenA, lenB, topN);
+        double result = instance.calculateScore(expSpec, libSpec, topN, topN);
         result=0.0;
         assertEquals(result, expResult, 0.0);
       

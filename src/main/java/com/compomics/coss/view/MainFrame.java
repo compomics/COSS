@@ -2,9 +2,12 @@ package com.compomics.coss.view;
 
 import com.compomics.coss.controller.MainFrameController;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BoxLayout;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneLayout;
 import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
@@ -21,16 +24,19 @@ public class MainFrame extends javax.swing.JFrame {
      * Creates new form MainFrame
      */
     public MainFrame(MainFrameController controler) {
+        
+        
         this.control = controler;
         initComponents();
+
         
         pnlQuerySpecViz.setLayout(new BorderLayout());
-        pnlResultSpec.setLayout(new BorderLayout());   
-        
+        pnlResultSpec.setLayout(new BorderLayout());
+
         spltPannelBase.setDividerLocation(0.6);
         spltPannelLeftBase.setDividerLocation(0.85);
         spltPannelRightBase.setDividerLocation(0.7);
-        
+
     }
 
     /**

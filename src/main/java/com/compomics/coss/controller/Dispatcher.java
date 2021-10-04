@@ -9,18 +9,14 @@ import com.compomics.coss.controller.matching.DataProducer;
 import com.compomics.coss.controller.matching.DotProduct;
 import com.compomics.coss.controller.matching.MSRobin;
 import com.compomics.coss.controller.matching.Matcher;
-import com.compomics.coss.controller.matching.MeanSquareError;
+import com.compomics.coss.controller.matching.Intensity_MSE;
 import com.compomics.coss.controller.matching.Score;
-import com.compomics.coss.controller.matching.TestScore;
 import com.compomics.coss.model.TheDataUnderComparison;
 import com.compomics.ms2io.model.Spectrum;
 import com.compomics.coss.model.ComparisonResult;
 import java.util.Collections;
 import com.compomics.coss.model.ConfigData;
-import java.util.Collection;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -77,7 +73,7 @@ public class Dispatcher {
                     scoreObj = new CosineSimilarity(this.confData, this.log);
                     break;
                 case 2:
-                    scoreObj = new MeanSquareError(this.confData, this.log);
+                    scoreObj = new Intensity_MSE(this.confData, this.log);
                     break;
 
                 case 3:
