@@ -221,6 +221,7 @@ public class Matcher implements Callable<List<ComparisonResult>> {
                         mSpec.setCorrelation_pearson(corr_pearson);
                         mSpec.setCorrelation_pearson_log2(corr_pearson_log2);
                         
+                        
                         mSpec.setSequence(sp2.getSequence());
                         if (sp2.getComment().contains("Decoy") || sp2.getProtein().contains("DECOY")) {
                             mSpec.setSource(0);
