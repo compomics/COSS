@@ -176,12 +176,9 @@ public class ImportExport {
 
            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "CosineSim", "MSE_Int", "MSE_MZ","spearman_corr", "pearson_corr","pearson_log2_corr", "Score_2nd", "Score_3rd", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
  //            String[] columns = {"File", "Title", "Rank", "Library", "Scan No.", "RetentionT", "Sequence", "Prec. Mass", "ChargeQuery", "Score", "Validation(FDR)", "Mods", "Protein","#MatchedPeaksQueryFraction", "#MatchedPeaksLibFraction", "SumMatchedIntQueryFraction", "SumMatchedIntLibFraction"};
-            //List<Employee> employees =  new ArrayList<>();
 
             // Create a Workbook
-            Workbook workbook = new XSSFWorkbook(); // new HSSFWorkbook() for generating `.xls` file
-            /* CreationHelper helps us create instances of various things like DataFormat,
-            Hyperlink, RichTextString etc, in a format (HSSF, XSSF) independent way */
+            Workbook workbook = new XSSFWorkbook(); 
             
             CreationHelper createHelper = workbook.getCreationHelper();
             // Create a Sheet
@@ -254,7 +251,6 @@ public class ImportExport {
                 row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson());
                 row.createCell(cell_index++).setCellValue(mSpec.get(s).getCorrelation_pearson_log2());
                 
-                
 
                 if (lenMSpecs > 1) { //if second match exists
                     score2 = mSpec.get(1).getScore();
@@ -281,9 +277,6 @@ public class ImportExport {
                 row.createCell(cell_index++).setCellValue(protein);//.substring(1, -1));
                 row.createCell(cell_index++).setCellValue(mSpec.get(s).getNumMatchedPeaks()/(double)mSpec.get(s).getTotalFilteredNumPeaks_Exp());
                 row.createCell(cell_index++).setCellValue(mSpec.get(s).getNumMatchedPeaks()/(double)mSpec.get(s).getTotalFilteredNumPeaks_Lib());
-//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSumFilteredIntensity_Exp());
-//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getSumFilteredIntensity_Lib());
-//                row.createCell(cell_index++).setCellValue(mSpec.get(s).getNumMatchedPeaks());
                 row.createCell(cell_index++).setCellValue(mSpec.get(s).getSumMatchedInt_Exp()/mSpec.get(s).getSumFilteredIntensity_Exp());
                 row.createCell(cell_index).setCellValue(mSpec.get(s).getSumMatchedInt_Lib()/mSpec.get(s).getSumFilteredIntensity_Lib());
                 rowNum++;
