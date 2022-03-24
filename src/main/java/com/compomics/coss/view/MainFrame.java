@@ -1,6 +1,7 @@
 package com.compomics.coss.view;
 
 import com.compomics.coss.controller.MainFrameController;
+import com.compomics.coss.model.ConfigData;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -19,14 +20,17 @@ import uk.ac.ebi.pride.tools.jmzreader.JMzReaderException;
 public class MainFrame extends javax.swing.JFrame {
 
     MainFrameController control;
+    
+    ConfigData cdata;
 
     /**
      * Creates new form MainFrame
      */
-    public MainFrame(MainFrameController controler) {
+    public MainFrame(MainFrameController controler, ConfigData cd) {
         
         
         this.control = controler;
+        this.cdata=cd;
         initComponents();
 
         
@@ -123,6 +127,7 @@ public class MainFrame extends javax.swing.JFrame {
         mnutsv = new javax.swing.JMenuItem();
         mnuexit = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        mnuItemPercolatorDir = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         mnureverseseq = new javax.swing.JMenuItem();
         mnurandomseq = new javax.swing.JMenuItem();
@@ -180,10 +185,20 @@ public class MainFrame extends javax.swing.JFrame {
 
         cmbprectolerance.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dalton", "PPM" }));
         cmbprectolerance.setSelectedIndex(1);
+        cmbprectolerance.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbprectoleranceActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Fragment tolerance");
 
         cmbfragmentTolerance.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dalton", "PPM" }));
+        cmbfragmentTolerance.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbfragmentToleranceActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -213,19 +228,18 @@ public class MainFrame extends javax.swing.JFrame {
                             .addGroup(jPanel7Layout.createSequentialGroup()
                                 .addComponent(txtfragTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(cmbfragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(cmbfragmentTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel7Layout.createSequentialGroup()
                                 .addComponent(txtprecTolerance, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(cmbprectolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
+                                .addComponent(cmbprectolerance, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
+                .addContainerGap(20, Short.MAX_VALUE)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtqueryspec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -375,7 +389,7 @@ public class MainFrame extends javax.swing.JFrame {
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
                 .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
                     .addGroup(jLayeredPane1Layout.createSequentialGroup()
                         .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jLayeredPane1Layout.createSequentialGroup()
@@ -466,7 +480,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         jPanel15Layout.setVerticalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 24, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, Short.MAX_VALUE)
         );
 
         jSplitPane9.setTopComponent(jPanel15);
@@ -652,7 +666,7 @@ public class MainFrame extends javax.swing.JFrame {
         );
         pnlQuerySpecVizLayout.setVerticalGroup(
             pnlQuerySpecVizLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 199, Short.MAX_VALUE)
+            .addGap(0, 197, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -688,7 +702,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtTotalSpec, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))))
-            .addComponent(pnlQuerySpecViz, javax.swing.GroupLayout.DEFAULT_SIZE, 529, Short.MAX_VALUE)
+            .addComponent(pnlQuerySpecViz, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -784,6 +798,15 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Settings");
+
+        mnuItemPercolatorDir.setText("Percolator Dir");
+        mnuItemPercolatorDir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuItemPercolatorDirActionPerformed(evt);
+            }
+        });
+        jMenu2.add(mnuItemPercolatorDir);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Generate Decoy");
@@ -988,9 +1011,23 @@ public class MainFrame extends javax.swing.JFrame {
         if (targSpectrumIndex >= 0) {
             control.fillBestmatchTable(targSpectrumIndex);
         }
-
-
     }//GEN-LAST:event_tblQueryMouseClicked
+
+    private void mnuItemPercolatorDirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemPercolatorDirActionPerformed
+        Percolator_Info setting_frm = new Percolator_Info(this.cdata);
+        setting_frm.setLocationRelativeTo(null);
+        setting_frm.setVisible(true);
+        
+    }//GEN-LAST:event_mnuItemPercolatorDirActionPerformed
+
+    private void cmbprectoleranceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbprectoleranceActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_cmbprectoleranceActionPerformed
+
+    private void cmbfragmentToleranceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbfragmentToleranceActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbfragmentToleranceActionPerformed
 
     //End of menu controls events
     //Setting controls events
@@ -1079,6 +1116,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JSplitPane jSplitPane8;
     private javax.swing.JSplitPane jSplitPane9;
     private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JMenuItem mnuItemPercolatorDir;
     private javax.swing.JMenuItem mnuannotate;
     private javax.swing.JMenuItem mnucsv;
     private javax.swing.JMenuItem mnuexit;

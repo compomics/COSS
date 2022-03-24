@@ -53,7 +53,7 @@ public class ConfigData {
 
     //initial log text
     String logText = "";
-
+   private String percolator_path="";
     //User input Search Settings
     /**
      * constructor
@@ -68,6 +68,16 @@ public class ConfigData {
 
     public void setExpSpecCount(int size) {
         this.totalExpSpectraCount = size;
+    }
+    
+ 
+    
+      public String getPercolatorPath() {
+        return this.percolator_path;
+    }
+
+    public void setPercolatorPath(String path) {
+        this.percolator_path = path;
     }
     
     public int getMassWindow() {

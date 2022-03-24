@@ -88,7 +88,7 @@ public class MainFrameController implements UpdateListener {
         isSettingSame = false;
         isReaderReady = false;
 
-        mainView = new MainFrame(this);
+        mainView = new MainFrame(this, this.configData);
 
         // add gui appender
         LogTextAreaAppender logTextAreaAppender = new LogTextAreaAppender();
@@ -965,7 +965,7 @@ public class MainFrameController implements UpdateListener {
                             LOG.info("rescoring the result with Percolator ... ");
                             Rescore rescore = new Rescore(result);
                             try {
-                                boolean finished = rescore.start_rescoring(configData.getExperimentalSpecFile().toString());
+                                boolean finished = rescore.start_rescoring(configData, configData.getExperimentalSpecFile().toString());
                                 if (finished) {
                                     LOG.info("Percolator finishes scoring and result is stored in the directory of input file ");
                                 } else {

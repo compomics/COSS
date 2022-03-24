@@ -237,7 +237,7 @@ public class MainConsoleController implements UpdateListener {
             LOG.info("starting rescoring the result with Percolator ... ");
             Rescore rescore = new Rescore(result);
             try {
-                boolean finished = rescore.start_rescoring(configData.getExperimentalSpecFile().toString());
+                boolean finished = rescore.start_rescoring(configData, configData.getExperimentalSpecFile().toString());
                 if (finished) {
                     LOG.info("Percolator finishes scoring and result is stored in the directory of input file ");
                 } else {
