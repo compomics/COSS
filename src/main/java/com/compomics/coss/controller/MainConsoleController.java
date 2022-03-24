@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import com.compomics.coss.model.ConfigData;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
@@ -31,6 +32,7 @@ public class MainConsoleController implements UpdateListener {
     List<ComparisonResult> result = new ArrayList<>();
     int cutoff_index_1percent;
     int cutoff_index_5percent;
+    boolean isPercolatorSelected = true;
 
     /**
      * the main method
@@ -41,9 +43,14 @@ public class MainConsoleController implements UpdateListener {
         try {
 
             System.out.println("Starting COSS-V2");
-            System.out.println("Rescoring with Percolator is set on by default in this version");
+            System.out.println("Rescoring with Percolator is set on by default in this version and I can be switched off by adding option -nP");
             int lenArgs = args.length;
             String arg1 = args[0];
+            if (Arrays.asList(args).contains("-nP")) {
+                lenArgs--;
+                isPercolatorSelected = false;
+            }
+
             if (lenArgs <= 1 || lenArgs > 5) {
                 System.out.println("At least two prameters has to be provided: Target spectrum and Library file \n max. number of argument is five");
                 System.out.println("\n\nUsage: \n");
@@ -52,7 +59,7 @@ public class MainConsoleController implements UpdateListener {
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.)  \n");
                 System.out.println("OR\n");
                 System.out.println("java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge \n");
-                
+
                 System.out.println("OR decoy spectra can be generated and appended to the given library file using the command below\n");
                 System.out.println("java -jar COSS-X.Y.jar -d librarySpectraFile \n");
                 System.out.println("OR spectra library file can be annotated using the command below\n");
@@ -229,25 +236,28 @@ public class MainConsoleController implements UpdateListener {
 
         dispatcher = new Dispatcher(this.configData, this, LOG);
         result = dispatcher.dispatch();
-        
+
         if (configData.isDecoyAvailable() && result != null) {
             validateResult();
+
             LOG.info("Number of validated identified spectra by COSS: " + Integer.toString(result.size()));
 
-            LOG.info("starting rescoring the result with Percolator ... ");
-            Rescore rescore = new Rescore(result);
-            try {
-                boolean finished = rescore.start_rescoring(configData, configData.getExperimentalSpecFile().toString());
-                if (finished) {
-                    LOG.info("Percolator finishes scoring and result is stored in the directory of input file ");
-                } else {
-                    LOG.info("Percolator exits with error. Result not rescored ");
-                    if (!rescore.error_msg.isEmpty()) {
-                        LOG.info(rescore.error_msg);
+            if (isPercolatorSelected) {
+                LOG.info("starting rescoring the result with Percolator ... ");
+                Rescore rescore = new Rescore(result);
+                try {
+                    boolean finished = rescore.start_rescoring(configData, configData.getExperimentalSpecFile().toString());
+                    if (finished) {
+                        LOG.info("Percolator finishes scoring and result is stored in the directory of input file ");
+                    } else {
+                        LOG.info("Percolator exits with error. Result not rescored ");
+                        if (!rescore.error_msg.isEmpty()) {
+                            LOG.info(rescore.error_msg);
+                        }
                     }
+                } catch (IOException ex) {
+                    java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(MainFrameController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
 
         } else {

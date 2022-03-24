@@ -4,10 +4,10 @@
 
     Running COSS(GUI)
    =================
-   Download COSS from "http://genesis.ugent.be/maven2/com/compomics/COSS/1.0/COSS-1.0.zip" and unzip it. On windows: your can       run COSS by double clicking on COSS-X.Y.jar file or it can be started on command line using the following command
+   Download COSS from "http://genesis.ugent.be/maven2/com/compomics/COSS/2.0/.zip" and unzip it. On windows: your can       run COSS by double clicking on COSS-X.Y.jar file or it can be started on command line using the following command
    $java -jar COSS-X.Y.jar
 
-   X.Y stands for the version number(eg. COSS-1.1.jar).
+   X.Y stands for the version number(eg. COSS-2.0.jar).
    On Ubuntu machine: COSS can be run using the command $java -jar COSS-X.Y.jar
 
    *Make sure java is installed on your machine.

@@ -9,7 +9,9 @@
 ---
 ## Project Description
 
-COSS is a user-friendly spectral library search tool capable of processing large spectral libraries and supporting multiple file formats. COSS is developed in Java and hence it is platform independent. COSS uses external subsystems for file reading and writing. Next to file io subsystems there are three main processes: preprocessing, feature extraction and matching. All processes are organized and implemented in a modular fashion to facilitate future upgrades. 
+COSS is a user-friendly spectral library search tool capable of processing large spectral libraries and supporting multiple file formats. COSS is developed in Java and hence it is platform independent
+Incase of COSS V2, Percolator, a semi-supervised machine learning tool is integrated to inhance the identification rate and the installation path should be given, if Percolator option is checked, to COSS inorder to run COSS in different platform.
+COSS uses external subsystems for file reading and writing. Next to file io subsystems there are three main processes: preprocessing, feature extraction and matching. All processes are organized and implemented in a modular fashion to facilitate future upgrades. 
 
 [Go to top of page](#coss)
 
@@ -60,6 +62,7 @@ Users can export the result in excel. The output table contains 15 columns.
 | MatchedIntLib | Sum of peak intensities of library spectrum that have a match in query spectrum |
 
 It is also possible to save results in .cos format. This allows users to re-import previous results for visualization.
+When Percolator is selected, the output is stored in tab delimited file in the same directory of the input file.
 
 [Go to top of page](#coss)
 
@@ -84,6 +87,7 @@ $java -jar COSS-X.Y.jar
 Make sure Java is installed on your machine.*
 	
 - Parameter Setting: Select and fill all required parameters.
+- If rescoring with Percolator is needed, make sure to check the option and give the full executable path pf percolator in the setting menu
 - Decoy generation: It is recommended to add decoy spectra to your spectral library for result validation. You can generate decoy library spectra using COSS builtin decoy generation. COSS has two algorithms to generate decoy spectra, reverse sequence and random sequence techniques. Click the GenerateDecoy menu and select the algorithm to generate the decoy spectra (which will be equal in size to your spectra library) and concatenate the decoys to your library. 
 
 *Note: make sure the spectral library is annotated before generating decoy library, if not you can use spectrum annotator provided in COSS.
@@ -104,6 +108,7 @@ java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN,
 or
 ```
 java -jar COSS-X.Y.jar targetSpectraFile librarySpectraFile algorithm(0=MSROBIN, 1=Cosine similarity) precursorMassTolerance(PPM) fragmentTolerance(Da.) maxNumberofCharge
+Note: In COSS V2, Percolator is set on by default and can be switched off by adding "-nP" option at the end of the command
 ```
 Decoy spectra can be generated and appended with the following command: dV- reverse, dR- random
 ```
