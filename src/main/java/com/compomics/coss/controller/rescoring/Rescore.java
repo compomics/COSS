@@ -44,8 +44,13 @@ public class Rescore {
         String cwd = System.getProperty("user.dir");
         
         String path_percolatorIn = (cwd + "\\percolator-v3-04\\bin\\pin.tab");
-
         File feature_file = new File(path_percolatorIn);
+        
+        if(feature_file.exists()){
+            feature_file.delete();
+            feature_file.createNewFile();
+            
+        }        
         GenerateFeatures features = new GenerateFeatures();
         features.generate(result, feature_file);
 
